@@ -1,1 +1,90 @@
-# Reto480EquipoC
+<div align="center">
+
+# Reto 480 Academy · Equipo C
+
+**Prototipo de aprendizaje adaptativo**
+
+Hackadō · Learn by dō
+
+![Estado](https://img.shields.io/badge/estado-en%20desarrollo-lightgrey)
+![Frontend](https://img.shields.io/badge/frontend-React%20PWA-lightgrey)
+![Backend](https://img.shields.io/badge/backend-Python%20%2B%20FastAPI-lightgrey)
+![Base de datos](https://img.shields.io/badge/BD-PostgreSQL-lightgrey)
+
+[Especificación](SPEC.md) · [Bitácora](BITACORA.md) · [Decisiones](docs/decisiones.md) · [Privacidad](docs/privacidad.md) · [Propuestas](propuestas/README.md) · [Contribución](CONTRIBUTING.md)
+
+</div>
+
+---
+
+## Resumen
+
+En 480 Academy todos los alumnos siguen el mismo itinerario, solo el 38 % de los vídeos se ve completo y no existe información sobre el aprendizaje entre el inicio del vídeo y el examen final.
+
+El prototipo aborda estos problemas con tres componentes:
+
+| Componente | Función |
+|---|---|
+| **Test inicial adaptativo** | Identifica los conceptos que el alumno ya domina. Esos contenidos se omiten de su itinerario. |
+| **Modo contexto** | El alumno indica el tiempo disponible y si puede escuchar audio. La sesión se ajusta a esas condiciones. |
+| **Mentor proactivo** | Detecta señales de bloqueo o pérdida de interés e interviene sin esperar a que el alumno pregunte. Cuando es necesario, deriva el caso a un tutor humano. |
+
+---
+
+## Criterios de evaluación
+
+| Criterio | Documentación |
+|---|---|
+| Valor para el alumno | [Respuesta a los cuatro problemas](SPEC.md#3-respuesta-a-los-cuatro-problemas) · [Historias de usuario](SPEC.md#4-historias-de-usuario) |
+| Calidad técnica y claridad de la arquitectura | [Arquitectura](SPEC.md#5-arquitectura) · [Modelo de datos](SPEC.md#6-modelo-de-datos-y-flujo-hacia-la-ia) · [Decisiones](docs/decisiones.md) |
+| Uso responsable de la IA | [Privacidad](docs/privacidad.md) · [Propuesta de agentes de IA y coste](propuestas/README.md#p1-agentes-de-ia) |
+| Originalidad y creatividad | [Idea original](SPEC.md#10-idea-original) |
+| Demo y proceso | [Bitácora](BITACORA.md) · [Guía de contribución](CONTRIBUTING.md) |
+| Reacción ante los cambios | [Bitácora: problemas y soluciones](BITACORA.md#problemas-y-soluciones) |
+
+---
+
+## Documentación
+
+| Documento | Contenido |
+|---|---|
+| [SPEC.md](SPEC.md) | Especificación: alumno, pantallas, historias, arquitectura, datos, agentes, contenido, coste y alcance |
+| [docs/decisiones.md](docs/decisiones.md) | Decisiones de stack, modelo de IA y producto |
+| [docs/privacidad.md](docs/privacidad.md) | RGPD, menores y datos enviados a la IA |
+| [propuestas/](propuestas/README.md) | Propuestas pendientes de votación del equipo |
+| [BITACORA.md](BITACORA.md) | Registro de sesiones, tareas y problemas |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Roles, ramas, pull requests y definición de terminado |
+| [AGENTS.md](AGENTS.md) | Convenciones de código y commits para el equipo y sus asistentes de IA |
+| [docs/img/](docs/img/README.md) | Bocetos y diagramas de la sesión de diseño |
+
+---
+
+## Stack
+
+| Capa | Tecnología |
+|---|---|
+| Frontend | React + Vite, PWA |
+| Backend | Python 3.12, FastAPI |
+| Base de datos | PostgreSQL |
+| IA | Pendiente de decisión ([propuesta P1](propuestas/README.md#p1-agentes-de-ia)) |
+
+Justificación en [docs/decisiones.md](docs/decisiones.md).
+
+---
+
+## Equipo
+
+| Nombre | Rol |
+|---|---|
+| Daniel | Backend (Python + FastAPI) |
+| Jeremy | Diseño (interfaz y experiencia móvil) |
+| Talia | Base de datos (PostgreSQL) |
+| Andrea | Frontend (React PWA) |
+
+## Calendario
+
+| Fecha | Hito |
+|---|---|
+| Lunes 23/11 | Sesión 1: análisis del caso, preguntas al cliente y diseño |
+| 24–29/11 | Semana intermedia (opcional) |
+| Lunes 30/11 | Sesión 2: construcción, entregables y demo |

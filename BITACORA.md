@@ -1,4 +1,4 @@
-<sub>[Inicio](README.md) · [Especificación](SPEC.md) · **Bitácora** · [Decisiones](docs/decisiones.md) · [Privacidad](docs/privacidad.md) · [Propuestas](propuestas/README.md) · [Contribución](CONTRIBUTING.md)</sub>
+<sub>[Inicio](README.md) · [Especificación](SPEC.md) · **Bitácora** · [Decisiones](docs/decisiones.md) · [Propuestas](propuestas/README.md) · [Contribución](CONTRIBUTING.md)</sub>
 
 # Bitácora
 
@@ -15,6 +15,21 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 - Presentación del equipo. Daniel, Jeremy y Talia estudian Ingeniería Informática en la UJI; Andrea procede de FP.
 - Lluvia de ideas sobre los cuatro problemas planteados por 480 Academy.
 - Reunión con el cliente: preguntas sobre el caso y presentación de la propuesta.
+
+### Hoja de acuerdos
+
+Comunicación por WhatsApp y repositorio en GitHub. Para la semana del 24 al 29, todos pueden trabajar entre semana por las mañanas.
+
+**Qué creemos que le pasa a 480 Academy:** existe una falta de motivación en los alumnos por falta de incentivos, y la empresa necesita conocer realmente la experiencia de cada usuario y su aprendizaje.
+
+**Preguntas preparadas para el cliente:**
+- Qué prioridad tienen y qué esperan conseguir.
+- Si hay un presupuesto máximo.
+- Qué grado de libertad tenemos sobre el material.
+
+![Hoja de acuerdos de la sesión 1](docs/img/hoja-acuerdos.jpg)
+
+Páginas completas de la sesión: [hoja de acuerdos](docs/img/originales/hoja-acuerdos.jpg) · [flujo del alumno y respuesta a los problemas](docs/img/originales/flujo-y-respuestas.jpg) · [arquitectura](docs/img/originales/arquitectura.jpg).
 
 ### Ideas iniciales
 
@@ -43,7 +58,7 @@ En la presentación de la propuesta:
 | Nombre | Tareas |
 |---|---|
 | Daniel | Gestión del repositorio |
-| Talia | Exposición y preguntas al cliente |
+| Talia | Contacto con el cliente |
 | Jeremy | Sin tareas asignadas en esta sesión, por coincidir con otra presentación |
 | Andrea | Bitácora |
 
@@ -53,8 +68,6 @@ En la presentación de la propuesta:
 |---|---|
 | Habíamos elegido Flutter para el frontend, pero el cliente sugirió otra opción: Flutter Web carga demasiado para conexiones 4G. | Adoptamos React como PWA ([Decisiones §1](docs/decisiones.md#1-stack-tecnológico)). |
 | La primera versión de la especificación planteaba que la IA reemplazaría a los tutores, cuando el cliente pide mejorar su trabajo. | Reformulamos el planteamiento: el mentor asume el seguimiento diario y deriva a un tutor humano cuando es necesario. |
-| La adaptación por estilos de aprendizaje carece de respaldo científico, y la prioridad del cliente es el aprendizaje. | La sustituimos por una adaptación basada en conocimiento previo y contexto. |
-| Otros equipos ya proponían certificados como incentivo. | Los dejamos fuera de alcance y desarrollamos una propuesta propia: el modo contexto. |
 | El panel para tutores no encaja con la petición de centrarse en el alumno. | Lo planteamos como evolución futura, fuera del prototipo. |
 
 ### Roles técnicos acordados

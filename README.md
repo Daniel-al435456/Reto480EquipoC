@@ -11,7 +11,7 @@ Hackadō · Learn by dō
 ![Backend](https://img.shields.io/badge/backend-Python%20%2B%20FastAPI-lightgrey)
 ![Base de datos](https://img.shields.io/badge/BD-PostgreSQL-lightgrey)
 
-[Especificación](SPEC.md) · [Bitácora](BITACORA.md) · [Decisiones](docs/decisiones.md) · [Privacidad](docs/privacidad.md) · [Propuestas](propuestas/README.md) · [Contribución](CONTRIBUTING.md)
+[Especificación](SPEC.md) · [Bitácora](BITACORA.md) · [Decisiones](docs/decisiones.md) · [Propuestas](propuestas/README.md) · [Contribución](CONTRIBUTING.md)
 
 </div>
 
@@ -26,7 +26,7 @@ El prototipo aborda estos problemas con tres componentes:
 | Componente | Función |
 |---|---|
 | **Test inicial adaptativo** | Identifica los conceptos que el alumno ya domina. Esos contenidos se omiten de su itinerario. |
-| **Modo contexto** | El alumno indica el tiempo disponible y si puede escuchar audio. La sesión se ajusta a esas condiciones. |
+| **Modos de estudio** | El alumno elige cómo estudiar según su situación: sin audio si no puede escuchar, o adaptado al tiempo que tiene. |
 | **Mentor proactivo** | Detecta señales de bloqueo o pérdida de interés e interviene sin esperar a que el alumno pregunte. Cuando es necesario, deriva el caso a un tutor humano. |
 
 ---
@@ -37,7 +37,7 @@ El prototipo aborda estos problemas con tres componentes:
 |---|---|
 | Valor para el alumno | [Respuesta a los cuatro problemas](SPEC.md#3-respuesta-a-los-cuatro-problemas) · [Historias de usuario](SPEC.md#4-historias-de-usuario) |
 | Calidad técnica y claridad de la arquitectura | [Arquitectura](SPEC.md#5-arquitectura) · [Modelo de datos](SPEC.md#6-modelo-de-datos-y-flujo-hacia-la-ia) · [Decisiones](docs/decisiones.md) |
-| Uso responsable de la IA | [Privacidad](docs/privacidad.md) · [Propuesta de agentes de IA y coste](propuestas/README.md#p1-agentes-de-ia) |
+| Uso responsable de la IA | Pendiente de aprobación: [agentes, modelo y coste](propuestas/README.md#p1-agentes-de-ia) · [datos y privacidad](propuestas/README.md#p3-arquitectura-detallada-modelo-de-datos-y-privacidad) |
 | Originalidad y creatividad | [Idea original](SPEC.md#10-idea-original) |
 | Demo y proceso | [Bitácora](BITACORA.md) · [Guía de contribución](CONTRIBUTING.md) |
 | Reacción ante los cambios | [Bitácora: problemas y soluciones](BITACORA.md#problemas-y-soluciones) |
@@ -48,10 +48,9 @@ El prototipo aborda estos problemas con tres componentes:
 
 | Documento | Contenido |
 |---|---|
-| [SPEC.md](SPEC.md) | Especificación: alumno, pantallas, historias, arquitectura, datos, agentes, contenido, coste y alcance |
+| [SPEC.md](SPEC.md) | Especificación del paquete de diseño (algunos apartados pendientes de aprobación) |
 | [docs/decisiones.md](docs/decisiones.md) | Decisiones de stack, modelo de IA y producto |
-| [docs/privacidad.md](docs/privacidad.md) | RGPD, menores y datos enviados a la IA |
-| [propuestas/](propuestas/README.md) | Propuestas pendientes de votación del equipo |
+| [propuestas/](propuestas/README.md) | Propuestas pendientes de votación del equipo: agentes de IA, historias, datos y privacidad, contenido y decisión de producto |
 | [BITACORA.md](BITACORA.md) | Registro de sesiones, tareas y problemas |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Roles, ramas, pull requests y definición de terminado |
 | [AGENTS.md](AGENTS.md) | Convenciones de código y commits para el equipo y sus asistentes de IA |

@@ -1,4 +1,4 @@
-<sub>[Inicio](README.md) · [Especificación](SPEC.md) · [Bitácora](BITACORA.md) · [Decisiones](docs/decisiones.md) · [Privacidad](docs/privacidad.md) · [Propuestas](propuestas/README.md) · **Contribución** </sub>
+<sub>[Inicio](README.md) · [Especificación](SPEC.md) · [Bitácora](BITACORA.md) · [Decisiones](docs/decisiones.md) · [Propuestas](propuestas/README.md) · **Contribución** </sub>
 
 # Guía de contribución
 

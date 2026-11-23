@@ -42,7 +42,7 @@ Reglas:
 - 3 preguntas de diagnóstico por concepto, una de cada dificultad.
 - Cada pregunta: "enunciado", "opciones" (4), "correcta" (índice), "explicacion".
 - Las opciones incorrectas deben ser errores plausibles, no absurdos.
-- Lenguaje inclusivo y apto para mayores de 14 años.
+- Lenguaje inclusivo y apto para menores de edad.
 ```
 
 ## Límites

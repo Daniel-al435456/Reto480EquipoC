@@ -1,4 +1,4 @@
-<sub>[Inicio](../README.md) · [Especificación](../SPEC.md) · [Bitácora](../BITACORA.md) · [Decisiones](../docs/decisiones.md) · [Privacidad](../docs/privacidad.md) · **Propuestas** · [Contribución](../CONTRIBUTING.md)</sub>
+<sub>[Inicio](../README.md) · [Especificación](../SPEC.md) · [Bitácora](../BITACORA.md) · [Decisiones](../docs/decisiones.md) · **Propuestas** · [Contribución](../CONTRIBUTING.md)</sub>
 
 # Propuestas
 
@@ -8,7 +8,11 @@ Propuestas pendientes de aprobación por el equipo. Mientras una propuesta no se
 
 | # | Propuesta | Estado |
 |---|---|---|
-| P1 | [Agentes de IA](#p1-agentes-de-ia) | En votación |
+| P1 | [Agentes de IA, modelo y coste](#p1-agentes-de-ia) | En votación |
+| P2 | [Historias de usuario](#p2-historias-de-usuario) | En votación |
+| P3 | [Arquitectura detallada, modelo de datos y privacidad](#p3-arquitectura-detallada-modelo-de-datos-y-privacidad) | En votación |
+| P4 | [Contenido del curso de muestra](#p4-contenido-del-curso-de-muestra) | En votación |
+| P5 | [Decisión de producto](#p5-decisión-de-producto) | En votación |
 
 ---
 
@@ -26,14 +30,14 @@ Tres agentes de IA; el resto del sistema funciona con reglas fijas, sin IA.
 
 **Sin IA, a propósito:** el planificador de sesión (qué contenido toca) y el detector de señales (cuándo interviene el mentor). Son reglas predecibles, gratuitas y comprobables.
 
-**Privacidad:** todas las llamadas pasan por el [filtro de privacidad](../docs/privacidad.md), que sustituye la identidad por un seudónimo y elimina datos personales del texto.
+**Privacidad:** todas las llamadas pasan por el filtro de privacidad descrito en la [propuesta P3](datos-y-privacidad.md#privacidad), que sustituye la identidad por un seudónimo y elimina datos personales del texto.
 
 ### Detalle por agente
 
 | Agente | Función | Modelo y justificación | Entrada | Salida | Límites |
 |---|---|---|---|---|---|
 | **Preparador** ([ficha](agentes/preparador.md)) | Transforma cada vídeo en material de aprendizaje: fragmentos de unos 5 minutos, conceptos, resumen, actividad sin audio, preguntas de diagnóstico y comprobaciones. | **Sonnet 5.5 por lotes.** Se ejecuta una sola vez por vídeo y fuera de línea, lo que permite priorizar calidad. El procesamiento por lotes reduce el coste a la mitad. | Transcripción con marcas de tiempo y metadatos del catálogo | JSON validado contra esquema, revisable por un tutor | No recibe datos de alumnos. Se limita a la transcripción. Salida JSON estricta. |
-| **Diagnóstico** ([ficha](agentes/diagnostico.md)) | Interpreta el resultado del test inicial y redacta para el alumno una explicación breve de su itinerario. | **Haiku 5.5.** Respuesta en tiempo real con coste mínimo; suficiente para resumir resultados estructurados. | Seudónimo, franja de edad y resultados por concepto (puntuados por el backend) | Clasificación por concepto y mensaje de ≤ 80 palabras | No determina la puntuación, que es determinista. No recibe datos personales. |
+| **Diagnóstico** ([ficha](agentes/diagnostico.md)) | Interpreta el resultado del test inicial y redacta para el alumno una explicación breve de su itinerario. | **Haiku 5.5.** Respuesta en tiempo real con coste mínimo; suficiente para resumir resultados estructurados. | Seudónimo, indicador de minoría de edad y resultados por concepto (puntuados por el backend) | Clasificación por concepto y mensaje de ≤ 80 palabras | No determina la puntuación, que es determinista. No recibe datos personales. |
 | **Mentor** ([ficha](agentes/mentor.md)) | Acompaña al alumno de forma proactiva ante señales (bloqueo, abandono, inactividad, racha) y responde a sus consultas. | **Haiku 5.5.** Requiere respuestas en menos de 3 segundos y un coste mínimo por mensaje. Con instrucciones en caché, cada llamada cuesta fracciones de céntimo. | Señal o consulta filtrada, nivel por concepto, fragmentos relevantes | Mensaje breve con una acción concreta o derivación a tutor | Responde solo con contenido del curso y cita el fragmento. No facilita respuestas del examen final ni solicita datos personales. Máximo 30 mensajes diarios por alumno. Deriva a un humano ante señales de malestar. |
 
 El Planificador y el Detector de señales se implementan deliberadamente sin IA: resultan predecibles, gratuitos y verificables. La IA se reserva para las tareas que requieren lenguaje y criterio.
@@ -84,6 +88,92 @@ Precios de lista de Anthropic en USD por millón de tokens:
 - Reutilización de respuestas frecuentes por fragmento.
 
 ### Votación
+
+| Nombre | Voto | Comentarios |
+|---|---|---|
+| Daniel | | |
+| Jeremy | | |
+| Talia | | |
+| Andrea | | |
+
+---
+
+## P2. Historias de usuario
+
+Afecta a: SPEC §4 y al backlog de GitHub Issues (que se crea a partir de estas historias una vez aprobadas).
+
+| # | Como… | Quiero… | Para… | Prioridad | Criterios de aceptación |
+|---|---|---|---|---|---|
+| H1 | alumno nuevo | realizar un test inicial breve | no revisar contenido que ya conozco | Imprescindible | Duración ≤ 6 min (≤ 12 preguntas). Dificultad adaptativa. Al finalizar se muestra el mapa con cada concepto clasificado como dominado, a repasar o nuevo. |
+| H2 | alumno | que el itinerario omita lo que ya domino | mantener el interés | Imprescindible | Los fragmentos de conceptos dominados no aparecen en el itinerario y siguen accesibles desde "Ver todo". |
+| H3 | alumno sin auriculares | seleccionar un modo sin audio | estudiar en cualquier lugar | Imprescindible | En modo sin audio solo se ofrecen lecturas, actividades y preguntas. No se reproduce vídeo con sonido. |
+| H4 | alumno con poco tiempo | indicar 5, 10 o 20 minutos disponibles | completar la sesión en ese tiempo | Imprescindible | La sesión propuesta se ajusta al tiempo elegido (±1 min) y muestra la duración estimada antes de empezar. |
+| H5 | alumno | responder 2 o 3 preguntas tras cada fragmento | comprobar que lo he entendido | Imprescindible | La comprobación aparece al final de cada fragmento. Un fallo marca el concepto como "a repasar" y se refleja en el mapa. |
+| H6 | alumno bloqueado | recibir ayuda sin tener que pedirla | no abandonar | Imprescindible | Tras 2 fallos en el mismo concepto, o al abandonar un fragmento antes de la mitad, el mentor ofrece una explicación alternativa en ≤ 3 s, basada exclusivamente en el contenido del curso. |
+| H7 | alumno | consultar dudas al mentor y solicitar un tutor | sentirme acompañado | Deseable | El mentor responde con contenido del curso y cita el fragmento. La opción "Hablar con un tutor" registra la derivación. |
+| H8 | alumno, o su familia si es menor | conocer y borrar los datos que usa la IA | confiar en la plataforma | Deseable | La pantalla de privacidad muestra los datos enviados a la IA. La opción de borrado elimina el historial del mentor. |
+| — | tutor | consultar un panel de alumnos en riesgo | priorizar mi dedicación | Fuera de alcance | El cliente ha solicitado centrar el prototipo en el alumno. Se plantea como evolución (§10). |
+
+**Votación**
+
+| Nombre | Voto | Comentarios |
+|---|---|---|
+| Daniel | | |
+| Jeremy | | |
+| Talia | | |
+| Andrea | | |
+
+---
+
+## P3. Arquitectura detallada, modelo de datos y privacidad
+
+Afecta a: SPEC §5 (esquema detallado), SPEC §6 y privacidad.
+
+Propuesta completa en [datos-y-privacidad.md](datos-y-privacidad.md): esquema de componentes, entidades de la base de datos, qué datos del alumno se envían a la IA y cómo se protegen (seudonimización, filtro de datos personales, tratamiento de menores, conservación).
+
+**Votación**
+
+| Nombre | Voto | Comentarios |
+|---|---|---|
+| Daniel | | |
+| Jeremy | | |
+| Talia | | |
+| Andrea | | |
+
+---
+
+## P4. Contenido del curso de muestra
+
+Afecta a: SPEC §8.
+
+- **Curso:***Python desde cero*. Encaja con una academia de formación profesional y tecnológica, presenta niveles previos muy variados (lo que pone a prueba el test inicial) y dispone de abundante material en español.
+- **Vídeos:** 12 vídeos públicos de YouTube de un mismo curso, de entre 5 y 25 minutos (selección pendiente).
+- **Transcripciones:** 1. Si el vídeo dispone de subtítulos (como el 30 % del catálogo real), se utilizan directamente.
+  2. En caso contrario, se transcriben con Whisper en servidor propio, sin coste por llamada y sin envío a terceros.
+- **Material derivado:** se genera una sola vez por vídeo y se almacena en la base de datos (método pendiente de la [propuesta P1](README.md#p1-agentes-de-ia)). En producción, un tutor lo revisa antes de publicarlo.
+
+**Votación**
+
+| Nombre | Voto | Comentarios |
+|---|---|---|
+| Daniel | | |
+| Jeremy | | |
+| Talia | | |
+| Andrea | | |
+
+---
+
+## P5. Decisión de producto
+
+Afecta a: docs/decisiones.md §3.
+
+**Decisión.** Personalizar el aprendizaje según **lo que el alumno ya sabe** (test inicial y mapa de dominio) y según **su contexto** (tiempo y audio), y no según estilos de aprendizaje (visual, auditivo, etc.).
+
+**Alternativas.** Adaptar el material a preferencias visuales, auditivas o lectoras (planteamiento inicial del equipo); itinerarios fijos con gamificación (certificados, insignias).
+
+**Justificación.** El cliente estableció como prioridad que los alumnos aprendan. La hipótesis de que adaptar el formato al estilo preferido mejora el aprendizaje carece de respaldo empírico. En cambio, sí lo tienen evitar la repetición de contenido dominado, la práctica de recuperación tras cada bloque y el repaso espaciado. El formato se adapta por razones prácticas: sin auriculares no es posible seguir un vídeo con audio. Esta decisión determina el resto del producto: el test inicial, la segmentación por conceptos, las comprobaciones y el modo contexto.
+
+**Votación**
 
 | Nombre | Voto | Comentarios |
 |---|---|---|

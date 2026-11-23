@@ -6,7 +6,7 @@
 |---|---|
 | **Cuándo corre** | **Proactivo:** cuando el Detector de señales lo activa. **Reactivo:** cuando el alumno pregunta. |
 | **Modelo** | Claude Haiku 5.5 · instrucciones en caché |
-| **Entrada** | Señal o pregunta (filtrada), franja de edad, nivel por concepto, 1–3 fragmentos relevantes del curso |
+| **Entrada** | Señal o pregunta (filtrada), indicador de minoría de edad, nivel por concepto, 1–3 fragmentos relevantes del curso |
 | **Salida** | Mensaje breve y, opcionalmente, una acción: `ver_fragmento`, `repasar`, `descansar` o `derivar_tutor` |
 | **Datos personales** | Solo seudónimo; el texto del alumno pasa antes por el filtro de privacidad |
 

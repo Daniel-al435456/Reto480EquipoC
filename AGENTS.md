@@ -1,4 +1,4 @@
-<sub>[Inicio](README.md) · [Especificación](SPEC.md) · [Bitácora](BITACORA.md) · [Decisiones](docs/decisiones.md) · [Privacidad](docs/privacidad.md) · [Propuestas](propuestas/README.md) · [Contribución](CONTRIBUTING.md)</sub>
+<sub>[Inicio](README.md) · [Especificación](SPEC.md) · [Bitácora](BITACORA.md) · [Decisiones](docs/decisiones.md) · [Propuestas](propuestas/README.md) · [Contribución](CONTRIBUTING.md)</sub>
 
 # Instrucciones para asistentes de IA de desarrollo
 
@@ -117,7 +117,7 @@ backend/
 - Tablas en plural y `snake_case`: `alumnos`, `fragmentos`, `eventos`.
 - Clave primaria `id`; claves foráneas `<entidad>_id` (`alumno_id`).
 - Columnas de fecha `creado_en` y `actualizado_en`, con zona horaria (`timestamptz`).
-- La tabla `identidades` permanece separada del resto ([privacidad](docs/privacidad.md)).
+- La tabla `identidades` permanece separada del resto ([propuesta P3](propuestas/datos-y-privacidad.md)).
 - Los cambios de esquema se realizan mediante scripts versionados en `backend/migraciones/`, nunca a mano sobre la base de datos.
 
 ---
@@ -154,7 +154,7 @@ frontend/src/
 
 - No confirma cambios en `main` ni fusiona pull requests.
 - No añade dependencias sin justificarlas en la pull request. Objetivo del frontend: interfaz inicial inferior a 200 KB comprimida.
-- No modifica `docs/privacidad.md` ni `propuestas/` salvo petición expresa.
+- No modifica `propuestas/` salvo petición expresa.
 - No implementa funcionalidades marcadas como fuera de alcance en SPEC §4.
 - No inventa requisitos: si algo no está en la especificación o en la issue, lo pregunta.
 - No envía a ningún servicio de IA nombre, email ni identificador interno de un alumno.

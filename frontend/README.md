@@ -31,8 +31,8 @@ Siguen el boceto de la sesión 1 ([SPEC §2](../SPEC.md#2-flujo-del-alumno)), m�
 | Pantalla | Ruta | Fichero |
 |---|---|---|
 | Hoy: lleva al alumno al punto en el que se quedó | `#/` | `src/pantallas/Inicio.jsx` |
-| Bienvenida (primera vez) · *pendiente de votación* | `#/bienvenida` | `src/pantallas/Bienvenida.jsx` |
-| Alias anónimo con avatar de píxeles · *pendiente de votación* | `#/alias` | `src/pantallas/Alias.jsx` |
+| Bienvenida (primera vez) | `#/bienvenida` | `src/pantallas/Bienvenida.jsx` |
+| Alias anónimo con avatar de píxeles | `#/alias` | `src/pantallas/Alias.jsx` |
 | Selección de curso | `#/cursos` | `src/pantallas/SeleccionCurso.jsx` |
 | Test inicial (`/test/repetir` para hacerlo de nuevo) | `#/curso/:id/test` | `src/pantallas/TestInicial.jsx` |
 | Modos de estudio: "¿Cómo quieres estudiar hoy?" | `#/curso/:id/hoy` | `src/pantallas/PrevioSesion.jsx` |
@@ -41,9 +41,9 @@ Siguen el boceto de la sesión 1 ([SPEC §2](../SPEC.md#2-flujo-del-alumno)), m�
 | Actividades | `#/curso/:id/sesion/:paso` | `src/pantallas/Actividades.jsx` |
 | Tutor | `#/tutor` | `src/pantallas/Tutor.jsx` |
 | Progreso | `#/progreso` | `src/pantallas/Progreso.jsx` |
-| Perfil · *pendiente de votación* | `#/perfil` | `src/pantallas/Perfil.jsx` |
+| Perfil | `#/perfil` | `src/pantallas/Perfil.jsx` |
 
-Las pantallas de bienvenida, alias y perfil proceden de los prototipos y no forman parte del boceto aprobado; están en votación en la [propuesta P6](../propuestas/README.md#p6-pantallas-de-bienvenida-alias-y-perfil). Si no se aprueban, basta con quitar sus rutas de `src/App.jsx` y la pestaña Perfil de `src/componentes/BarraInferior.jsx`.
+Las pantallas de bienvenida, alias y perfil proceden de los prototipos y se aprobaron en la [propuesta P6](../propuestas/README.md#p6-pantallas-de-bienvenida-alias-y-perfil).
 
 La barra inferior tiene cuatro pestañas (Hoy, Progreso, Tutor y Perfil) y se oculta en las pantallas de concentración: primera vez, test y sesión.
 

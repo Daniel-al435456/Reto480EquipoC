@@ -5,7 +5,7 @@ import estilos from './Bienvenida.module.css';
 
 /**
  * Bienvenida para quien abre la app por primera vez.
- * Pantalla de los prototipos pendiente de votación del equipo (propuesta P6).
+ * Pantalla de los prototipos, aprobada en la propuesta P6.
  */
 export function Bienvenida({ navegar }) {
   const encabezado = useTituloPantalla('Bienvenida');

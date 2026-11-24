@@ -2,7 +2,7 @@
 
 # Propuestas
 
-Propuestas del equipo y su estado. Mientras una propuesta no se apruebe, no forma parte de la especificación. P1 a P5 se aprobaron en la reunión del 24/11/2026 ([Bitácora, sesión 2](../BITACORA.md#sesión-2--martes-24112026)); su contenido está pendiente de trasladarse a SPEC.md y a docs/decisiones.md.
+Propuestas del equipo y su estado. Mientras una propuesta no se apruebe, no forma parte de la especificación. P1 a P6 se aprobaron en la reunión del 24/11/2026 ([Bitácora, sesión 2](../BITACORA.md#sesión-2--martes-24112026)); su contenido está pendiente de trasladarse a SPEC.md y a docs/decisiones.md.
 
 **Cómo votar:** cada miembro edita la tabla de votación de la propuesta (icono del lápiz en GitHub) con su voto (a favor, en contra o abstención) y, si quiere, un comentario. Una propuesta se aprueba con mayoría. Al aprobarse, su contenido se traslada a SPEC.md y a docs/decisiones.md.
 
@@ -13,7 +13,7 @@ Propuestas del equipo y su estado. Mientras una propuesta no se apruebe, no form
 | P3 | [Arquitectura detallada, modelo de datos y privacidad](#p3-arquitectura-detallada-modelo-de-datos-y-privacidad) | Aprobada (24/11) |
 | P4 | [Contenido del curso de muestra](#p4-contenido-del-curso-de-muestra) | Aprobada (24/11) |
 | P5 | [Decisión de producto](#p5-decisión-de-producto) | Aprobada con un añadido (24/11) |
-| P6 | [Pantallas de bienvenida, alias y perfil](#p6-pantallas-de-bienvenida-alias-y-perfil) | En votación |
+| P6 | [Pantallas de bienvenida, alias y perfil](#p6-pantallas-de-bienvenida-alias-y-perfil) | Aprobada (24/11) |
 
 ---
 
@@ -105,14 +105,6 @@ El Planificador y el Detector de señales se implementan deliberadamente sin IA:
 
 **Resultado.** Aprobada con cambios en la reunión del 24/11/2026. Se mantienen los tres agentes y su función; cambian los proveedores: Claude para el Preparador y Groq para el Diagnóstico y el Mentor, con respaldo en ambos (véase "Modelo y proveedor").
 
-### Votación
-
-| Nombre | Voto | Comentarios |
-|---|---|---|
-| Daniel | A favor | |
-| Jeremy | | |
-| Talia | | |
-| Andrea | | |
 
 ---
 
@@ -135,14 +127,6 @@ Afecta a: SPEC §4 y al backlog de GitHub Issues (que se crea a partir de estas 
 
 **Resultado.** Aprobada en la reunión del 24/11/2026, con un añadido: acceso al tutor desde cualquier pantalla mediante un símbolo de IA (historia H9).
 
-**Votación**
-
-| Nombre | Voto | Comentarios |
-|---|---|---|
-| Daniel | A favor | |
-| Jeremy | | |
-| Talia | | |
-| Andrea | | |
 
 ---
 
@@ -154,14 +138,6 @@ Propuesta completa en [datos-y-privacidad.md](datos-y-privacidad.md): esquema de
 
 **Resultado.** Aprobada en la reunión del 24/11/2026. El esquema se ha actualizado con los proveedores de P1. Se ha añadido el diagrama entidad-relación de la base de datos.
 
-**Votación**
-
-| Nombre | Voto | Comentarios |
-|---|---|---|
-| Daniel | A favor | |
-| Jeremy | | |
-| Talia | | |
-| Andrea | | |
 
 ---
 
@@ -177,14 +153,6 @@ Afecta a: SPEC §8.
 
 **Resultado.** Aprobada en la reunión del 24/11/2026. El curso de ejemplo es *Python desde cero*.
 
-**Votación**
-
-| Nombre | Voto | Comentarios |
-|---|---|---|
-| Daniel | A favor | |
-| Jeremy | | |
-| Talia | | |
-| Andrea | | |
 
 ---
 
@@ -200,14 +168,6 @@ Afecta a: docs/decisiones.md §3.
 
 **Resultado.** Aprobada en la reunión del 24/11/2026, con un añadido: incorporar mapas conceptuales y tarjetas de repaso para reforzar el aprendizaje.
 
-**Votación**
-
-| Nombre | Voto | Comentarios |
-|---|---|---|
-| Daniel | A favor | |
-| Jeremy | | |
-| Talia | | |
-| Andrea | | |
 
 ---
 
@@ -215,7 +175,7 @@ Afecta a: docs/decisiones.md §3.
 
 Afecta a: SPEC §2 y frontend.
 
-**Resumen.** Añadir al flujo del alumno tres pantallas que no aparecen en el boceto de la sesión 1 y que proceden de los prototipos. Ya están implementadas en el frontend para poder valorarlas; si no se aprueban, se retiran.
+**Resumen.** Añadir al flujo del alumno tres pantallas que no aparecen en el boceto de la sesión 1 y que proceden de los prototipos. Están implementadas en el frontend.
 
 **Detalle.**
 - **Bienvenida:** pantalla inicial la primera vez que se abre la aplicación, con el lema "Aprende a tu ritmo. En tu momento." y el botón Empezar.
@@ -223,14 +183,9 @@ Afecta a: SPEC §2 y frontend.
 - **Perfil:** alias y modo anónimo, cursos del alumno, qué datos usa la IA, modo de estudio habitual, tamaño del texto y tema, y borrado del historial con el tutor.
 - La barra inferior pasa a tener cuatro pestañas: Hoy, Progreso, Tutor y Perfil.
 
-**Votación**
+**Resultado.** Aprobada en la reunión del 24/11/2026.
 
-| Nombre | Voto | Comentarios |
-|---|---|---|
-| Daniel | | |
-| Jeremy | | |
-| Talia | | |
-| Andrea | | |
+---
 
 <!-- Plantilla para nuevas propuestas
 
@@ -242,7 +197,7 @@ Afecta a: SPEC §2 y frontend.
 
 | Nombre | Voto | Comentarios |
 |---|---|---|
-| Daniel | A favor | |
+| Daniel | | |
 | Jeremy | | |
 | Talia | | |
 | Andrea | | |

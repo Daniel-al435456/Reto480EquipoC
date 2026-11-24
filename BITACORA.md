@@ -15,7 +15,7 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 - Estructura base del frontend en `frontend/`: aplicación React instalable como PWA, con las pantallas del boceto, el estilo de los prototipos y respuestas simuladas mientras se decide la IA. Pendiente de revisión en una pull request.
 - Propuesta P6 para votar las pantallas nuevas de los prototipos: bienvenida, alias anónimo y perfil.
 - Tablero de tareas en GitHub Projects ([Reto 480 · Equipo C](https://github.com/users/andreaperibaz/projects/1)) con el backlog del proyecto: 15 tareas creadas como issues en el repositorio, cada una con su etiqueta y sus dependencias.
-- Reunión del equipo para tratar las propuestas P1 a P5.
+- Reunión del equipo para tratar las propuestas P1 a P6.
 
 ### Acuerdos de la reunión
 
@@ -26,8 +26,9 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 | [P3. Arquitectura y privacidad](propuestas/README.md#p3-arquitectura-detallada-modelo-de-datos-y-privacidad) | Aprobada. Hay que actualizar el esquema con los cambios de P1 y añadir material sobre la base de datos. |
 | [P4. Contenido del curso](propuestas/README.md#p4-contenido-del-curso-de-muestra) | Aprobada. Se empleará como ejemplo un curso de Python. |
 | [P5. Decisión de producto](propuestas/README.md#p5-decisión-de-producto) | Aprobada. Se añaden mapas conceptuales y tarjetas para reforzar el aprendizaje. |
+| [P6. Pantallas de bienvenida, alias y perfil](propuestas/README.md#p6-pantallas-de-bienvenida-alias-y-perfil) | Aprobada. |
 
-P6 (pantallas de bienvenida, alias y perfil) sigue pendiente de votación.
+Las propuestas quedan aprobadas tal como están escritas, por lo que se retiran sus tablas de votación.
 
 ### Reparto de tareas
 

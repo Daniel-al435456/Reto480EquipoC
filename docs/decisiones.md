@@ -18,10 +18,10 @@ Registro de las tres decisiones que más condicionan la solución: opción elegi
 
 ## 2. Modelo y proveedor de IA
 
-Pendiente de decisión del equipo. Propuesta en votación: [P1. Agentes de IA](../propuestas/README.md#p1-agentes-de-ia).
+Aprobado el 24/11/2026, pendiente de trasladar a este documento. Contenido en [P1. Agentes de IA](../propuestas/README.md#p1-agentes-de-ia).
 
 ---
 
 ## 3. Decisión de producto
 
-Pendiente de aprobación del equipo. Propuesta en votación: [P5. Decisión de producto](../propuestas/README.md#p5-decisión-de-producto).
+Aprobado el 24/11/2026, pendiente de trasladar a este documento. Contenido en [P5. Decisión de producto](../propuestas/README.md#p5-decisión-de-producto).

@@ -44,7 +44,7 @@ Adulto o adolescente, con perfiles y experiencia muy diversos, que estudia princ
 
 ## 4. Historias de usuario
 
-Pendiente de aprobación del equipo. Propuesta en votación: [P2. Historias de usuario](propuestas/README.md#p2-historias-de-usuario).
+Aprobado el 24/11/2026, pendiente de trasladar a este documento. Contenido en [P2. Historias de usuario](propuestas/README.md#p2-historias-de-usuario).
 
 ---
 
@@ -67,25 +67,25 @@ Esquema detallado pendiente de aprobación: [propuesta P3](propuestas/README.md#
 
 ## 6. Modelo de datos y flujo hacia la IA
 
-Pendiente de aprobación del equipo. Propuesta en votación: [P3. Arquitectura detallada, modelo de datos y privacidad](propuestas/README.md#p3-arquitectura-detallada-modelo-de-datos-y-privacidad).
+Aprobado el 24/11/2026, pendiente de trasladar a este documento. Contenido en [P3. Arquitectura detallada, modelo de datos y privacidad](propuestas/README.md#p3-arquitectura-detallada-modelo-de-datos-y-privacidad).
 
 ---
 
 ## 7. Agentes de IA
 
-Pendiente de decisión del equipo. Propuesta en votación: [P1. Agentes de IA](propuestas/README.md#p1-agentes-de-ia).
+Aprobado el 24/11/2026, pendiente de trasladar a este documento. Contenido en [P1. Agentes de IA](propuestas/README.md#p1-agentes-de-ia).
 
 ---
 
 ## 8. Contenido
 
-Pendiente de aprobación del equipo. Propuesta en votación: [P4. Contenido del curso de muestra](propuestas/README.md#p4-contenido-del-curso-de-muestra).
+Aprobado el 24/11/2026, pendiente de trasladar a este documento. Contenido en [P4. Contenido del curso de muestra](propuestas/README.md#p4-contenido-del-curso-de-muestra).
 
 ---
 
 ## 9. Coste de IA por alumno y mes
 
-Pendiente de decisión del equipo. Propuesta en votación: [P1. Agentes de IA](propuestas/README.md#p1-agentes-de-ia).
+Aprobado el 24/11/2026, pendiente de trasladar a este documento. Contenido en [P1. Agentes de IA](propuestas/README.md#p1-agentes-de-ia).
 
 ---
 

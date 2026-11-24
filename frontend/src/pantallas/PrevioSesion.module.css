@@ -1,0 +1,52 @@
+.cabeceraPlan {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.pasos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paso {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+.numero {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radio-pequeno);
+  background: var(--color-superficie-suave);
+  color: var(--color-acento-tinta);
+  font-weight: 800;
+  font-size: 0.8125rem;
+}
+
+.textoPaso {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.textoPaso strong {
+  font-size: var(--texto-pequeno);
+}
+
+.minutos {
+  flex-shrink: 0;
+  color: var(--color-texto-suave);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}

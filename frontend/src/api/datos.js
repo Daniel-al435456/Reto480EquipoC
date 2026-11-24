@@ -1,0 +1,293 @@
+/*
+ * Contenido de ejemplo del curso de muestra.
+ * El curso definitivo está pendiente de votación (propuesta P4); cambiarlo solo requiere editar este fichero.
+ * Los identificadores de YouTube están vacíos hasta que se seleccionen los vídeos.
+ */
+
+export const cursos = [
+  {
+    id: 'python-desde-cero',
+    titulo: 'Python desde cero',
+    descripcion: 'Aprende los fundamentos de la programación con Python.',
+    nivel: 'Inicial',
+    lecciones: [
+      {
+        id: 'introduccion',
+        titulo: 'Qué es Python',
+        concepto: 'Primeros pasos',
+        youtubeId: '',
+        duracionVideo: 5,
+        duracionLectura: 3,
+        descripcion: 'Qué es Python, para qué se usa y cómo escribir tu primer programa.',
+        lectura: [
+          'Python es un lenguaje de programación de propósito general. Se usa para crear páginas web, analizar datos, automatizar tareas o programar inteligencia artificial.',
+          'Un programa es una lista de instrucciones que el ordenador ejecuta en orden, de arriba abajo.',
+          'La instrucción print muestra un texto por pantalla. Por ejemplo, print("Hola") muestra la palabra Hola. El texto va siempre entre comillas.',
+        ],
+        resumen: 'Python ejecuta las instrucciones en orden. print("texto") muestra un texto por pantalla.',
+        actividades: [
+          {
+            id: 'introduccion-1',
+            tipo: 'vf',
+            enunciado: 'La instrucción print("Hola") muestra la palabra Hola por pantalla.',
+            correcta: true,
+            explicacion: 'print muestra por pantalla lo que va entre los paréntesis.',
+          },
+          {
+            id: 'introduccion-2',
+            tipo: 'vf',
+            enunciado: 'Python ejecuta las instrucciones en un orden aleatorio.',
+            correcta: false,
+            explicacion: 'Las instrucciones se ejecutan en orden, de arriba abajo.',
+          },
+          {
+            id: 'introduccion-3',
+            tipo: 'escrita',
+            enunciado: 'Escribe la instrucción que muestra por pantalla el texto Buenos días.',
+            palabrasClave: ['print', 'buenos días'],
+            solucion: 'print("Buenos días")',
+          },
+        ],
+      },
+      {
+        id: 'variables',
+        titulo: 'Variables y tipos de datos',
+        concepto: 'Variables',
+        youtubeId: '',
+        duracionVideo: 6,
+        duracionLectura: 4,
+        descripcion: 'Cómo guardar datos en variables y qué tipos de datos existen.',
+        lectura: [
+          'Una variable es un nombre que guarda un valor para usarlo más tarde. Se crea con el signo igual: edad = 18.',
+          'Los tipos de datos más comunes son: números enteros (int), como 18; números decimales (float), como 3.14; textos (str), como "Hola"; y valores lógicos (bool), que solo pueden ser True o False.',
+          'El valor de una variable puede cambiar durante el programa: si escribes edad = 19, la variable pasa a valer 19.',
+        ],
+        resumen: 'Una variable guarda un valor: nombre = valor. Tipos básicos: int, float, str y bool.',
+        actividades: [
+          {
+            id: 'variables-1',
+            tipo: 'vf',
+            enunciado: 'El valor 3.14 es de tipo float.',
+            correcta: true,
+            explicacion: 'Los números con decimales son de tipo float.',
+          },
+          {
+            id: 'variables-2',
+            tipo: 'vf',
+            enunciado: 'Una vez creada, una variable no puede cambiar de valor.',
+            correcta: false,
+            explicacion: 'Puedes asignar un valor nuevo a una variable en cualquier momento.',
+          },
+          {
+            id: 'variables-3',
+            tipo: 'escrita',
+            enunciado: 'Crea una variable llamada nombre que guarde el texto Ana.',
+            palabrasClave: ['nombre', '=', 'ana'],
+            solucion: 'nombre = "Ana"',
+          },
+        ],
+      },
+      {
+        id: 'condicionales',
+        titulo: 'Condicionales',
+        concepto: 'Condicionales',
+        youtubeId: '',
+        duracionVideo: 6,
+        duracionLectura: 4,
+        descripcion: 'Cómo hacer que el programa tome decisiones con if, elif y else.',
+        lectura: [
+          'Los condicionales permiten ejecutar unas instrucciones u otras según se cumpla una condición.',
+          'if comprueba una condición. elif comprueba otra condición si la anterior no se ha cumplido. else se ejecuta cuando no se ha cumplido ninguna.',
+          'Ejemplo: if nota >= 5: print("Aprobado") else: print("Suspenso"). Las instrucciones de cada bloque van con sangría, es decir, desplazadas a la derecha.',
+        ],
+        resumen: 'if comprueba una condición, elif otra alternativa y else el resto de casos. Cada bloque va con sangría.',
+        actividades: [
+          {
+            id: 'condicionales-1',
+            tipo: 'vf',
+            enunciado: 'En Python se escribe elif para comprobar otra condición.',
+            correcta: true,
+            explicacion: 'elif es la forma corta de "else if" que usa Python.',
+          },
+          {
+            id: 'condicionales-2',
+            tipo: 'vf',
+            enunciado: 'El bloque else se ejecuta siempre, se cumpla o no la condición.',
+            correcta: false,
+            explicacion: 'else solo se ejecuta cuando no se ha cumplido ninguna de las condiciones anteriores.',
+          },
+          {
+            id: 'condicionales-3',
+            tipo: 'escrita',
+            enunciado: 'Escribe la primera línea de un condicional que compruebe si la variable edad es mayor o igual que 18.',
+            palabrasClave: ['if', 'edad', '>=', '18'],
+            solucion: 'if edad >= 18:',
+          },
+        ],
+      },
+      {
+        id: 'bucles',
+        titulo: 'Bucles',
+        concepto: 'Bucles',
+        youtubeId: '',
+        duracionVideo: 7,
+        duracionLectura: 4,
+        descripcion: 'Cómo repetir instrucciones con for y while.',
+        lectura: [
+          'Un bucle repite un bloque de instrucciones varias veces.',
+          'for repite el bloque un número concreto de veces. Por ejemplo, for i in range(3): repite el bloque tres veces, con i valiendo 0, 1 y 2.',
+          'while repite el bloque mientras se cumpla una condición. Hay que asegurarse de que la condición deje de cumplirse en algún momento; si no, el bucle no termina nunca.',
+        ],
+        resumen: 'for repite un número concreto de veces; while repite mientras se cumpla una condición.',
+        actividades: [
+          {
+            id: 'bucles-1',
+            tipo: 'vf',
+            enunciado: 'for i in range(3): repite el bloque tres veces.',
+            correcta: true,
+            explicacion: 'range(3) genera los valores 0, 1 y 2: tres repeticiones.',
+          },
+          {
+            id: 'bucles-2',
+            tipo: 'vf',
+            enunciado: 'Un bucle while siempre termina por sí solo.',
+            correcta: false,
+            explicacion: 'Si la condición nunca deja de cumplirse, el bucle se repite indefinidamente.',
+          },
+          {
+            id: 'bucles-3',
+            tipo: 'escrita',
+            enunciado: 'Escribe la primera línea de un bucle for que se repita 5 veces.',
+            palabrasClave: ['for', 'in', 'range', '5'],
+            solucion: 'for i in range(5):',
+          },
+        ],
+      },
+      {
+        id: 'listas',
+        titulo: 'Listas',
+        concepto: 'Listas',
+        youtubeId: '',
+        duracionVideo: 5,
+        duracionLectura: 3,
+        descripcion: 'Cómo guardar varios valores en una lista y acceder a ellos.',
+        lectura: [
+          'Una lista guarda varios valores en orden, entre corchetes y separados por comas: numeros = [10, 20, 30].',
+          'Cada elemento tiene una posición, llamada índice, que empieza en 0. Por eso numeros[0] vale 10 y numeros[2] vale 30.',
+          'Para añadir un elemento al final de la lista se usa append: numeros.append(40).',
+        ],
+        resumen: 'Una lista guarda varios valores: [10, 20, 30]. El primer índice es 0. append añade al final.',
+        actividades: [
+          {
+            id: 'listas-1',
+            tipo: 'vf',
+            enunciado: 'En la lista [10, 20, 30], el elemento en la posición 0 es 10.',
+            correcta: true,
+            explicacion: 'Los índices de las listas empiezan en 0.',
+          },
+          {
+            id: 'listas-2',
+            tipo: 'vf',
+            enunciado: 'append añade un elemento al principio de la lista.',
+            correcta: false,
+            explicacion: 'append añade el elemento al final de la lista.',
+          },
+          {
+            id: 'listas-3',
+            tipo: 'escrita',
+            enunciado: 'Escribe la instrucción que añade el número 5 al final de la lista numeros.',
+            palabrasClave: ['numeros', 'append', '5'],
+            solucion: 'numeros.append(5)',
+          },
+        ],
+      },
+      {
+        id: 'funciones',
+        titulo: 'Funciones',
+        concepto: 'Funciones',
+        youtubeId: '',
+        duracionVideo: 7,
+        duracionLectura: 4,
+        descripcion: 'Cómo agrupar instrucciones en funciones para reutilizarlas.',
+        lectura: [
+          'Una función agrupa instrucciones bajo un nombre para poder usarlas tantas veces como quieras.',
+          'Se define con la palabra def, el nombre y los paréntesis: def saludar():. Las instrucciones de la función van con sangría.',
+          'Una función puede recibir datos (parámetros) y devolver un resultado con return. Por ejemplo, def doble(n): return n * 2.',
+        ],
+        resumen: 'def nombre(parámetros): define una función. return devuelve un resultado.',
+        actividades: [
+          {
+            id: 'funciones-1',
+            tipo: 'vf',
+            enunciado: 'Las funciones en Python se definen con la palabra def.',
+            correcta: true,
+            explicacion: 'def es la palabra clave para definir funciones.',
+          },
+          {
+            id: 'funciones-2',
+            tipo: 'vf',
+            enunciado: 'Una función solo se puede usar una vez en un programa.',
+            correcta: false,
+            explicacion: 'La ventaja de las funciones es que se pueden reutilizar tantas veces como se necesite.',
+          },
+          {
+            id: 'funciones-3',
+            tipo: 'escrita',
+            enunciado: 'Escribe la primera línea de una función llamada saludar sin parámetros.',
+            palabrasClave: ['def', 'saludar', '('],
+            solucion: 'def saludar():',
+          },
+        ],
+      },
+    ],
+    testInicial: [
+      {
+        id: 't-introduccion',
+        leccionId: 'introduccion',
+        enunciado: '¿Qué instrucción muestra un texto por pantalla en Python?',
+        opciones: ['print("Hola")', 'echo "Hola"', 'console.log("Hola")', 'System.out.println("Hola")'],
+        correcta: 0,
+      },
+      {
+        id: 't-variables',
+        leccionId: 'variables',
+        enunciado: '¿De qué tipo es el valor 3.14 en Python?',
+        opciones: ['int', 'float', 'str', 'bool'],
+        correcta: 1,
+      },
+      {
+        id: 't-condicionales',
+        leccionId: 'condicionales',
+        enunciado: '¿Qué palabra se usa para comprobar otra condición si la primera no se cumple?',
+        opciones: ['else if', 'elseif', 'elif', 'otherwise'],
+        correcta: 2,
+      },
+      {
+        id: 't-bucles',
+        leccionId: 'bucles',
+        enunciado: '¿Cuántas veces se repite el bloque de for i in range(3):?',
+        opciones: ['2 veces', '3 veces', '4 veces', 'Infinitas veces'],
+        correcta: 1,
+      },
+      {
+        id: 't-listas',
+        leccionId: 'listas',
+        enunciado: 'Si numeros = [10, 20, 30], ¿qué devuelve numeros[0]?',
+        opciones: ['10', '20', '30', 'Un error'],
+        correcta: 0,
+      },
+      {
+        id: 't-funciones',
+        leccionId: 'funciones',
+        enunciado: '¿Qué palabra clave se usa para definir una función?',
+        opciones: ['function', 'func', 'fn', 'def'],
+        correcta: 3,
+      },
+    ],
+  },
+];
+
+/** Duración estimada, en minutos, de las actividades de una lección. */
+export const DURACION_ACTIVIDADES = 2;
+/** Duración estimada, en minutos, del resumen exprés de una lección. */
+export const DURACION_RESUMEN = 1;

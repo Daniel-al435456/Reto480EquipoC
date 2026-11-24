@@ -1,0 +1,34 @@
+/*
+ * Contenedor principal. Diseño mobile-first:
+ * - Móvil: una columna a todo el ancho.
+ * - Tableta y escritorio: columna centrada con ancho de lectura cómodo.
+ * Respeta las zonas seguras de pantallas con notch y el espacio de la barra inferior.
+ */
+.principal {
+  width: 100%;
+  max-width: var(--ancho-contenido);
+  margin: 0 auto;
+  padding: calc(var(--espacio-6) + env(safe-area-inset-top)) calc(var(--espacio-5) + env(safe-area-inset-right))
+    calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + var(--espacio-6))
+    calc(var(--espacio-5) + env(safe-area-inset-left));
+  outline: none;
+}
+
+@media (min-width: 48rem) {
+  .principal {
+    padding-top: calc(var(--espacio-6) + env(safe-area-inset-top));
+  }
+}
+
+/* Móviles en horizontal: menos margen vertical para aprovechar la poca altura. */
+@media (max-height: 30rem) and (orientation: landscape) {
+  .principal {
+    padding-top: calc(var(--espacio-3) + env(safe-area-inset-top));
+  }
+}
+
+/* Pantallas sin barra inferior: la acción principal queda pegada al borde. */
+.sinBarra {
+  --margen-inferior: 0px;
+  padding-bottom: calc(var(--espacio-5) + env(safe-area-inset-bottom));
+}

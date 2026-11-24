@@ -50,10 +50,12 @@ El prototipo aborda estos problemas con tres componentes:
 |---|---|
 | [SPEC.md](SPEC.md) | Especificación del paquete de diseño (algunos apartados pendientes de aprobación) |
 | [docs/decisiones.md](docs/decisiones.md) | Decisiones de stack, modelo de IA y producto |
-| [propuestas/](propuestas/README.md) | Propuestas pendientes de votación del equipo: agentes de IA, historias, datos y privacidad, contenido y decisión de producto |
+| [propuestas/](propuestas/README.md) | Propuestas pendientes de votación del equipo: agentes de IA, historias, datos y privacidad, contenido, decisión de producto y pantallas nuevas |
 | [BITACORA.md](BITACORA.md) | Registro de sesiones, tareas y problemas |
+| [Tablero de tareas](https://github.com/users/andreaperibaz/projects/1) | Backlog del proyecto en GitHub Projects: qué falta, quién se encarga y en qué estado está |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Roles, ramas, pull requests y definición de terminado |
 | [AGENTS.md](AGENTS.md) | Convenciones de código y commits para el equipo y sus asistentes de IA |
+| [frontend/](frontend/README.md) | Aplicación del alumno (React PWA): puesta en marcha, pantallas y estructura |
 | [docs/img/](docs/img/README.md) | Bocetos y diagramas de la sesión de diseño |
 
 ---

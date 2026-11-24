@@ -1,0 +1,60 @@
+/* Marco del vídeo en grafito, como en los prototipos. */
+.marco {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 1.375rem;
+  overflow: hidden;
+  background: var(--color-grafito);
+}
+
+.iframe,
+.portada,
+.imagen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.portada {
+  padding: 0;
+  background: var(--color-grafito);
+  cursor: pointer;
+}
+
+.imagen {
+  object-fit: cover;
+}
+
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 50%;
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+  transform: translate(-50%, -50%);
+}
+
+.vacio {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--espacio-3);
+  height: 100%;
+  padding: var(--espacio-4);
+  color: var(--color-grafito-suave);
+  font-size: var(--texto-pequeno);
+  text-align: center;
+}
+
+.vacio .play {
+  position: static;
+  transform: none;
+}

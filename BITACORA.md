@@ -6,6 +6,36 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 
 ---
 
+## Sesión 2 · Martes 24/11/2026
+
+**Asistentes:**
+
+### Actividades
+
+- Estructura base del frontend en `frontend/`: aplicación React instalable como PWA, con las pantallas del boceto, el estilo de los prototipos y respuestas simuladas mientras se decide la IA. Pendiente de revisión en una pull request.
+- Propuesta P6 para votar las pantallas nuevas de los prototipos: bienvenida, alias anónimo y perfil.
+- Tablero de tareas en GitHub Projects ([Reto 480 · Equipo C](https://github.com/users/andreaperibaz/projects/1)) con el backlog del proyecto: 15 tareas creadas como issues en el repositorio, cada una con su etiqueta y sus dependencias.
+
+### Reparto de tareas
+
+| Nombre | Tareas |
+|---|---|
+| Andrea | Estructura base del frontend, tablero de tareas y backlog, bitácora |
+
+### Problemas y soluciones
+
+| Problema | Solución |
+|---|---|
+| No teníamos una forma común de saber qué tareas quedaban ni quién se encargaba de cada una. | Creamos un tablero en GitHub Projects con todas las tareas pendientes. Las tareas se asignan en equipo y cada tarjeta avanza por las columnas a medida que se trabaja. |
+
+### Herramientas de IA utilizadas
+
+| Herramienta | Modelo | Uso |
+|---|---|---|
+| Claude (claude.ai) | Claude Opus 5.5 | Generación de la estructura del frontend, prototipos de pantallas, redacción del backlog y script para crear los issues |
+
+---
+
 ## Sesión 1 · Lunes 23/11/2026
 
 **Asistentes:** Daniel, Jeremy, Talia, Andrea

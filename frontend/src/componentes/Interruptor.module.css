@@ -1,0 +1,60 @@
+/* Interruptor accesible (role="switch"). */
+.interruptor {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  width: 100%;
+  padding: 0.875rem var(--espacio-4);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 1.125rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
+}
+
+.texto strong {
+  font-size: 0.9375rem;
+}
+
+.interruptor > .pista {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 2rem;
+  padding: 3px;
+  border-radius: 1rem;
+  background: var(--color-pendiente);
+  transition: background-color var(--duracion);
+}
+
+.pista::after {
+  content: '';
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform var(--duracion);
+}
+
+.interruptor[aria-checked='true'] > .pista {
+  background: var(--color-acento-tinta);
+}
+
+.interruptor[aria-checked='true'] > .pista::after {
+  transform: translateX(1.25rem);
+}
+
+.descripcion {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+  line-height: 1.4;
+}

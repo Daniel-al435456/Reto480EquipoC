@@ -1,0 +1,89 @@
+/*
+ * Variables de diseño · paleta "Grafito 480", basada en los colores de 480 Academy.
+ * Modo claro por defecto y modo oscuro automático según el sistema.
+ * Todos los textos cumplen contraste AA sobre su fondo:
+ * - el cian de marca (#1CF9FC) solo se usa como relleno, con texto oscuro encima;
+ * - en textos, enlaces y bordes se usa --color-acento-tinta.
+ */
+:root {
+  color-scheme: light dark;
+
+  --color-fondo: #f4f6f6;
+  --color-superficie: #ffffff;
+  --color-superficie-suave: #e3e6e6;
+  --color-texto: #1f2222;
+  --color-texto-medio: #3e4444;
+  --color-texto-suave: #5e6363;
+  --color-borde: #e3e6e6;
+  --color-borde-fuerte: #c5caca;
+  --color-pendiente: #dadede;
+  --color-acento: #1cf9fc; /* cian de marca: rellenos */
+  --color-acento-texto: #1f2222; /* texto sobre el cian */
+  --color-acento-suave: #ddfdfe;
+  --color-acento-tinta: #007a7d; /* cian oscurecido: textos, enlaces y bordes */
+  --color-progreso: #12a15a;
+  --color-verde-marca: #39fe90; /* verde de marca: rellenos con texto oscuro */
+  --color-exito: #1b6b3a;
+  --color-exito-suave: #e3f4ea;
+  --color-error: #c0392b;
+  --color-error-texto: #8a1f14;
+  --color-error-suave: #fcebe9;
+  --color-marca-coral: #ff4950;
+  --color-foco: #d92b33;
+
+  /* Tarjetas destacadas en grafito, con texto blanco. */
+  --color-grafito: #1f2222;
+  --color-grafito-texto: #ffffff;
+  --color-grafito-suave: rgba(255, 255, 255, 0.78);
+  --color-grafito-pista: rgba(255, 255, 255, 0.16);
+
+  --fuente: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --fuente-codigo: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --texto-mini: 0.75rem;
+  --texto-pequeno: 0.875rem;
+  --texto-base: 1rem;
+  --texto-medio: 1.125rem;
+  --texto-titulo: 1.75rem;
+
+  --espacio-1: 0.25rem;
+  --espacio-2: 0.5rem;
+  --espacio-3: 0.75rem;
+  --espacio-4: 1rem;
+  --espacio-5: 1.5rem;
+  --espacio-6: 2rem;
+
+  --radio: 1rem;
+  --radio-grande: 1.25rem;
+  --radio-pequeno: 0.75rem;
+  --tactil-minimo: 2.75rem; /* 44 px: área táctil mínima recomendada */
+  --alto-boton: 3.5rem;
+  --ancho-contenido: 40rem;
+  --alto-barra-inferior: 4.5rem;
+  --duracion: 180ms;
+}
+
+/* Modo oscuro: "Grafito 480" oscuro, fiel a la web de 480. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-fondo: #1f2222;
+    --color-superficie: #2a2d2d;
+    --color-superficie-suave: #3a3d3d;
+    --color-texto: #ffffff;
+    --color-texto-medio: #d5dada;
+    --color-texto-suave: #b4baba;
+    --color-borde: #3d4141;
+    --color-borde-fuerte: #5a5f5f;
+    --color-pendiente: #4d4d4d;
+    --color-acento-suave: #1c3b3c;
+    --color-acento-tinta: #1cf9fc;
+    --color-progreso: #39fe90;
+    --color-exito: #39fe90;
+    --color-exito-suave: #1f3a2b;
+    --color-error: #ff6b71;
+    --color-error-texto: #ffb3b6;
+    --color-error-suave: #3a2224;
+    --color-foco: #ff4950;
+    --color-grafito: #343838;
+  }
+}

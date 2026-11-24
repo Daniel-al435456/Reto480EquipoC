@@ -1,11 +1,11 @@
-<sub>[Volver a propuestas](../README.md) · Propuesta P1, pendiente de votación</sub>
+<sub>[Volver a propuestas](../README.md) · Propuesta P1, aprobada el 24/11/2026</sub>
 
 # Agente Mentor
 
 | | |
 |---|---|
 | **Cuándo corre** | **Proactivo:** cuando el Detector de señales lo activa. **Reactivo:** cuando el alumno pregunta. |
-| **Modelo** | Claude Haiku 5.5 · instrucciones en caché |
+| **Modelo** | Groq, modelo `gpt-oss-120b` · respaldo: mensaje fijo y derivación al tutor humano |
 | **Entrada** | Señal o pregunta (filtrada), indicador de minoría de edad, nivel por concepto, 1–3 fragmentos relevantes del curso |
 | **Salida** | Mensaje breve y, opcionalmente, una acción: `ver_fragmento`, `repasar`, `descansar` o `derivar_tutor` |
 | **Datos personales** | Solo seudónimo; el texto del alumno pasa antes por el filtro de privacidad |

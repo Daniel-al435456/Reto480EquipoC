@@ -1,11 +1,11 @@
-<sub>[Volver a propuestas](../README.md) · Propuesta P1, pendiente de votación</sub>
+<sub>[Volver a propuestas](../README.md) · Propuesta P1, aprobada el 24/11/2026</sub>
 
 # Agente Diagnóstico
 
 | | |
 |---|---|
 | **Cuándo corre** | Al terminar el test inicial (≈ 1 vez por alumno y curso) |
-| **Modelo** | Claude Haiku 5.5 |
+| **Modelo** | Groq, modelo `gpt-oss-20b` · respaldo: plantilla fija sin IA |
 | **Entrada** | Seudónimo, indicador de minoría de edad y resultado por concepto (aciertos/fallos por dificultad, **ya puntuado por el backend**) |
 | **Salida** | JSON: estado por concepto y mensaje al alumno |
 | **Datos personales** | Solo seudónimo y indicador de minoría de edad |

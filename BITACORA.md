@@ -15,6 +15,19 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 - Estructura base del frontend en `frontend/`: aplicación React instalable como PWA, con las pantallas del boceto, el estilo de los prototipos y respuestas simuladas mientras se decide la IA. Pendiente de revisión en una pull request.
 - Propuesta P6 para votar las pantallas nuevas de los prototipos: bienvenida, alias anónimo y perfil.
 - Tablero de tareas en GitHub Projects ([Reto 480 · Equipo C](https://github.com/users/andreaperibaz/projects/1)) con el backlog del proyecto: 15 tareas creadas como issues en el repositorio, cada una con su etiqueta y sus dependencias.
+- Reunión del equipo para tratar las propuestas P1 a P5.
+
+### Acuerdos de la reunión
+
+| Propuesta | Resultado |
+|---|---|
+| [P1. Agentes de IA](propuestas/README.md#p1-agentes-de-ia) | Aprobada con cambios. Preparador: Claude, antes de la demo, una vez por vídeo. Diagnóstico: Groq, con plantilla fija de respaldo. Mentor: Groq, con derivación al tutor humano de respaldo. |
+| [P2. Historias de usuario](propuestas/README.md#p2-historias-de-usuario) | Aprobada. Se añade el acceso al tutor desde cualquier pantalla mediante un símbolo de IA. |
+| [P3. Arquitectura y privacidad](propuestas/README.md#p3-arquitectura-detallada-modelo-de-datos-y-privacidad) | Aprobada. Hay que actualizar el esquema con los cambios de P1 y añadir material sobre la base de datos. |
+| [P4. Contenido del curso](propuestas/README.md#p4-contenido-del-curso-de-muestra) | Aprobada. Se empleará como ejemplo un curso de Python. |
+| [P5. Decisión de producto](propuestas/README.md#p5-decisión-de-producto) | Aprobada. Se añaden mapas conceptuales y tarjetas para reforzar el aprendizaje. |
+
+P6 (pantallas de bienvenida, alias y perfil) sigue pendiente de votación.
 
 ### Reparto de tareas
 
@@ -28,11 +41,18 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 |---|---|
 | No teníamos una forma común de saber qué tareas quedaban ni quién se encargaba de cada una. | Creamos un tablero en GitHub Projects con todas las tareas pendientes. Las tareas se asignan en equipo y cada tarjeta avanza por las columnas a medida que se trabaja. |
 
+### Cambios
+
+| Cambio | Motivo |
+|---|---|
+| **Opción de IA.** La propuesta inicial usaba modelos de pago de Claude para los tres agentes. Ahora el Preparador usa Claude y el Diagnóstico y el Mentor usan Groq. | Queríamos opciones gratuitas para el prototipo. El Preparador se ejecuta una sola vez por vídeo y antes de la demo, así que priorizamos la calidad del contenido y no recibe datos de alumnos. El Diagnóstico y el Mentor necesitan responder al momento: Groq responde en menos de un segundo, es gratuito sin tarjeta y su contrato establece que no entrena con nuestros datos. Como el plan gratuito tiene límites, ambos tienen respaldo: plantilla fija y derivación al tutor. Descartamos Google Gemini gratuito porque sus condiciones exigen usuarios de 18 años o más y prohíben las aplicaciones que probablemente usen menores. |
+| **Personalización del aprendizaje.** En un primer momento optamos por adaptar el material a estilos de aprendizaje (visual, auditivo…). Ahora personalizamos según lo que el alumno ya sabe (test inicial y mapa de dominio) y según su contexto (tiempo y audio). | Tras investigar, vimos que adaptar el formato al estilo preferido no tiene respaldo empírico como mejora del aprendizaje. Sí lo tienen evitar repetir lo que el alumno ya domina, comprobar lo aprendido tras cada bloque y repasar de forma espaciada. El formato se adapta solo por motivos prácticos, como no poder escuchar audio. |
+
 ### Herramientas de IA utilizadas
 
 | Herramienta | Modelo | Uso |
 |---|---|---|
-| Claude (claude.ai) | Claude Opus 5.5 | Generación de la estructura del frontend, prototipos de pantallas, redacción del backlog y script para crear los issues |
+| Claude (claude.ai) | Claude Opus 5.5 | Generación de la estructura del frontend, prototipos de pantallas, redacción del backlog y script para crear los issues, búsqueda de opciones de IA gratuitas y actualización de las propuestas con los acuerdos de la reunión |
 
 ---
 

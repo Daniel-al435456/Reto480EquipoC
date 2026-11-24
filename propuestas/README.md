@@ -91,7 +91,7 @@ Precios de lista de Anthropic en USD por millón de tokens:
 
 | Nombre | Voto | Comentarios |
 |---|---|---|
-| Daniel | | |
+| Daniel | A favor | |
 | Jeremy | | |
 | Talia | | |
 | Andrea | | |
@@ -118,7 +118,7 @@ Afecta a: SPEC §4 y al backlog de GitHub Issues (que se crea a partir de estas 
 
 | Nombre | Voto | Comentarios |
 |---|---|---|
-| Daniel | | |
+| Daniel | A favor | |
 | Jeremy | | |
 | Talia | | |
 | Andrea | | |
@@ -135,7 +135,7 @@ Propuesta completa en [datos-y-privacidad.md](datos-y-privacidad.md): esquema de
 
 | Nombre | Voto | Comentarios |
 |---|---|---|
-| Daniel | | |
+| Daniel | A favor | |
 | Jeremy | | |
 | Talia | | |
 | Andrea | | |
@@ -156,7 +156,7 @@ Afecta a: SPEC §8.
 
 | Nombre | Voto | Comentarios |
 |---|---|---|
-| Daniel | | |
+| Daniel | A favor | |
 | Jeremy | | |
 | Talia | | |
 | Andrea | | |
@@ -177,7 +177,7 @@ Afecta a: docs/decisiones.md §3.
 
 | Nombre | Voto | Comentarios |
 |---|---|---|
-| Daniel | | |
+| Daniel | A favor | |
 | Jeremy | | |
 | Talia | | |
 | Andrea | | |
@@ -192,7 +192,7 @@ Afecta a: docs/decisiones.md §3.
 
 | Nombre | Voto | Comentarios |
 |---|---|---|
-| Daniel | | |
+| Daniel | A favor | |
 | Jeremy | | |
 | Talia | | |
 | Andrea | | |

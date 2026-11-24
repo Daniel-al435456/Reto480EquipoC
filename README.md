@@ -54,6 +54,7 @@ El prototipo aborda estos problemas con tres componentes:
 | [BITACORA.md](BITACORA.md) | Registro de sesiones, tareas y problemas |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Roles, ramas, pull requests y definición de terminado |
 | [AGENTS.md](AGENTS.md) | Convenciones de código y commits para el equipo y sus asistentes de IA |
+| [frontend/](frontend/README.md) | Aplicación del alumno (React PWA): puesta en marcha, pantallas y estructura |
 | [docs/img/](docs/img/README.md) | Bocetos y diagramas de la sesión de diseño |
 
 ---

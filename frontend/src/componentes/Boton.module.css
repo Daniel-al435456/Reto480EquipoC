@@ -1,0 +1,57 @@
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  min-height: var(--tactil-minimo);
+  padding: var(--espacio-3) var(--espacio-5);
+  border: 2px solid transparent;
+  border-radius: var(--radio);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--duracion),
+    transform var(--duracion);
+}
+
+.boton:active {
+  transform: scale(0.98);
+}
+
+.boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Acción principal: alta y en cian de marca, como en los prototipos. */
+.primario {
+  min-height: var(--alto-boton);
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+  font-size: var(--texto-base);
+}
+
+.secundario {
+  background: var(--color-superficie);
+  border-color: var(--color-borde-fuerte);
+  color: var(--color-texto);
+}
+
+.texto {
+  background: transparent;
+  color: var(--color-acento-tinta);
+  padding-inline: var(--espacio-3);
+}
+
+.peligro {
+  background: transparent;
+  color: var(--color-error);
+  padding-inline: var(--espacio-3);
+}
+
+.anchoCompleto {
+  width: 100%;
+}

@@ -1,0 +1,121 @@
+.pantalla {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+}
+
+.cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+}
+
+.filaSuperior {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+/* Botón cuadrado de volver o cerrar, como en los prototipos. */
+.volver {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--tactil-minimo);
+  height: var(--tactil-minimo);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.875rem;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  cursor: pointer;
+}
+
+.contador {
+  flex-shrink: 0;
+  color: var(--color-texto-suave);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.bloqueTitulo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  min-width: 0;
+}
+
+.tituloConIcono {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+.tituloConIcono .bloqueTitulo {
+  gap: 2px;
+}
+
+.icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--tactil-minimo);
+  height: var(--tactil-minimo);
+  border-radius: 0.875rem;
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+}
+
+.tituloPequeno {
+  font-size: var(--texto-medio);
+  letter-spacing: 0;
+}
+
+.antetitulo {
+  color: var(--color-texto-suave);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.etiqueta {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-acento-suave);
+  color: var(--color-acento-tinta);
+  font-size: var(--texto-mini);
+  font-weight: 700;
+}
+
+.subtitulo {
+  color: var(--color-texto-suave);
+  font-size: 0.9375rem;
+}
+
+.tituloConIcono .subtitulo {
+  font-size: var(--texto-mini);
+}
+
+.contenido {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+/* Acción principal fija sobre la barra inferior, al alcance del pulgar. */
+.pie {
+  position: sticky;
+  bottom: calc(var(--margen-inferior, var(--alto-barra-inferior)) + env(safe-area-inset-bottom) + var(--espacio-2));
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding-top: var(--espacio-3);
+  background: linear-gradient(to bottom, transparent, var(--color-fondo) 30%);
+}
+
+/* En pantallas muy bajas (móvil en horizontal) la acción deja de estar fija para no tapar el contenido. */
+@media (max-height: 30rem) {
+  .pie {
+    position: static;
+    background: none;
+  }
+}

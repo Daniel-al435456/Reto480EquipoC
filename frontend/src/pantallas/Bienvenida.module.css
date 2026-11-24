@@ -1,0 +1,130 @@
+.bienvenida {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+  min-height: calc(100dvh - var(--espacio-6) * 2 - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radio-pequeno);
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+  font-weight: 800;
+  font-size: var(--texto-pequeno);
+  letter-spacing: -0.02em;
+}
+
+.nombre {
+  font-weight: 800;
+  font-size: var(--texto-medio);
+  letter-spacing: -0.02em;
+}
+
+.coral {
+  color: var(--color-marca-coral);
+}
+
+/* Composición decorativa de los prototipos: círculos, baldosa de vídeo y duración. */
+.ilustracion {
+  position: relative;
+  flex-grow: 1;
+  min-height: 16rem;
+}
+
+.ilustracion > span {
+  position: absolute;
+}
+
+.circuloGrande,
+.circuloMedio,
+.circuloAcento {
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.circuloGrande {
+  width: 26rem;
+  height: 26rem;
+  border: 1px solid color-mix(in srgb, var(--color-texto) 7%, transparent);
+}
+
+.circuloMedio {
+  width: 18.75rem;
+  height: 18.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-texto) 9%, transparent);
+}
+
+.circuloAcento {
+  width: 11.25rem;
+  height: 11.25rem;
+  background: var(--color-acento);
+  opacity: 0.85;
+}
+
+.baldosa {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  left: calc(50% + 3.5rem);
+  top: calc(50% - 6.5rem);
+  border-radius: var(--radio-grande);
+  background: var(--color-superficie);
+  color: var(--color-acento-tinta);
+}
+
+.pildora {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 2.75rem;
+  padding: 0 var(--espacio-4);
+  left: calc(50% - 9rem);
+  top: calc(50% + 4.5rem);
+  border-radius: 1.375rem;
+  background: color-mix(in srgb, var(--color-texto) 6%, transparent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.texto {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.titulo {
+  font-size: 2.25rem;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.resalte {
+  color: var(--color-acento-tinta);
+}
+
+.descripcion {
+  color: var(--color-texto-medio);
+  line-height: 1.5;
+}
+
+@media (max-height: 34rem) {
+  .ilustracion {
+    display: none;
+  }
+}

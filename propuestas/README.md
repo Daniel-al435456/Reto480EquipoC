@@ -13,6 +13,7 @@ Propuestas pendientes de aprobación por el equipo. Mientras una propuesta no se
 | P3 | [Arquitectura detallada, modelo de datos y privacidad](#p3-arquitectura-detallada-modelo-de-datos-y-privacidad) | En votación |
 | P4 | [Contenido del curso de muestra](#p4-contenido-del-curso-de-muestra) | En votación |
 | P5 | [Decisión de producto](#p5-decisión-de-producto) | En votación |
+| P6 | [Pantallas de bienvenida, alias y perfil](#p6-pantallas-de-bienvenida-alias-y-perfil) | En votación |
 
 ---
 
@@ -172,6 +173,29 @@ Afecta a: docs/decisiones.md §3.
 **Alternativas.** Adaptar el material a preferencias visuales, auditivas o lectoras (planteamiento inicial del equipo); itinerarios fijos con gamificación (certificados, insignias).
 
 **Justificación.** El cliente estableció como prioridad que los alumnos aprendan. La hipótesis de que adaptar el formato al estilo preferido mejora el aprendizaje carece de respaldo empírico. En cambio, sí lo tienen evitar la repetición de contenido dominado, la práctica de recuperación tras cada bloque y el repaso espaciado. El formato se adapta por razones prácticas: sin auriculares no es posible seguir un vídeo con audio. Esta decisión determina el resto del producto: el test inicial, la segmentación por conceptos, las comprobaciones y el modo contexto.
+
+**Votación**
+
+| Nombre | Voto | Comentarios |
+|---|---|---|
+| Daniel | | |
+| Jeremy | | |
+| Talia | | |
+| Andrea | | |
+
+---
+
+## P6. Pantallas de bienvenida, alias y perfil
+
+Afecta a: SPEC §2 y frontend.
+
+**Resumen.** Añadir al flujo del alumno tres pantallas que no aparecen en el boceto de la sesión 1 y que proceden de los prototipos. Ya están implementadas en el frontend para poder valorarlas; si no se aprueban, se retiran.
+
+**Detalle.**
+- **Bienvenida:** pantalla inicial la primera vez que se abre la aplicación, con el lema "Aprende a tu ritmo. En tu momento." y el botón Empezar.
+- **Alias anónimo:** el alumno elige un alias (o genera uno) con un avatar de píxeles en los colores de 480. El modo anónimo, activado por defecto, hace que los tutores le vean con su alias. Relacionado con la privacidad de la [propuesta P3](datos-y-privacidad.md#privacidad).
+- **Perfil:** alias y modo anónimo, cursos del alumno, qué datos usa la IA, modo de estudio habitual, tamaño del texto y tema, y borrado del historial con el tutor.
+- La barra inferior pasa a tener cuatro pestañas: Hoy, Progreso, Tutor y Perfil.
 
 **Votación**
 

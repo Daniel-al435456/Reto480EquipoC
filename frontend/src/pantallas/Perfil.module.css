@@ -1,0 +1,178 @@
+.perfil {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.nombre {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nombre h1 {
+  font-size: 1.375rem;
+  overflow-wrap: anywhere;
+}
+
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.tituloSeccion {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tactil-minimo);
+  color: var(--color-acento-tinta);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.curso {
+  width: 100%;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cursoFila {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.barra {
+  display: flex;
+  height: 0.5rem;
+  border-radius: 4px;
+  background: var(--color-grafito-pista);
+  overflow: hidden;
+}
+
+.barra > span {
+  border-radius: inherit;
+  background: var(--color-verde-marca);
+}
+
+.otroCurso {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  width: 100%;
+  padding: 0.875rem var(--espacio-4);
+  background: var(--color-superficie);
+  border: 1px dashed var(--color-borde-fuerte);
+  border-radius: 1.125rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.iconoMas {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radio-pequeno);
+  background: var(--color-superficie-suave);
+  color: var(--color-acento-tinta);
+}
+
+.textoOtro {
+  display: flex;
+  flex-direction: column;
+}
+
+.textoOtro strong {
+  font-size: var(--texto-pequeno);
+}
+
+/* Lista de ajustes en una sola tarjeta, separada por líneas. */
+.ajustes {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 1.125rem;
+  overflow: hidden;
+}
+
+.ajustes > * + * {
+  border-top: 1px solid var(--color-borde);
+}
+
+.ajuste,
+.ajustePeligro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0 var(--espacio-4);
+  border: 0;
+  background: transparent;
+  color: var(--color-texto);
+  font-size: var(--texto-pequeno);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ajuste svg {
+  flex-shrink: 0;
+  color: var(--color-texto-suave);
+  transition: transform var(--duracion);
+}
+
+.ajustePeligro {
+  color: var(--color-error);
+  font-weight: 700;
+}
+
+.valor {
+  color: var(--color-texto-suave);
+  font-weight: 500;
+}
+
+.desplegable summary {
+  list-style: none;
+}
+
+.desplegable summary::-webkit-details-marker {
+  display: none;
+}
+
+.desplegable[open] summary svg {
+  transform: rotate(90deg);
+}
+
+.detalle,
+.confirmar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding: 0 var(--espacio-4) var(--espacio-4);
+  font-size: var(--texto-pequeno);
+  line-height: 1.5;
+}
+
+.confirmar {
+  padding-top: var(--espacio-4);
+  background: var(--color-error-suave);
+}

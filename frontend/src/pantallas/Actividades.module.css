@@ -1,0 +1,72 @@
+.enunciado {
+  padding: var(--espacio-4);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  font-size: var(--texto-base);
+  line-height: 1.5;
+}
+
+.dosColumnas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.respuestas:empty {
+  display: none;
+}
+
+/* Pista del tutor proactivo: tarjeta en grafito, como en los prototipos. */
+.pista {
+  display: flex;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  border-radius: 1.125rem;
+  background: var(--color-grafito);
+  color: var(--color-grafito-texto);
+}
+
+.iconoPista {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.875rem;
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+}
+
+.textoPista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  font-size: var(--texto-pequeno);
+  line-height: 1.45;
+}
+
+.textoPista > span {
+  color: var(--color-grafito-suave);
+}
+
+.botonPista,
+.botonAhoraNo {
+  min-height: var(--tactil-minimo);
+  padding: 0 0.875rem;
+  border: 0;
+  border-radius: var(--radio-pequeno);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.botonPista {
+  background: #ffffff;
+  color: #1f2222;
+}
+
+.botonAhoraNo {
+  background: transparent;
+  color: var(--color-grafito-texto);
+}

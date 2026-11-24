@@ -1,11 +1,11 @@
-<sub>[Volver a propuestas](../README.md) · Propuesta P1, pendiente de votación</sub>
+<sub>[Volver a propuestas](../README.md) · Propuesta P1, aprobada el 24/11/2026</sub>
 
 # Agente Preparador
 
 | | |
 |---|---|
 | **Cuándo corre** | Fuera de línea, **una sola vez por vídeo** (o cuando cambia la transcripción) |
-| **Modelo** | Claude Sonnet 5.5 · API en lote (Batch) |
+| **Modelo** | Claude · una vez por vídeo, antes de la demo |
 | **Entrada** | Transcripción con marcas de tiempo y metadatos del vídeo (título y duración) |
 | **Salida** | JSON validado contra `backend/app/esquemas/contenido.json` |
 | **Datos de alumnos** | Ninguno |

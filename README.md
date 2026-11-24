@@ -50,7 +50,7 @@ El prototipo aborda estos problemas con tres componentes:
 |---|---|
 | [SPEC.md](SPEC.md) | Especificación del paquete de diseño (algunos apartados pendientes de aprobación) |
 | [docs/decisiones.md](docs/decisiones.md) | Decisiones de stack, modelo de IA y producto |
-| [propuestas/](propuestas/README.md) | Propuestas pendientes de votación del equipo: agentes de IA, historias, datos y privacidad, contenido, decisión de producto y pantallas nuevas |
+| [propuestas/](propuestas/README.md) | Propuestas del equipo: P1 a P5 aprobadas el 24/11 (pendientes de pasar a la especificación) y P6, pantallas nuevas, en votación |
 | [BITACORA.md](BITACORA.md) | Registro de sesiones, tareas y problemas |
 | [Tablero de tareas](https://github.com/users/andreaperibaz/projects/1) | Backlog del proyecto en GitHub Projects: qué falta, quién se encarga y en qué estado está |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Roles, ramas, pull requests y definición de terminado |
@@ -67,7 +67,7 @@ El prototipo aborda estos problemas con tres componentes:
 | Frontend | React + Vite, PWA |
 | Backend | Python 3.12, FastAPI |
 | Base de datos | PostgreSQL |
-| IA | Pendiente de decisión ([propuesta P1](propuestas/README.md#p1-agentes-de-ia)) |
+| IA | Claude para preparar el contenido y Groq para el diagnóstico y el mentor ([propuesta P1](propuestas/README.md#p1-agentes-de-ia)) |
 
 Justificación en [docs/decisiones.md](docs/decisiones.md).
 

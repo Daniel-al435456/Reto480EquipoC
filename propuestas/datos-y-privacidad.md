@@ -1,4 +1,4 @@
-<sub>[Volver a propuestas](README.md) · Propuesta P3, pendiente de votación</sub>
+<sub>[Volver a propuestas](README.md) · Propuesta P3, aprobada el 24/11/2026</sub>
 
 # P3. Arquitectura detallada, modelo de datos y privacidad
 
@@ -19,9 +19,11 @@ flowchart LR
 
   DB[("PostgreSQL<br/>alumnos · dominio · eventos<br/>contenido preparado")]
 
-  IA["Servicio de IA<br/>(pendiente de decisión)"]
+  GROQ["Groq<br/>Diagnóstico y Mentor<br/>(tiempo real)"]
+  RESP["Respaldo<br/>plantilla fija · derivación a tutor"]
 
   CAT["Catálogo del curso +<br/>transcripciones"]
+  CLAUDE["Claude<br/>Preparador<br/>(una vez por vídeo, antes de la demo)"]
 
   PWA <--> API
   API --> PLAN
@@ -29,37 +31,70 @@ flowchart LR
   API <--> DB
   SEN -- "señal de riesgo" --> PRIV
   API -- "test / consulta" --> PRIV
-  PRIV --> IA
-  CAT -- "una vez por vídeo" --> IA
+  PRIV --> GROQ
+  GROQ -. "si falla" .-> RESP
+  CAT --> CLAUDE
+  CLAUDE -- "contenido preparado" --> DB
   PWA -. "vídeo con marcas de tiempo" .-> YT["YouTube"]
 ```
 
 | Componente | Función |
 |---|---|
-| **React PWA** | Interfaz mobile‑first, utilizable con una mano y con las acciones principales en la zona del pulgar. Almacena en caché la interfaz y el texto de la sesión para tolerar conexiones 4G inestables. |
+| **React PWA** | Interfaz mobile‑first, utilizable con una mano y con las acciones principales en la zona del pulgar. Almacena en caché la interfaz y el texto de la sesión para tolerar conexiones 4G inestables. Incluye un acceso al tutor desde cualquier pantalla que envía la lección actual como contexto. |
 | **API FastAPI** | Punto único de entrada: autenticación simulada en el prototipo y endpoints de test, sesión, eventos y mentor. |
 | **Planificador de sesión** | Lógica determinista, sin IA. A partir del mapa de dominio, el tiempo disponible y la disponibilidad de audio, selecciona fragmentos y actividades. Es predecible, no tiene coste y se puede probar. |
 | **Detector de señales** | Reglas sobre los eventos registrados (fallos consecutivos, abandono, inactividad, racha). Determina cuándo interviene el mentor. |
 | **Filtro de privacidad** | Toda llamada a la IA pasa por este módulo, que sustituye la identidad por un seudónimo y elimina datos personales del texto libre. Detalle en el apartado "Privacidad". |
-| **Servicio de IA** | Pendiente de decisión del equipo ([propuesta P1](README.md#p1-agentes-de-ia)). |
+| **Claude (Preparador)** | Genera fragmentos, resúmenes, versión sin audio, preguntas y actividades a partir de la transcripción. Se ejecuta una vez por vídeo, antes de la demo, y no recibe datos de alumnos. El resultado se guarda en PostgreSQL ([propuesta P1](README.md#p1-agentes-de-ia)). |
+| **Groq (Diagnóstico y Mentor)** | Redacta el resultado del test y responde al alumno en tiempo real, solo con el contenido de la lección y con datos seudonimizados. |
+| **Respaldo** | Si Groq no está disponible: plantilla fija para el diagnóstico y derivación a un tutor humano para el mentor. La aplicación nunca se queda sin respuesta. |
 | **PostgreSQL** | Datos del alumno separados en identidad y aprendizaje, eventos y contenido preparado. |
 | **Integración** | La plataforma actual no dispone de API. Se diseña como servicio independiente con API propia, integrable posteriormente mediante SSO, LTI 1.3 y xAPI. |
 
 ## Modelo de datos y flujo hacia la IA
 
-**Entidades principales**
+**Diagrama entidad-relación**
+
+![Diagrama entidad-relación de la base de datos](../docs/img/modelo-entidad-relacion.jpg)
+
+**Entidades**
 
 ```
-Identidad(id, nombre, email, fecha_nacimiento, consentimiento_tutor_legal)   -- nunca se envía a la IA
-Alumno(id, id_externo, seudonimo_ia UUID, es_menor, curso_id)
-Concepto(id, curso_id, nombre)
-Fragmento(id, video_id, inicio_s, fin_s, conceptos[], resumen, actividad_sin_audio)
-Pregunta(id, concepto_id, dificultad, enunciado, opciones, correcta, tipo: diagnostico|micro)
-Dominio(alumno_id, concepto_id, nivel 0..1, actualizado)
-Evento(alumno_id, tipo, fragmento_id?, pregunta_id?, valor, timestamp)
-Sesion(alumno_id, minutos, audio, fragmentos[], estado)
-MensajeMentor(alumno_id, rol, texto_filtrado, timestamp)   -- se elimina a los 90 días
+Identidad(id, nombre, email, fecha_nacimiento, id_externo, consentimiento_tutor_legal)   -- nunca se envía a la IA
+Alumno(id, seudonimo_ia, es_menor)
+Curso(id, titulo, descripcion)
+Video(id, titulo, youtube_id, duracion_s, orden, transcripcion, origen_transcripcion)
+Fragmento(id, titulo, inicio_s, fin_s, resumen, lectura, ejercicio)
+Concepto(id, nombre)
+Pregunta(id, enunciado, opciones, correcta, tipo, dificultad, explicacion)
+Evento(id, tipo, valor, timestamp)
+Sesion(id, minutos, audio, estado)
+MensajeMentor(id, rol, texto_filtrado, timestamp)   -- se elimina a los 90 días
+Recurso(id, tipo, contenido)
 ```
+
+**Relaciones**
+
+| Relación | Entidades | Cardinalidad | Atributos |
+|---|---|---|---|
+| Corresponde | Identidad – Alumno | 1 : 1 | |
+| Pertenece | Alumno – Curso | N : M | fecha_inicio, estado |
+| Incluye | Curso – Vídeo | 1 : N | |
+| Contiene | Curso – Concepto | 1 : N | |
+| Divide | Vídeo – Fragmento | 1 : N | |
+| Cubre | Concepto – Fragmento | M : N | |
+| Domina | Alumno – Concepto | N : M | nivel, actualizado |
+| Evalúa | Concepto – Pregunta | 1 : N | |
+| Comprueba | Pregunta – Fragmento | N : 0..1 | |
+| Genera | Alumno – Evento | 1 : N | |
+| Referencia | Pregunta – Evento | 0..1 : N | |
+| Referencia | Fragmento – Evento | 0..1 : N | |
+| Planifica | Alumno – Sesión | 1 : N | |
+| Compone | Sesión – Fragmento | N : M | orden, completado |
+| Conversa | Alumno – Mensaje mentor | 1 : N | |
+| Apoya | Fragmento – Recurso | 1 : N | |
+
+La identidad real del alumno está en una entidad separada (`Identidad`) y solo se relaciona con `Alumno`. El resto del sistema, incluida la IA, trabaja con el seudónimo.
 
 **Datos enviados a la IA**
 
@@ -109,6 +144,7 @@ Todas las llamadas a la IA pasan por un único módulo del backend (`backend/app
 
 ### 4. Proveedor de IA
 
+- En el prototipo, el diagnóstico y el mentor usan Groq, cuyo contrato establece que no entrena con los datos del cliente; procesa en EE. UU., por lo que solo recibe datos seudonimizados. El Preparador usa Claude y solo recibe transcripciones.
 - En producción, el acceso se realiza a través de un proveedor cloud con procesamiento en la UE y contrato de encargado de tratamiento.
 - Según las condiciones comerciales del proveedor, los datos enviados por API no se emplean para entrenar modelos. Este punto debe verificarse contractualmente antes del paso a producción.
 - La generación de material a partir de los vídeos no recibe en ningún caso datos de alumnos: trabaja exclusivamente con las transcripciones.

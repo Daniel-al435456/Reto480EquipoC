@@ -12,7 +12,7 @@ import estilos from './Perfil.module.css';
 
 /**
  * Perfil del alumno: alias, modo anónimo, cursos y control de sus datos.
- * Pantalla de los prototipos pendiente de votación del equipo (propuesta P6).
+ * Pantalla de los prototipos, aprobada en la propuesta P6.
  */
 export function Perfil({ navegar }) {
   const { estado, cambiarAnonimo, borrarHistorialTutor, reiniciar, registrarEvento } = useEstado();

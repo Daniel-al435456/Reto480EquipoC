@@ -11,7 +11,7 @@ import estilos from './Alias.module.css';
 
 /**
  * Alias anónimo con avatar de píxeles. Se muestra la primera vez y desde el perfil.
- * Pantalla de los prototipos pendiente de votación del equipo (propuesta P6).
+ * Pantalla de los prototipos, aprobada en la propuesta P6.
  */
 export function Alias({ navegar }) {
   const { estado, guardarPerfil, registrarEvento } = useEstado();

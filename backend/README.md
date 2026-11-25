@@ -3,15 +3,19 @@
 # Backend (Python + FastAPI)
 
 API que usa la PWA. El frontend nunca habla con la IA: toda llamada a los modelos
-pasa por este servidor y por el filtro de privacidad (`app/privacidad.py`).
+pasa por este servidor y por el filtro de privacidad (`app/privacidad.py`, previsto
+en la Fase 2).
 
-Estado: **fase 1, esqueleto y harness de comprobación.** Los endpoints de negocio
-siguen en la issue #13.
+Estado: **fase 1 completa (esqueleto y harness de comprobación).** Pendiente en la
+Fase 2: la conexión real con PostgreSQL y `app/privacidad.py`; los endpoints de
+negocio siguen en la issue #13.
 
 ## Requisitos
 
 - Python 3.12 o superior (`python3 --version`)
-- PostgreSQL 14 o superior, por ejemplo con [Postgres.app](https://postgres.app)
+- PostgreSQL 14 o superior. En macOS, por ejemplo con
+  [Postgres.app](https://postgres.app); en el resto de sistemas, con el
+  instalador oficial o un contenedor de Docker.
 
 ## Puesta en marcha
 
@@ -55,14 +59,14 @@ Las mismas comprobaciones se ejecutan solas en cada pull request
 | `app/esquemas.py` | Contratos de entrada y salida (Pydantic) |
 | `app/errores.py` | Formato único de error: `{"error", "mensaje"}` |
 | `app/config.py` | Variables de entorno. Aquí no se escribe ningún valor secreto |
-| `app/privacidad.py` | Único módulo que habla con la IA (SPEC §5) |
+| `app/privacidad.py` | Previsto (Fase 2): único módulo que hablará con la IA (SPEC §5) |
 | `migraciones/` | Único origen del esquema de la base de datos |
 | `pruebas/` | Pruebas por endpoint y pruebas de arquitectura |
 
 ## Convenciones que comprueban las pruebas
 
 - Los routers no acceden a la base de datos: delegan en `servicios/`.
-- Solo `app/privacidad.py` puede llamar a un proveedor de IA.
+- Solo `app/privacidad.py` podrá llamar a un proveedor de IA (SPEC §5).
 - El esquema de las tablas solo se define en `migraciones/`.
 - Ninguna clave o contraseña aparece en el código fuente.
 - Cada endpoint tiene al menos una prueba.

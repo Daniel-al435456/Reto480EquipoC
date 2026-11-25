@@ -1,4 +1,4 @@
-<sub>[Inicio](../README.md) · [Especificación](../SPEC.md) · [Contribución](../CONTRIBUTING.md)</sub>
+<sub>[Inicio](../../README.md) · [Especificación](../../SPEC.md) · [Contribución](../../CONTRIBUTING.md)</sub>
 
 # Migraciones de la base de datos
 
@@ -19,6 +19,9 @@ Las tablas se nombran según `AGENTS.md` y el modelo aprobado en `SPEC.md` §6
   con el aprendizaje (condición de privacidad, `SPEC.md` §6).
 
 ## Cómo se aplican
+
+Todavía no hay ningún script: el primero lo creará la **issue #14** (diseño de
+las tablas) con el modelo de la `SPEC.md` §6. Cuando exista, se aplica así:
 
 ```bash
 psql "$DATABASE_URL" -f migraciones/0001_esquema_inicial.sql

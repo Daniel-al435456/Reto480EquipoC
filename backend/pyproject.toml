@@ -1,0 +1,47 @@
+[project]
+name = "reto480-backend"
+version = "0.1.0"
+description = "API del prototipo de aprendizaje adaptativo · Reto 480 Equipo C"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic-settings>=2.4",
+  "sqlalchemy>=2.0",
+  "psycopg[binary]>=3.2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "httpx>=0.27",
+  "ruff>=0.8",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["app", "app.routers", "app.servicios"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["app", "pruebas"]
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "ANN"]
+# ANN401: se admite Any en utilidades internas.
+# N818: en español la convención es "Error de negocio", no "ErrorDeNegocioError".
+ignore = ["ANN401", "N818"]
+
+[tool.ruff.lint.per-file-ignores]
+"pruebas/**" = ["ANN"]
+
+[tool.pytest.ini_options]
+testpaths = ["pruebas"]
+pythonpath = ["."]
+addopts = "-q"

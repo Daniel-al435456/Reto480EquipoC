@@ -1,0 +1,9 @@
+# Entorno virtual y restos de herramientas. La raíz del repositorio ya ignora
+# `.env`, `.venv/`, `__pycache__/` y `*.pyc`; aquí se añaden los de las pruebas.
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/

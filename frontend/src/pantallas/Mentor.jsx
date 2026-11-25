@@ -1,64 +1,65 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { preguntarTutor, solicitarTutorHumano, usaBackend } from '../api/cliente.js';
+import { preguntarMentor, solicitarTutorHumano, usaBackend } from '../api/cliente.js';
 import { Boton } from '../componentes/Boton.jsx';
-import { IconoCerrar, IconoEnviar, IconoTutor } from '../componentes/Iconos.jsx';
+import { IconoCerrar, IconoEnviar, IconoMentor } from '../componentes/Iconos.jsx';
 import { Pato } from '../componentes/Pato.jsx';
 import { TextoTecleado } from '../componentes/TextoTecleado.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { esMenor, useEstado } from '../hooks/useEstado.jsx';
+import { contextoIA } from '../api/mentor.js';
+import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
-import estilos from './Tutor.module.css';
+import estilos from './Mentor.module.css';
 
 const SUGERENCIAS = ['No entiendo los bucles', '¿Qué es una variable?', 'Dame un ejemplo'];
 
 /**
- * Pantalla 5 del boceto: tutor virtual (agente Mentor, propuesta P1).
+ * Pantalla 5 del boceto: mentor virtual (agente Mentor, propuesta P1).
  * Responde dudas y, además, escribe por iniciativa propia cuando detecta que el alumno se atasca.
  * Si se abre desde una lección, sabe de qué lección se habla (historia H9).
  */
-export function Tutor({ navegar }) {
-  const { estado, anadirMensaje, marcarTutorLeido, registrarEvento, ponerContextoTutor, cambiarTutorIA } = useEstado();
-  const contexto = estado.contextoTutor;
-  const avatar = estado.ajustes.tutor;
+export function Mentor({ navegar }) {
+  const { estado, anadirMensaje, marcarMentorLeido, registrarEvento, ponerContextoMentor, cambiarMentorIA } = useEstado();
+  const contexto = estado.contextoMentor;
+  const avatar = estado.ajustes.mentor;
 
   // Los mensajes que llegan mientras la pantalla está abierta se muestran letra a letra.
-  const vistos = useRef(new Set(estado.mensajesTutor.map((m) => m.id)));
+  const vistos = useRef(new Set(estado.mensajesMentor.map((m) => m.id)));
   const [tecleando, setTecleando] = useState(null);
   const [caraPato, setCaraPato] = useState(null);
   useEffect(() => {
-    const ultimo = estado.mensajesTutor[estado.mensajesTutor.length - 1];
+    const ultimo = estado.mensajesMentor[estado.mensajesMentor.length - 1];
     if (ultimo && !vistos.current.has(ultimo.id)) {
       vistos.current.add(ultimo.id);
-      if (ultimo.autor === 'tutor') setTecleando(ultimo.id);
+      if (ultimo.autor === 'mentor') setTecleando(ultimo.id);
     }
-  }, [estado.mensajesTutor]);
+  }, [estado.mensajesMentor]);
   const alTerminar = useCallback(() => {
     setTecleando(null);
     setCaraPato(null);
   }, []);
-  const ultimoTutor = [...estado.mensajesTutor].reverse().find((m) => m.autor === 'tutor');
-  const datosConsulta = { cursoId: estado.cursoId, leccionId: contexto?.leccionId, esMenor: esMenor(estado) };
+  const ultimoMentor = [...estado.mensajesMentor].reverse().find((m) => m.autor === 'mentor');
+  const datosConsulta = { cursoId: estado.cursoId, leccionId: contexto?.leccionId, ...contextoIA(estado) };
   const [texto, setTexto] = useState('');
   const [esperando, setEsperando] = useState(false);
   const finConversacion = useRef(null);
 
   useEffect(() => {
-    marcarTutorLeido();
-  }, [marcarTutorLeido]);
+    marcarMentorLeido();
+  }, [marcarMentorLeido]);
 
   useEffect(() => {
     finConversacion.current?.scrollIntoView({ block: 'end' });
-  }, [estado.mensajesTutor.length, esperando]);
+  }, [estado.mensajesMentor.length, esperando]);
 
   const enviar = async (pregunta) => {
     const limpia = pregunta.trim();
     if (!limpia || esperando) return;
     anadirMensaje({ autor: 'alumno', texto: limpia });
-    registrarEvento('pregunta_tutor', { cursoId: estado.cursoId, leccionId: contexto?.leccionId });
+    registrarEvento('pregunta_mentor', { cursoId: estado.cursoId, leccionId: contexto?.leccionId });
     setTexto('');
     setEsperando(true);
-    const respuesta = await preguntarTutor(limpia, datosConsulta);
-    anadirMensaje({ autor: 'tutor', texto: respuesta.texto });
+    const respuesta = await preguntarMentor(limpia, datosConsulta);
+    anadirMensaje({ autor: 'mentor', texto: respuesta.texto });
     setEsperando(false);
   };
 
@@ -66,7 +67,7 @@ export function Tutor({ navegar }) {
     setEsperando(true);
     registrarEvento('derivacion_tutor', { cursoId: estado.cursoId });
     anadirMensaje({ autor: 'alumno', texto: 'Quiero hablar con un tutor.' });
-    anadirMensaje({ autor: 'tutor', texto: await solicitarTutorHumano(datosConsulta) });
+    anadirMensaje({ autor: 'mentor', texto: await solicitarTutorHumano(datosConsulta) });
     setEsperando(false);
   };
 
@@ -77,11 +78,11 @@ export function Tutor({ navegar }) {
         ? () => navegar(`/curso/${estado.cursoId}/leccion/${contexto.leccionId}`)
         : undefined;
 
-  if (!estado.tutorIA) {
+  if (!estado.mentorIA) {
     return (
-      <Pantalla titulo="Tutor" icono={<IconoTutor tamano={22} />} alVolver={volverSesion}>
+      <Pantalla titulo="Mentor" icono={<IconoMentor tamano={22} />} alVolver={volverSesion}>
         <div className={comun.tarjeta}>
-          <h2>Has desactivado el tutor con IA</h2>
+          <h2>Has desactivado el mentor con IA</h2>
           <p className={comun.medio}>
             Puedes seguir estudiando con normalidad. Si tienes una duda, escribe a un tutor de la academia.
           </p>
@@ -89,13 +90,13 @@ export function Tutor({ navegar }) {
             <Boton onClick={pedirHumano} disabled={esperando}>
               Hablar con un tutor de la academia
             </Boton>
-            <Boton variante="texto" onClick={() => cambiarTutorIA(true)}>
-              Activar el tutor con IA
+            <Boton variante="texto" onClick={() => cambiarMentorIA(true)}>
+              Activar el mentor con IA
             </Boton>
           </div>
         </div>
-        {estado.mensajesTutor.length > 1 && (
-          <p className={comun.secundario}>{estado.mensajesTutor[estado.mensajesTutor.length - 1].texto}</p>
+        {estado.mensajesMentor.length > 1 && (
+          <p className={comun.secundario}>{estado.mensajesMentor[estado.mensajesMentor.length - 1].texto}</p>
         )}
       </Pantalla>
     );
@@ -103,9 +104,9 @@ export function Tutor({ navegar }) {
 
   return (
     <Pantalla
-      titulo="Tutor"
+      titulo="Mentor"
       subtitulo="Responde con el contenido de tu curso"
-      icono={<IconoTutor tamano={22} />}
+      icono={<IconoMentor tamano={22} />}
       alVolver={volverSesion}
       textoVolver={estado.sesion ? 'Volver a la sesión' : 'Volver a la lección'}
     >
@@ -117,7 +118,7 @@ export function Tutor({ navegar }) {
           <button
             type="button"
             className={estilos.quitarContexto}
-            onClick={() => ponerContextoTutor(null)}
+            onClick={() => ponerContextoMentor(null)}
             aria-label={`Dejar de hablar de ${contexto.titulo} y preguntar sobre cualquier tema`}
           >
             <IconoCerrar tamano={16} />
@@ -130,11 +131,11 @@ export function Tutor({ navegar }) {
         academia.{!usaBackend && ' Sin conexión con el servidor, las respuestas son de ejemplo.'}
       </p>
 
-      <ol className={estilos.conversacion} role="log" aria-label="Conversación con el tutor" aria-live="polite">
-        {estado.mensajesTutor.map((m) => {
+      <ol className={estilos.conversacion} role="log" aria-label="Conversación con el mentor" aria-live="polite">
+        {estado.mensajesMentor.map((m) => {
           const burbuja = (
-            <div className={m.autor === 'tutor' ? estilos.tutor : estilos.alumno}>
-              <span className="visualmente-oculto">{m.autor === 'tutor' ? 'Tutor:' : 'Tú:'}</span>
+            <div className={m.autor === 'mentor' ? estilos.mentor : estilos.alumno}>
+              <span className="visualmente-oculto">{m.autor === 'mentor' ? 'Mentor:' : 'Tú:'}</span>
               {m.proactivo && <span className={estilos.marca}>Te he visto atascado</span>}
               {tecleando === m.id ? (
                 <span>
@@ -149,10 +150,10 @@ export function Tutor({ navegar }) {
               )}
             </div>
           );
-          // El pato acompaña al último mensaje del tutor (salvo mientras escribe la respuesta siguiente).
-          const conPato = avatar !== 'ninguno' && m.id === ultimoTutor?.id && !esperando;
+          // El pato acompaña al último mensaje del mentor (salvo mientras escribe la respuesta siguiente).
+          const conPato = avatar !== 'ninguno' && m.id === ultimoMentor?.id && !esperando;
           return (
-            <li key={m.id} className={m.autor === 'tutor' ? estilos.filaTutor : estilos.filaAlumno}>
+            <li key={m.id} className={m.autor === 'mentor' ? estilos.filaMentor : estilos.filaAlumno}>
               {conPato && (
                 <Pato variante={avatar} cara={caraPato} reposo={m.proactivo ? 'animando_c' : 'cerrado'} tamano={56} />
               )}
@@ -161,9 +162,9 @@ export function Tutor({ navegar }) {
           );
         })}
         {esperando && (
-          <li className={estilos.filaTutor} aria-label="El tutor está escribiendo">
+          <li className={estilos.filaMentor} aria-label="El mentor está escribiendo">
             {avatar !== 'ninguno' && <Pato variante={avatar} cara="pensando" tamano={56} />}
-            <div className={estilos.tutor}>
+            <div className={estilos.mentor}>
               <span className={estilos.escribiendo} aria-hidden="true">
                 <span />
                 <span />
@@ -193,11 +194,11 @@ export function Tutor({ navegar }) {
           enviar(texto);
         }}
       >
-        <label htmlFor="pregunta-tutor" className="visualmente-oculto">
+        <label htmlFor="pregunta-mentor" className="visualmente-oculto">
           Escribe tu pregunta
         </label>
         <input
-          id="pregunta-tutor"
+          id="pregunta-mentor"
           className={comun.campo}
           type="text"
           placeholder="¿Dudas?"

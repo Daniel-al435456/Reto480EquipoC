@@ -37,8 +37,9 @@ Detalle en [SPEC](SPEC.md) y [propuestas](propuestas/README.md). Las marcadas co
 
 - El frontend nunca llama a un proveedor de IA ni contiene claves: todo pasa por el backend. ✓
 - Toda llamada a la IA pasa por `backend/app/privacidad.py`: seudónimo en lugar de identidad y texto libre sin datos personales ([SPEC §6](SPEC.md#6-modelo-de-datos-y-flujo-hacia-la-ia)).
-- Se guarda la fecha de nacimiento, solo en `identidades`. El backend calcula el tramo de edad cuando lo necesita, y a la IA solo llega si el alumno es menor o no, nunca su edad ni su fecha de nacimiento.
+- A la IA solo llega si el alumno es menor o no, nunca su fecha de nacimiento ni su edad. La fecha se guarda para que el tramo cambie solo al cumplir 14 o 18 años. ✓
 - Con menos de 14 años, el alumno no continúa sin el consentimiento de su familia. ✓
+- A la IA, junto a la consulta, solo llegan además la personalidad elegida para el tutor y cómo quiere que se dirija al alumno (femenino, masculino o neutro). ✓
 - La IA recomienda, pero no decide: el alumno puede abrir cualquier lección aunque el test diga que la domina. ✓
 - El planificador de sesión y el detector de señales funcionan con reglas, sin IA. La sesión cabe en el tiempo elegido (±1 min) y sin audio no hay vídeo. ✓
 - El mentor solo usa el contenido del curso, cita el fragmento, admite 30 mensajes al día por alumno y deriva a un tutor humano ante señales de malestar.
@@ -78,9 +79,7 @@ frontend/
 - `src/api/pato.js` no se edita a mano: se genera con `python3 herramientas/pato.py`.
 - Si cambia la forma del estado guardado, se sube la versión de la clave en `useEstado.jsx` y en `index.html`.
 
-## Backend y base de datos
-
-El esquema de PostgreSQL ya existe en `backend/migraciones/`; el servidor FastAPI, aún no. Puesta en marcha en [backend/README.md](backend/README.md).
+## Backend y base de datos ([puesta en marcha](backend/README.md))
 
 - Python 3.12 y FastAPI. Formato y lint con Ruff; tipos en las funciones públicas. Pruebas con pytest, al menos una por endpoint.
 - Los routers validan y delegan; la lógica va en `servicios/`. Entrada y salida con esquemas Pydantic. Errores con el formato `{"error": "codigo", "mensaje": "..."}`.

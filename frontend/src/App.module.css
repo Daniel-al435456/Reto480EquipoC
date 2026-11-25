@@ -29,7 +29,7 @@
 
 /*
  * --margen-inferior: espacio que ocupa la barra inferior. Lo usan la acción fija de cada pantalla
- * y el botón del tutor para quedar siempre por encima de la barra.
+ * y el botón del mentor para quedar siempre por encima de la barra.
  */
 .app {
   --margen-inferior: var(--alto-barra-inferior);

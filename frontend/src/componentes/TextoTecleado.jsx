@@ -6,7 +6,7 @@ const VOCAL = /[aeiouáéíóú]/i;
 const PAUSA = /[\s.,;:¿?¡!]/;
 
 /**
- * Muestra un texto letra a letra, como si el tutor lo dijera en ese momento.
+ * Muestra un texto letra a letra, como si el mentor lo dijera en ese momento.
  * - alHablar("abierto" | "cerrado"): para mover el pico del pato (se abre con las vocales y se cierra en las pausas).
  * - alTerminar(): cuando se ha mostrado todo el texto.
  * El lector de pantalla recibe el texto completo de una vez, no letra a letra.

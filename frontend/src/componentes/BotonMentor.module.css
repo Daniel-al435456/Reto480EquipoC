@@ -1,4 +1,4 @@
-/* Botón flotante del tutor: encima de la acción principal de cada pantalla, en la zona del pulgar. */
+/* Botón flotante del mentor: encima de la acción principal de cada pantalla, en la zona del pulgar. */
 .boton {
   position: fixed;
   z-index: 20;

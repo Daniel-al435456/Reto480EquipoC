@@ -36,7 +36,7 @@ export function AvisosApp({ sugerirInstalacion }) {
         <div className={estilos.aviso}>
           <IconoSinConexion tamano={20} />
           <span>
-            <strong>Sin conexión.</strong> Puedes seguir con lo que ya se ha cargado. El tutor responderá cuando vuelva
+            <strong>Sin conexión.</strong> Puedes seguir con lo que ya se ha cargado. El mentor responderá cuando vuelva
             la conexión.
           </span>
         </div>

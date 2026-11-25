@@ -11,7 +11,7 @@ Programamos con asistentes de IA. Para que su código sea fiable, el repositorio
 | Instrucciones comunes para cualquier asistente | Guía | [AGENTS.md](../AGENTS.md) (Claude Code lo carga desde `CLAUDE.md`) |
 | Especificación, decisiones y propuestas | Guía | [SPEC.md](../SPEC.md), [decisiones.md](decisiones.md), [propuestas/](../propuestas/README.md) |
 | Flujo para funcionalidades nuevas: plan, pruebas primero, verificación y revisión | Guía | `/nueva-funcionalidad` en `.claude/commands/` |
-| Pruebas unitarias de las reglas de negocio (acceso, menores, cuenta, planificador) | Sensor | `frontend/pruebas/unitarias/` |
+| Pruebas unitarias de las reglas de negocio (acceso, edad y menores, cuenta, tutor, planificador) | Sensor | `frontend/pruebas/unitarias/` |
 | Pruebas de arquitectura (red solo desde `src/api/`, sin claves ni llamadas a la IA, sin dependencias nuevas) | Sensor | `frontend/pruebas/unitarias/arquitectura.test.js` |
 | Pruebas en navegador con tamaño de móvil (alta, menores, sesión, sin conexión, accesibilidad, peso) | Sensor | `frontend/pruebas/e2e/` |
 | `npm test` tras cada edición y compilación al terminar | Sensor automático | `.claude/settings.json` y `.claude/hooks/comprobar.mjs` |

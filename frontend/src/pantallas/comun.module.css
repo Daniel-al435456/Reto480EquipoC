@@ -341,7 +341,7 @@
   color: var(--color-texto-suave);
 }
 
-/* Enlace de acción con icono (por ejemplo, "¿Dudas? Pregunta al tutor"). */
+/* Enlace de acción con icono (por ejemplo, "¿Dudas? Pregunta al mentor"). */
 .enlaceAccion {
   display: inline-flex;
   align-items: center;

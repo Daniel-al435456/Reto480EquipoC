@@ -10,7 +10,7 @@
  *
  * Al publicar cambios, sube la versión: así los dispositivos detectan que hay una versión nueva.
  */
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = `reto480-${VERSION}`;
 const ESENCIALES = [
   './',

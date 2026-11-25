@@ -1,5 +1,4 @@
 import { Boton } from '../componentes/Boton.jsx';
-import { ElegirTutor } from '../componentes/ElegirTutor.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
 import { AJUSTES_INICIALES, useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
@@ -45,7 +44,7 @@ const GRUPOS = [
   },
 ];
 
-/** Apariencia: tutor (pato, pata o solo texto) y ajustes de visualización. Se guardan en el dispositivo. */
+/** Apariencia: tamaño del texto, tema, contraste y animaciones. Se guardan en el dispositivo. */
 export function Ajustes({ navegar }) {
   const { estado, cambiarAjuste } = useEstado();
   const { ajustes } = estado;
@@ -58,8 +57,6 @@ export function Ajustes({ navegar }) {
       alVolver={() => navegar('/perfil')}
       textoVolver="Volver al perfil"
     >
-      <ElegirTutor />
-
       {GRUPOS.map(({ clave, titulo, ayuda, opciones }) => (
         <fieldset key={clave} className={comun.grupo}>
           <legend>{titulo}</legend>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { tramoDe } from '../api/edad.js';
 import { IconoCandado } from '../componentes/Iconos.jsx';
 import { AvatarPixel } from '../componentes/AvatarPixel.jsx';
 import { Boton } from '../componentes/Boton.jsx';
@@ -16,7 +17,7 @@ const fecha = (iso) => new Date(iso).toLocaleDateString('es-ES', { day: 'numeric
 /**
  * Perfil → Mi cuenta: alias, datos personales editables (nombre, apellidos y puesto) y datos fijos.
  * Los datos fijos se indican en el alta y solo puede corregirlos la academia: el correo, porque es el usuario
- * con el que se inicia sesión; la empresa, porque la relaciona con la formación que paga; y el tramo de edad
+ * con el que se inicia sesión; la empresa, porque la relaciona con la formación que paga; y la fecha de nacimiento
  * y el consentimiento, porque de ellos dependen las protecciones para menores.
  */
 export function PerfilCuenta({ navegar }) {
@@ -92,8 +93,12 @@ export function PerfilCuenta({ navegar }) {
         <dl className={estilos.ajustes}>
           <DatoFijo texto="Correo electrónico" valor={cuenta.email} ayuda="Es tu usuario para iniciar sesión." />
           <DatoFijo texto="Empresa" valor={cuenta.empresa} />
-          <DatoFijo texto="Tramo de edad" valor={TRAMOS[estado.tramoEdad] ?? 'Sin indicar'} />
-          {estado.tramoEdad === 'menor14' && (
+          <DatoFijo
+            texto="Fecha de nacimiento"
+            valor={estado.fechaNacimiento ? fecha(`${estado.fechaNacimiento}T12:00:00`) : 'Sin indicar'}
+            ayuda={TRAMOS[tramoDe(estado)]}
+          />
+          {tramoDe(estado) === 'menor14' && (
             <DatoFijo
               texto="Consentimiento de la familia"
               valor={estado.consentimientoFamilia ? fecha(estado.consentimientoFamilia) : 'Pendiente'}

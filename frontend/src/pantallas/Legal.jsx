@@ -29,40 +29,41 @@ const PAGINAS = {
             área. Sirven para darte acceso y gestionar tu formación.
           </li>
           <li>
-            <strong>Tramo de edad:</strong> solo si eres menor de 14 años, de 14 a 17 o mayor de edad, nunca tu edad
-            exacta. Sirve para proteger tus datos y adaptar el tono del tutor.
+            <strong>Fecha de nacimiento:</strong> para saber si eres menor de 14 años, de 14 a 17 o mayor de edad, y
+            actualizarlo solo cuando cumplas años. Sirve para proteger tus datos y adaptar el tono del mentor.
           </li>
           <li>
             <strong>Datos de aprendizaje:</strong> respuestas al test y a las actividades, lecciones completadas, tiempo
             de estudio y preferencias. Sirven para adaptar el curso a lo que ya sabes.
           </li>
           <li>
-            <strong>Conversaciones con el tutor:</strong> tus preguntas y sus respuestas, para continuar la conversación.
+            <strong>Conversaciones con el mentor:</strong> tus preguntas y sus respuestas, para continuar la conversación.
           </li>
         </ul>
 
-        <h2>El tutor con inteligencia artificial</h2>
+        <h2>El mentor con inteligencia artificial</h2>
         <p>
-          El tutor usa un servicio de IA externo. Antes de enviarle nada, eliminamos tu identidad: solo recibe un alias,
-          si eres menor de edad o no, tu nivel en cada tema y el texto de tu pregunta, del que quitamos correos,
-          teléfonos o nombres que escribas. Nunca recibe tu nombre, tus apellidos ni tu correo.
+          El mentor usa un servicio de IA externo. Antes de enviarle nada, eliminamos tu identidad: solo recibe un alias,
+          si eres menor de edad o no, la personalidad que has elegido para el mentor, cómo quieres que se dirija a ti,
+          tu nivel en cada tema y el texto de tu pregunta, del que quitamos correos, teléfonos o nombres que escribas.
+          Nunca recibe tu nombre, tus apellidos, tu correo ni tu fecha de nacimiento.
         </p>
         <p>
           El proveedor ({PENDIENTE('proveedor definitivo')}) no usa estos datos para entrenar sus modelos, según su
           contrato. La IA solo recomienda: no toma decisiones automáticas sobre ti y puedes elegir cualquier contenido.
-          Puedes desactivar el tutor con IA cuando quieras en Perfil → Privacidad y datos.
+          Puedes desactivar el mentor con IA cuando quieras en Perfil → Privacidad y datos.
         </p>
 
         <h2>Menores de edad</h2>
         <p>
           Si tienes menos de 14 años, necesitamos el consentimiento de tu madre, padre o tutor legal. Con alumnos menores
-          de edad, el tutor usa un tono adaptado, evita temas personales y deriva a una persona ante cualquier señal de
+          de edad, el mentor usa un tono adaptado, evita temas personales y deriva a una persona ante cualquier señal de
           malestar.
         </p>
 
         <h2>Cuánto tiempo los guardamos</h2>
         <ul>
-          <li>Conversaciones con el tutor: 90 días.</li>
+          <li>Conversaciones con el mentor: 90 días.</li>
           <li>Progreso y nivel por tema: mientras tengas acceso a 480 Academy.</li>
           <li>Registros técnicos del servicio de IA: solo datos de uso (coste, tiempo de respuesta), sin contenido.</li>
         </ul>
@@ -76,7 +77,7 @@ const PAGINAS = {
         <h2>Tus derechos</h2>
         <p>
           Puedes acceder a tus datos, corregirlos, descargarlos o pedir que se borren. Desde Perfil → Privacidad y datos
-          puedes descargar tus datos, borrar tu historial con el tutor y eliminar tu cuenta. También puedes escribir a{' '}
+          puedes descargar tus datos, borrar tu historial con el mentor y eliminar tu cuenta. También puedes escribir a{' '}
           {PENDIENTE('correo de contacto')} o reclamar ante la Agencia Española de Protección de Datos (aepd.es).
         </p>
       </>
@@ -89,7 +90,7 @@ const PAGINAS = {
         <h2>No usamos cookies propias</h2>
         <p>
           La aplicación no instala cookies propias ni de publicidad. Para funcionar, guarda en el almacenamiento de tu
-          navegador tu progreso, tus preferencias (tema, tamaño del texto, tutor) y, en esta versión, los datos de tu
+          navegador tu progreso, tus preferencias (tema, tamaño del texto, mentor) y, en esta versión, los datos de tu
           cuenta. Es imprescindible para el servicio y no se usa para seguirte.
         </p>
 
@@ -127,7 +128,7 @@ const PAGINAS = {
         <p>
           El acceso está reservado a personas con una cuenta facilitada por su empresa. Te comprometes a usarla para tu
           formación, a no compartir tu contraseña y a no introducir contenidos ilícitos u ofensivos en el chat con el
-          tutor.
+          mentor.
         </p>
 
         <h2>Contenidos y propiedad intelectual</h2>
@@ -136,9 +137,9 @@ const PAGINAS = {
           pertenecen a sus autores y se muestran con el reproductor oficial.
         </p>
 
-        <h2>Respuestas del tutor con IA</h2>
+        <h2>Respuestas del mentor con IA</h2>
         <p>
-          Las respuestas del tutor se generan con inteligencia artificial a partir del contenido del curso y pueden
+          Las respuestas del mentor se generan con inteligencia artificial a partir del contenido del curso y pueden
           contener errores. Ante cualquier duda importante, consulta con un tutor de la academia.
         </p>
 

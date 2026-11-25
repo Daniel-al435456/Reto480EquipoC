@@ -49,10 +49,10 @@ Siguen el boceto de la sesión 1 ([SPEC §2](../SPEC.md#2-flujo-del-alumno)), m�
 
 | Pantalla | Ruta | Fichero |
 |---|---|---|
-| Tramo de edad (paso 2) | `#/edad` | `src/pantallas/Edad.jsx` |
+| Fecha de nacimiento (paso 2) | `#/edad` | `src/pantallas/Edad.jsx` |
 | Consentimiento de la familia (menores de 14 años) | `#/consentimiento` | `src/pantallas/Consentimiento.jsx` |
 | Alias anónimo con avatar de píxeles (paso 3) | `#/alias` | `src/pantallas/Alias.jsx` |
-| Preferencias: tutor, tema, tamaño del texto y tutor con IA (paso 4) | `#/preferencias` | `src/pantallas/Preferencias.jsx` |
+| Preferencias: mentor (forma, personalidad y trato), tema, tamaño del texto y mentor con IA (paso 4) | `#/preferencias` | `src/pantallas/Preferencias.jsx` |
 
 **Con sesión:**
 
@@ -65,19 +65,20 @@ Siguen el boceto de la sesión 1 ([SPEC §2](../SPEC.md#2-flujo-del-alumno)), m�
 | Ficha de una lección: estudiarla o repasarla cuando se quiera | `#/curso/:id/leccion/:leccion` | `src/pantallas/Leccion.jsx` |
 | Vídeo (o lectura sin audio) | `#/curso/:id/sesion/:paso` | `src/pantallas/Video.jsx` |
 | Actividades | `#/curso/:id/sesion/:paso` | `src/pantallas/Actividades.jsx` |
-| Tutor | `#/tutor` | `src/pantallas/Tutor.jsx` |
+| Mentor | `#/mentor` | `src/pantallas/Mentor.jsx` |
 | Progreso | `#/progreso` | `src/pantallas/Progreso.jsx` |
 | Perfil: resumen, cursos y acceso a los ajustes | `#/perfil` | `src/pantallas/Perfil.jsx` |
 | Mi cuenta: alias, datos personales y datos fijos de la cuenta | `#/perfil/cuenta` | `src/pantallas/PerfilCuenta.jsx` |
-| Apariencia: tutor, texto, tema, contraste y animaciones | `#/perfil/apariencia` | `src/pantallas/Ajustes.jsx` |
+| Tu mentor: forma, personalidad y cómo se dirige al alumno | `#/perfil/mentor` | `src/pantallas/PerfilMentor.jsx` |
+| Apariencia: texto, tema, contraste y animaciones | `#/perfil/apariencia` | `src/pantallas/Ajustes.jsx` |
 | Seguridad: contraseña, cerrar sesión y eliminar cuenta | `#/perfil/seguridad` | `src/pantallas/PerfilSeguridad.jsx` |
-| Privacidad y datos: tutor con IA, descarga y borrado | `#/perfil/privacidad` | `src/pantallas/PerfilPrivacidad.jsx` |
+| Privacidad y datos: mentor con IA, descarga y borrado | `#/perfil/privacidad` | `src/pantallas/PerfilPrivacidad.jsx` |
 
 Sin sesión, cualquier ruta privada lleva a la bienvenida; con la alta a medias, al paso pendiente (`destinoInicio` y `rutaPermitida` en `src/api/acceso.js`).
 
-Las pantallas de bienvenida, alias y perfil proceden de los prototipos y se aprobaron en la [propuesta P6](../propuestas/README.md#p6-pantallas-de-bienvenida-alias-y-perfil). La cuenta de usuario, las páginas legales, el perfil por secciones y el tutor con forma de pato están pendientes de aprobación en la [propuesta P7](../propuestas/README.md#p7-cuenta-de-usuario-páginas-legales-y-tutor-con-forma-de-pato).
+Las pantallas de bienvenida, alias y perfil proceden de los prototipos y se aprobaron en la [propuesta P6](../propuestas/README.md#p6-pantallas-de-bienvenida-alias-y-perfil).
 
-La barra inferior tiene cuatro pestañas (Hoy, Progreso, Tutor y Perfil) y se oculta en las pantallas públicas, en la alta y en las de concentración (test y sesión). En el escritorio se convierte en un menú lateral.
+La barra inferior tiene cuatro pestañas (Hoy, Progreso, Mentor y Perfil) y se oculta en las pantallas públicas, en la alta y en las de concentración (test y sesión). En el escritorio se convierte en un menú lateral.
 
 ## Qué incluye
 
@@ -90,43 +91,46 @@ La barra inferior tiene cuatro pestañas (Hoy, Progreso, Tutor y Perfil) y se oc
 
 **Seguimiento continuo.** Cada respuesta, vídeo o sesión se registra como evento (`useEstado` → `registrarEvento`). La pantalla de progreso muestra las lecciones superadas y el porcentaje de aciertos.
 
-**Tutor proactivo.** Tras dos fallos en las actividades de una lección, el tutor interviene sin que el alumno lo pida. El alumno también puede preguntar o pedir un tutor de la academia.
+**Mentor proactivo.** Tras dos fallos en las actividades de una lección, el mentor interviene sin que el alumno lo pida. El alumno también puede preguntar o pedir un tutor de la academia.
 
-**Tutor desde cualquier pantalla** (historia H9). Un botón flotante con el símbolo de IA abre el tutor desde cualquier pantalla, salvo en la alta, en el test inicial (para no condicionar el resultado) y en los formularios del perfil. Si el alumno está en una lección, el chat muestra "Hablando de: [lección]" y envía esa lección al backend como contexto; la etiqueta se puede quitar para preguntar sobre cualquier tema. El chat y el resultado del test avisan cuando el texto lo ha generado la IA.
+**Mentor desde cualquier pantalla** (historia H9). Un botón flotante con el símbolo de IA abre el mentor desde cualquier pantalla, salvo en la alta, en el test inicial (para no condicionar el resultado) y en los formularios del perfil. Si el alumno está en una lección, el chat muestra "Hablando de: [lección]" y envía esa lección al backend como contexto; la etiqueta se puede quitar para preguntar sobre cualquier tema. El chat y el resultado del test avisan cuando el texto lo ha generado la IA.
 
 **Cuenta de usuario.** El alta tiene cuatro pasos:
 1. Crear la cuenta: empresa, nombre, apellidos, correo, contraseña y, opcionalmente, puesto o área. Hay que aceptar la política de privacidad.
-2. Tramo de edad y, si es menor de 14 años, consentimiento de la familia.
+2. Fecha de nacimiento y, si es menor de 14 años, consentimiento de la familia.
 3. Alias y avatar.
-4. Preferencias: forma del tutor (pato, pata o solo texto), tema, tamaño del texto y si quiere usar el tutor con IA.
+4. Preferencias: forma del mentor (pato, pata o solo texto), su personalidad, cómo se dirige al alumno, tema, tamaño del texto y si quiere usar el mentor con IA.
 
-**Qué datos se pueden cambiar después.** Desde Perfil → Mi cuenta el alumno puede cambiar su nombre, apellidos y puesto, y desde otras secciones su alias, el modo anónimo, la apariencia, el tutor con IA y la contraseña (pidiendo la actual). Estos datos se fijan en el alta y solo puede corregirlos la academia; el perfil los muestra con un candado:
+**Qué datos se pueden cambiar después.** Desde Perfil → Mi cuenta el alumno puede cambiar su nombre, apellidos y puesto, y desde otras secciones su alias, el modo anónimo, la apariencia, el mentor con IA y la contraseña (pidiendo la actual). Estos datos se fijan en el alta y solo puede corregirlos la academia; el perfil los muestra con un candado:
 - Correo: es el usuario para iniciar sesión y cambiarlo exige verificar el nuevo, lo que necesita el backend.
 - Empresa: relaciona al alumno con la formación que contrata su empresa.
-- Tramo de edad y consentimiento de la familia: de ellos dependen las protecciones para menores, así que el alumno no puede cambiarlos para saltárselas.
+- Fecha de nacimiento y consentimiento de la familia: de ellos dependen las protecciones para menores, así que el alumno no puede cambiarlos para saltárselas.
 
 La regla está en `CAMPOS_EDITABLES` (`src/api/cuenta.js`), que también impide cambiarlos aunque se fuerce la acción, y en `src/api/acceso.js`, que no deja volver a las pantallas de edad, consentimiento y preferencias del alta ni a la bienvenida, el registro o el inicio de sesión con la sesión iniciada. El registro avisa en el campo de empresa y en el del correo de que no se podrán cambiar.
 
 Mientras no haya backend, la cuenta se guarda solo en el dispositivo. La contraseña nunca se guarda: se guarda su resumen SHA-256 (`src/api/cuenta.js`). Las contraseñas deben tener al menos 8 caracteres, con una letra y un número. "¿Has olvidado tu contraseña?" solo muestra un aviso hasta que el backend pueda enviar correos.
 
 **Perfil por secciones.** El perfil muestra el nombre (o el alias en modo anónimo), los cursos y las filas de ajustes:
-- Mi cuenta: alias, datos personales editables (nombre, apellidos y puesto) y datos fijos de la cuenta (correo, empresa, tramo de edad, consentimiento y fecha de alta).
-- Apariencia: forma del tutor, tamaño del texto, tema, contraste y animaciones.
+- Mi cuenta: alias, datos personales editables (nombre, apellidos y puesto) y datos fijos de la cuenta (correo, empresa, fecha de nacimiento, consentimiento y fecha de alta).
+- Tu mentor: forma, personalidad y cómo se dirige al alumno.
+- Apariencia: tamaño del texto, tema, contraste y animaciones.
 - Modo de estudio habitual.
 - Seguridad: cambiar la contraseña (pide la actual), cerrar sesión y eliminar la cuenta, con confirmación.
-- Privacidad y datos: activar o desactivar el tutor con IA, qué datos usa la IA, descargar mis datos en JSON (sin la contraseña) y borrar el historial del tutor.
+- Privacidad y datos: activar o desactivar el mentor con IA, qué datos usa la IA, descargar mis datos en JSON (sin la contraseña) y borrar el historial del mentor.
 
-**Bienvenida.** El pato aparece en el círculo de marca y las ventajas de la app (vídeos cortos, sesiones de 5, 10 o 20 minutos, sin repetir lo que ya sabe, tutor, progreso y modo sin audio) giran a su alrededor en una órbita en perspectiva. Gira sola despacio y se puede girar arrastrando con el dedo o el ratón, con inercia; el elemento que pasa por delante muestra su texto. Con "reducir movimiento" no gira sola. Es decorativa: el lector de pantalla la ignora (`src/componentes/Orbita.jsx`).
+**Bienvenida.** Las ventajas de la app (aprendizaje personalizado, mentor con IA y tutor personal, material adaptado, sesiones de 5 a 20 minutos y sin repetir lo que ya sabe) giran alrededor del círculo de marca en una órbita en perspectiva. La que pasa por delante muestra su nombre y se explica debajo. Gira sola despacio y se puede girar arrastrando con el dedo o el ratón, con inercia. Con "reducir movimiento" no gira sola. El lector de pantalla recibe la lista completa de ventajas (`src/componentes/Orbita.jsx`).
 
 **Páginas legales.** Privacidad, cookies y aviso legal, enlazadas en el pie de la bienvenida, del perfil y de la privacidad. Son borradores basados en la [propuesta P3](../propuestas/datos-y-privacidad.md): los datos de 480 Academy (razón social, NIF, dirección y contacto) aparecen entre corchetes y resaltados hasta que los confirme la academia, y el texto final debe revisarlo la academia.
 
-**Tutor con forma de pato.** El alumno elige en el alta o en Apariencia si el tutor aparece como pato (con gafas cian), pata (con lazo coral) o solo texto. El pato respira, parpadea y de vez en cuando se mira la cola; mientras el tutor escribe, el texto aparece letra a letra y el pico se abre en las vocales y se cierra al terminar. Con "reducir movimiento" el pato queda quieto y el texto aparece completo. El lector de pantalla siempre recibe el texto completo.
+**Mentor con forma de pato.** El alumno elige en el alta o en Perfil → Tu mentor si el mentor aparece como pato (con gafas cian), pata (con lazo coral) o solo texto. El pato respira, parpadea y de vez en cuando se mira la cola; mientras el mentor escribe, el texto aparece letra a letra y el pico se abre en las vocales y se cierra al terminar. Con "reducir movimiento" el pato queda quieto y el texto aparece completo. El lector de pantalla siempre recibe el texto completo.
 - `src/componentes/Pato.jsx`: dibuja el pato y sus animaciones de reposo.
 - `src/componentes/TextoTecleado.jsx`: texto letra a letra.
-- `src/componentes/ElegirTutor.jsx`: selector de forma del tutor.
+- `src/componentes/ElegirMentor.jsx`: selector de forma del mentor.
 - `src/api/pato.js`: dibujos del pato en píxeles (32 × 32). No se edita a mano: se genera con `python3 herramientas/pato.py` (con `--hoja` guarda además una imagen de todas las caras para revisarlas; requiere Pillow).
 
-**Tutor con IA opcional.** Si el alumno desactiva el tutor con IA, desaparece el botón flotante, el tutor no interviene en las actividades y la pantalla del tutor ofrece hablar con un tutor de la academia o volver a activarlo.
+**Personalidad del mentor y trato.** El alumno elige la personalidad del mentor (amable, motivador, gracioso o estricto) y si quiere que se dirija a él en femenino, en masculino o de forma neutra. Se envían al backend junto a cada consulta (`contextoIA` en `src/api/mentor.js`) para que el mentor redacte con ese tono; sin backend, las respuestas de ejemplo usan las frases de `frasesMentor`.
+
+**Mentor con IA opcional.** Si el alumno desactiva el mentor con IA, desaparece el botón flotante, el mentor no interviene en las actividades y la pantalla del mentor ofrece hablar con un tutor de la academia o volver a activarlo.
 
 **Ajustes del alumno** (Perfil → Apariencia). Se aplican al momento y se guardan en el dispositivo:
 - Tamaño del texto: normal, grande o muy grande. Todo el diseño usa `rem`, así que escala por completo.
@@ -136,12 +140,12 @@ Mientras no haya backend, la cuenta se guarda solo en el dispositivo. La contras
 
 Se aplican con atributos en `<html>` (`data-tema`, `data-texto`, `data-contraste`, `data-movimiento`) que leen las variables de `src/estilos/variables.css`. `index.html` los aplica antes de cargar la app para que no haya parpadeos. Al eliminar la cuenta se borra todo salvo estos ajustes.
 
-**Menores de edad** ([propuesta P3](../propuestas/datos-y-privacidad.md#3-menores-de-edad)). Durante el alta, el alumno indica su tramo de edad (18 o más, 14 a 17, menos de 14). Solo se guarda el tramo, nunca la edad exacta, y al backend solo llega si es menor o no, para que el mentor adapte el tono. Con menos de 14 años, la app pide el consentimiento de la madre, el padre o el tutor legal antes de continuar. En el prototipo no se envía ningún correo ni se guarda la dirección: solo se registra la fecha del consentimiento, que aparece en el perfil.
+**Menores de edad** ([propuesta P3](../propuestas/datos-y-privacidad.md#3-menores-de-edad)). Durante el alta, el alumno indica su fecha de nacimiento, que el modelo de datos guarda en `Identidad`. Con ella el tramo (18 o más, 14 a 17, menos de 14) se calcula cada vez (`src/api/edad.js`), así que cambia solo cuando el alumno cumple 14 o 18 años. Al backend de IA solo llega si es menor o no, para que el mentor adapte el tono. Con menos de 14 años, la app pide el consentimiento de la madre, el padre o el tutor legal antes de continuar. En el prototipo no se envía ningún correo ni se guarda la dirección: solo se registra la fecha del consentimiento, que aparece en el perfil.
 
 **Diseño.** Paleta "Grafito 480" (grafito, cian, verde y coral de la marca), tipografías Plus Jakarta Sans y JetBrains Mono (desde Google Fonts; sin conexión se usa la fuente del sistema), botones de 56 px, tarjetas blancas, tarjetas destacadas en grafito y barras de progreso por segmentos. El cian de marca solo se usa como fondo con texto oscuro; para textos y enlaces se usa un cian oscurecido que cumple el contraste.
 
 **PWA:**
-- `public/manifest.webmanifest`: nombre, colores, iconos y accesos directos (mantener pulsado el icono: Lección de hoy, Tutor y Mi progreso).
+- `public/manifest.webmanifest`: nombre, colores, iconos y accesos directos (mantener pulsado el icono: Lección de hoy, Mentor y Mi progreso).
 - `public/sw.js`: service worker que guarda la aplicación en el dispositivo; carga al instante y funciona sin conexión.
 - `public/icons/`: iconos normales y "maskable" (Android), icono para iPhone y favicon.
 - **Instalar:** en Android y en el escritorio con Chrome o Edge, botón "Instalar" (aviso en la pantalla de inicio, una vez, y fila en el perfil). En iPhone, Safari no permite el botón, así que el perfil explica cómo añadirla a la pantalla de inicio. Si ya está instalada, no se muestra.
@@ -172,7 +176,7 @@ Se aplican con atributos en `<html>` (`data-tema`, `data-texto`, `data-contraste
 
 - `src/api/datos.js`: curso de ejemplo *Python desde cero* ([propuesta P4](../propuestas/README.md#p4-contenido-del-curso-de-muestra)). Los vídeos de YouTube están sin seleccionar.
 - `src/api/cliente.js`: única capa de acceso a datos. Las pantallas nunca llaman a `fetch` ni a la IA directamente.
-- La cuenta, el progreso, los ajustes, el alias y el modo anónimo se guardan en el navegador (`localStorage`, clave `reto480-estado-v2`). Si se cambia la forma de los datos guardados, hay que subir la versión de la clave en `src/hooks/useEstado.jsx` y en `index.html`.
+- La cuenta, el progreso, los ajustes, el alias y el modo anónimo se guardan en el navegador (`localStorage`, clave `reto480-estado-v3`). Si se cambia la forma de los datos guardados, hay que subir la versión de la clave en `src/hooks/useEstado.jsx` y en `index.html`.
 
 **Conectar el backend.** Definir la variable de entorno `VITE_API_URL` con la dirección del backend FastAPI:
 - En local: fichero `frontend/.env.local` con `VITE_API_URL=http://localhost:8000` (no se sube al repositorio).
@@ -186,10 +190,10 @@ Sin `VITE_API_URL`, o si el backend no responde en 8 segundos, la app usa los da
 |---|---|---|---|
 | `obtenerCursos` | `GET /api/cursos` | | `{ cursos: [{ id, titulo, descripcion, nivel, numeroLecciones }] }` |
 | `obtenerTestInicial` | `GET /api/cursos/{id}/test` | | `{ preguntas: [{ id, leccionId, enunciado, opciones }] }` |
-| `evaluarTestInicial` | `POST /api/cursos/{id}/test/evaluacion` | `{ respuestas, esMenor }` | `{ dominio: { leccionId: true }, mensaje }` (mensaje redactado por la IA, agente Diagnóstico) |
+| `evaluarTestInicial` | `POST /api/cursos/{id}/test/evaluacion` | `{ respuestas, esMenor, personalidad, tratamiento }` | `{ dominio: { leccionId: true }, mensaje }` (mensaje redactado por la IA, agente Diagnóstico) |
 | `corregirRespuestaEscrita` | `POST /api/actividades/correccion` | `{ actividadId, texto }` | `{ correcta, solucion }` |
-| `mensajeProactivoTutor` | `POST /api/mentor/proactivo` | `{ cursoId, leccionId, senal, esMenor }` | `{ texto }` |
-| `preguntarTutor` | `POST /api/mentor/mensaje` | `{ cursoId, leccionId, texto, esMenor }` | `{ texto, derivado }` |
+| `mensajeProactivoMentor` | `POST /api/mentor/proactivo` | `{ cursoId, leccionId, senal, esMenor, personalidad, tratamiento }` | `{ texto }` |
+| `preguntarMentor` | `POST /api/mentor/mensaje` | `{ cursoId, leccionId, texto, esMenor, personalidad, tratamiento }` | `{ texto, derivado }` |
 | `solicitarTutorHumano` | `POST /api/mentor/derivacion` | `{ cursoId, leccionId }` | `{ texto }` |
 
 La IA está en el backend ([propuesta P1](../propuestas/README.md#p1-agentes-de-ia)): Claude prepara el contenido una vez por vídeo y Groq redacta el diagnóstico y responde como mentor. Las claves de la IA nunca llegan al frontend.
@@ -200,8 +204,8 @@ Se usan el ejecutor de pruebas de Node (`node:test`) y Playwright, sin más depe
 
 | Carpeta | Qué comprueba |
 |---|---|
-| `pruebas/unitarias/` | Reglas de negocio en funciones puras de `src/api/`: acceso y alta, menores, datos de la cuenta, contraseñas y planificador de sesión (historias H2 a H5). También reglas de arquitectura: solo `src/api/` usa la red, no hay claves ni llamadas a proveedores de IA, no hay dependencias nuevas y la clave del estado coincide con `index.html`. |
-| `pruebas/e2e/` | La app compilada en Chromium con tamaño de móvil: alta de un adulto y de un menor de 14 años, datos que no se pueden cambiar, cierre e inicio de sesión, funcionamiento sin conexión, accesibilidad básica de las pantallas públicas y peso del JavaScript (menos de 200 KB comprimido). |
+| `pruebas/unitarias/` | Reglas de negocio en funciones puras de `src/api/`: acceso y alta, edad y menores (incluido el cambio de tramo al cumplir años), datos de la cuenta, contraseñas, personalidad y trato del mentor, datos que llegan a la IA y planificador de sesión (historias H2 a H5). También reglas de arquitectura: solo `src/api/` usa la red, no hay claves ni llamadas a proveedores de IA, no hay dependencias nuevas y la clave del estado coincide con `index.html`. |
+| `pruebas/e2e/` | La app compilada en Chromium con tamaño de móvil: alta de un adulto y de un menor de 14 años, fecha de nacimiento futura, respuesta del mentor con la personalidad elegida, datos que no se pueden cambiar, cierre e inicio de sesión, funcionamiento sin conexión, accesibilidad básica de las pantallas públicas y peso del JavaScript (menos de 200 KB comprimido). |
 
 `npm run verificar` las ejecuta todas tras compilar, y GitHub Actions lo repite en cada pull request (`.github/workflows/frontend.yml`). Una regla de negocio nueva se escribe como función pura en `src/api/` y se prueba en `pruebas/unitarias/`.
 

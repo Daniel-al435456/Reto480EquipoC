@@ -59,42 +59,54 @@ flowchart LR
 
 **Entidades**
 
+Actualizadas el 25/11/2026 con la cuenta de usuario de P7 y la implementación del esquema (`backend/migraciones/001_esquema_inicial.sql`). La unidad de estudio se llama **lección**, como en el frontend y la API: un vídeo entero o un trozo de él.
+
 ```
-Identidad(id, nombre, email, fecha_nacimiento, id_externo, consentimiento_tutor_legal)   -- nunca se envía a la IA
-Alumno(id, seudonimo_ia, es_menor)
-Curso(id, titulo, descripcion)
-Video(id, titulo, youtube_id, duracion_s, orden, transcripcion, origen_transcripcion)
-Fragmento(id, titulo, inicio_s, fin_s, resumen, lectura, ejercicio)
-Concepto(id, nombre)
-Pregunta(id, enunciado, opciones, correcta, tipo, dificultad, explicacion)
-Evento(id, tipo, valor, timestamp)
-Sesion(id, minutos, audio, estado)
-MensajeMentor(id, rol, texto_filtrado, timestamp)   -- se elimina a los 90 días
-Recurso(id, tipo, contenido)
+Empresa(id, nombre)
+Identidad(id, alumno_id, empresa_id, id_externo, nombre, apellidos, email, hash_contrasena,
+          fecha_nacimiento, consentimiento_familia_en, privacidad_aceptada_en)   -- nunca se envía a la IA
+Alumno(id, seudonimo_ia, alias, anonimo, tutor_ia_activo)
+Curso(id, titulo, descripcion, nivel)
+Video(id, curso_id, titulo, youtube_id, duracion_s, orden, transcripcion, origen_transcripcion)
+Leccion(id, video_id, titulo, descripcion, inicio_s, fin_s, duracion_lectura_min, resumen, lectura, ejercicio)
+Concepto(id, curso_id, nombre)
+Pregunta(id, concepto_id, leccion_id, uso, formato, dificultad, enunciado, solucion, explicacion)
+   opciones (multivaluado): orden, texto, correcta
+   palabras_clave (multivaluado)
+Recurso(id, leccion_id, tipo, contenido)
+Evento(id, alumno_id, tipo, leccion_id, pregunta_id, valor, detalles)
+Sesion(id, alumno_id, minutos, audio, estado)
+MensajeMentor(id, alumno_id, leccion_id, rol, texto_filtrado, proactivo)   -- se elimina a los 90 días
 ```
+
+Todas las tablas tienen además `creado_en` y `actualizado_en`. La contraseña solo se guarda como hash (Argon2 o bcrypt), calculado por el backend. La fecha de nacimiento no sale de `Identidad`: el backend calcula el tramo de edad y a la IA solo le llega si el alumno es menor. Las preferencias visuales (tema, tamaño del texto, forma del tutor) se guardan en el dispositivo, no en la base de datos.
 
 **Relaciones**
 
-| Relación | Entidades | Cardinalidad | Atributos |
-|---|---|---|---|
-| Corresponde | Identidad – Alumno | 1 : 1 | |
-| Pertenece | Alumno – Curso | N : M | fecha_inicio, estado |
-| Incluye | Curso – Vídeo | 1 : N | |
-| Contiene | Curso – Concepto | 1 : N | |
-| Divide | Vídeo – Fragmento | 1 : N | |
-| Cubre | Concepto – Fragmento | M : N | |
-| Domina | Alumno – Concepto | N : M | nivel, actualizado |
-| Evalúa | Concepto – Pregunta | 1 : N | |
-| Comprueba | Pregunta – Fragmento | N : 0..1 | |
-| Genera | Alumno – Evento | 1 : N | |
-| Referencia | Pregunta – Evento | 0..1 : N | |
-| Referencia | Fragmento – Evento | 0..1 : N | |
-| Planifica | Alumno – Sesión | 1 : N | |
-| Compone | Sesión – Fragmento | N : M | orden, completado |
-| Conversa | Alumno – Mensaje mentor | 1 : N | |
-| Apoya | Fragmento – Recurso | 1 : N | |
+| Relación | Entidades | Cardinalidad | Atributos | Tabla |
+|---|---|---|---|---|
+| Trabaja en | Empresa – Identidad | 1 : N | | |
+| Corresponde | Identidad – Alumno | 1 : 1 | | |
+| Pertenece | Alumno – Curso | N : M | fecha_inicio, estado | `matriculas` |
+| Incluye | Curso – Vídeo | 1 : N | | |
+| Contiene | Curso – Concepto | 1 : N | | |
+| Divide | Vídeo – Lección | 1 : N | | |
+| Cubre | Lección – Concepto | N : M | | `lecciones_conceptos` |
+| Domina | Alumno – Concepto | N : M | nivel, nivel_test | `dominios` |
+| Evalúa | Concepto – Pregunta | 1 : N | | |
+| Comprueba | Lección – Pregunta | 0..1 : N | | |
+| Apoya | Lección – Recurso | 1 : N | | |
+| Genera | Alumno – Evento | 1 : N | | |
+| Referencia | Pregunta – Evento | 0..1 : N | | |
+| Referencia | Lección – Evento | 0..1 : N | | |
+| Planifica | Alumno – Sesión | 1 : N | | |
+| Compone | Sesión – Lección | N : M | orden, completado | `sesiones_lecciones` |
+| Conversa | Alumno – Mensaje mentor | 1 : N | | |
+| Trata | Lección – Mensaje mentor | 0..1 : N | | |
 
-La identidad real del alumno está en una entidad separada (`Identidad`) y solo se relaciona con `Alumno`. El resto del sistema, incluida la IA, trabaja con el seudónimo.
+Los atributos multivaluados de Pregunta se guardan en las tablas `opciones_pregunta` y `palabras_clave` (primera forma normal).
+
+La identidad real del alumno está en una entidad separada (`Identidad`), que es la única que guarda el vínculo con `Alumno`: desde `Alumno` no hay ningún camino hacia los datos personales. Borrar la identidad deja anónimos los datos de aprendizaje. El resto del sistema, incluida la IA, trabaja con el seudónimo; el alias lo escribe el alumno y tampoco se envía a la IA.
 
 **Datos enviados a la IA**
 

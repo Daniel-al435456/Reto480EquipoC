@@ -15,7 +15,12 @@ Lo que se puede comprobar no se pide aquí: lo comprueban las pruebas (`npm run 
 | Comprobación rápida | `npm test` | Tras cada cambio (menos de un segundo) |
 | Comprobación completa | `npm run verificar` | Antes de dar algo por terminado y antes de cada pull request |
 
-`npm run verificar` ejecuta las pruebas unitarias y de arquitectura, compila y prueba la app en un navegador real con tamaño de móvil. GitHub Actions lo repite en cada pull request. El backend aún no existe; cuando exista, tendrá sus propios comandos aquí.
+`npm run verificar` ejecuta las pruebas unitarias y de arquitectura, compila y prueba la app en un navegador real con tamaño de móvil. GitHub Actions lo repite en cada pull request.
+
+| Qué | Comando (desde `backend/`) | Cuándo |
+|---|---|---|
+| Crear las tablas | `./migraciones/aplicar.sh` | Al clonar y al añadir una migración |
+| Probar el esquema | `./migraciones/probar.sh` | Antes de cada pull request que cambie la base de datos |
 
 ## Forma de trabajar
 
@@ -32,7 +37,7 @@ Detalle en [SPEC](SPEC.md) y [propuestas](propuestas/README.md). Las marcadas co
 
 - El frontend nunca llama a un proveedor de IA ni contiene claves: todo pasa por el backend. ✓
 - Toda llamada a la IA pasa por `backend/app/privacidad.py`: seudónimo en lugar de identidad y texto libre sin datos personales ([SPEC §6](SPEC.md#6-modelo-de-datos-y-flujo-hacia-la-ia)).
-- A la IA solo llega si el alumno es menor o no, nunca su edad exacta. Se guarda el tramo de edad, no la fecha.
+- Se guarda la fecha de nacimiento, solo en `identidades`. El backend calcula el tramo de edad cuando lo necesita, y a la IA solo llega si el alumno es menor o no, nunca su edad ni su fecha de nacimiento.
 - Con menos de 14 años, el alumno no continúa sin el consentimiento de su familia. ✓
 - La IA recomienda, pero no decide: el alumno puede abrir cualquier lección aunque el test diga que la domina. ✓
 - El planificador de sesión y el detector de señales funcionan con reglas, sin IA. La sesión cabe en el tiempo elegido (±1 min) y sin audio no hay vídeo. ✓
@@ -73,11 +78,13 @@ frontend/
 - `src/api/pato.js` no se edita a mano: se genera con `python3 herramientas/pato.py`.
 - Si cambia la forma del estado guardado, se sube la versión de la clave en `useEstado.jsx` y en `index.html`.
 
-## Backend y base de datos (acordado, aún sin código)
+## Backend y base de datos
+
+El esquema de PostgreSQL ya existe en `backend/migraciones/`; el servidor FastAPI, aún no. Puesta en marcha en [backend/README.md](backend/README.md).
 
 - Python 3.12 y FastAPI. Formato y lint con Ruff; tipos en las funciones públicas. Pruebas con pytest, al menos una por endpoint.
 - Los routers validan y delegan; la lógica va en `servicios/`. Entrada y salida con esquemas Pydantic. Errores con el formato `{"error": "codigo", "mensaje": "..."}`.
-- PostgreSQL: tablas en plural y `snake_case`, clave `id`, foráneas `<entidad>_id`, fechas `creado_en` y `actualizado_en` con zona horaria. `identidades` separada del resto. Cambios de esquema solo con scripts en `backend/migraciones/`.
+- PostgreSQL: tablas en plural y `snake_case`, clave `id`, foráneas `<entidad>_id`, fechas `creado_en` y `actualizado_en` con zona horaria. `identidades` separada del resto. Cambios de esquema solo con un script nuevo en `backend/migraciones/` (nunca se edita uno ya fusionado), con su prueba en `pruebas.sql`.
 - La API que espera el frontend está en [frontend/README.md](frontend/README.md#datos-y-conexión-con-el-backend).
 
 ## Límites

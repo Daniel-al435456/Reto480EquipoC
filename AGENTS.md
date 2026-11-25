@@ -15,7 +15,15 @@ Lo que se puede comprobar no se pide aquí: lo comprueban las pruebas (`npm run 
 | Comprobación rápida | `npm test` | Tras cada cambio (menos de un segundo) |
 | Comprobación completa | `npm run verificar` | Antes de dar algo por terminado y antes de cada pull request |
 
-`npm run verificar` ejecuta las pruebas unitarias y de arquitectura, compila y prueba la app en un navegador real con tamaño de móvil. GitHub Actions lo repite en cada pull request. El backend aún no existe; cuando exista, tendrá sus propios comandos aquí.
+El backend (Python) tiene sus propios comandos, desde `backend/`:
+
+| Qué | Comando (desde `backend/`) | Cuándo |
+|---|---|---|
+| Instalar | `python3 -m venv .venv` y `.venv/bin/python -m pip install -e ".[dev]"` | Al clonar o cambiar dependencias |
+| Desarrollo | `.venv/bin/uvicorn app.main:app --reload` | Para ver la API en `http://localhost:8000` y su documentación en `/docs` |
+| Comprobación | `.venv/bin/ruff format --check .`, `.venv/bin/ruff check .` y `.venv/bin/python -m pytest` | Tras cada cambio y antes de cada pull request |
+
+`npm run verificar` ejecuta las pruebas unitarias y de arquitectura, compila y prueba la app en un navegador real con tamaño de móvil. GitHub Actions lo repite en cada pull request, y el workflow `.github/workflows/backend.yml` hace lo propio con las comprobaciones del backend.
 
 ## Forma de trabajar
 

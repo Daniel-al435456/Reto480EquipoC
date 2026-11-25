@@ -57,7 +57,7 @@ describe('rutaPermitida', () => {
     for (const ruta of ['/bienvenida', '/registro', '/entrar', '/legal/privacidad']) {
       assert.ok(rutaPermitida({}, ruta), ruta);
     }
-    for (const ruta of ['/', '/progreso', '/perfil', '/tutor', '/edad']) {
+    for (const ruta of ['/', '/progreso', '/perfil', '/mentor', '/edad']) {
       assert.ok(!rutaPermitida({}, ruta), ruta);
     }
   });
@@ -67,7 +67,7 @@ describe('rutaPermitida', () => {
     assert.ok(rutaPermitida(enAlta, '/edad'));
     assert.ok(rutaPermitida(enAlta, '/preferencias'));
     assert.ok(!rutaPermitida(enAlta, '/progreso'));
-    assert.ok(!rutaPermitida(enAlta, '/tutor'));
+    assert.ok(!rutaPermitida(enAlta, '/mentor'));
   });
 
   it('tras el alta no se puede volver a la edad, al consentimiento ni a las preferencias', () => {

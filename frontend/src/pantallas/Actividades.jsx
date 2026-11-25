@@ -1,15 +1,15 @@
 import { useRef, useState } from 'react';
-import { corregirRespuestaEscrita, mensajeProactivoTutor } from '../api/cliente.js';
+import { corregirRespuestaEscrita, mensajeProactivoMentor } from '../api/cliente.js';
 import { Boton } from '../componentes/Boton.jsx';
-import { IconoTutor } from '../componentes/Iconos.jsx';
+import { IconoMentor } from '../componentes/Iconos.jsx';
 import { Pato } from '../componentes/Pato.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { contextoIA } from '../api/tutor.js';
+import { contextoIA } from '../api/mentor.js';
 import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './Actividades.module.css';
 
-/** Fallos en una lección a partir de los cuales el tutor interviene sin que se lo pidan. */
+/** Fallos en una lección a partir de los cuales el mentor interviene sin que se lo pidan. */
 const FALLOS_PARA_AYUDA = 2;
 
 /**
@@ -17,13 +17,13 @@ const FALLOS_PARA_AYUDA = 2;
  * Seguimiento continuo: cada respuesta se registra como evento de aprendizaje.
  */
 export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, alSiguiente, alSalir, navegar }) {
-  const { estado, registrarEvento, anadirMensaje, completarLeccion, ponerContextoTutor } = useEstado();
+  const { estado, registrarEvento, anadirMensaje, completarLeccion, ponerContextoMentor } = useEstado();
   const [indice, setIndice] = useState(0);
   const [respuesta, setRespuesta] = useState(null);
   const [resultado, setResultado] = useState(null);
   const [comprobando, setComprobando] = useState(false);
   const [aciertos, setAciertos] = useState(0);
-  const [pistaTutor, setPistaTutor] = useState(null);
+  const [pistaMentor, setPistaMentor] = useState(null);
   const fallos = useRef(0);
 
   const actividades = leccion.actividades;
@@ -47,11 +47,11 @@ export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, a
       setAciertos((a) => a + 1);
     } else {
       fallos.current += 1;
-      if (fallos.current === FALLOS_PARA_AYUDA && estado.tutorIA) {
-        const texto = await mensajeProactivoTutor(leccion, { cursoId: estado.cursoId, ...contextoIA(estado) });
-        anadirMensaje({ autor: 'tutor', texto, proactivo: true });
-        registrarEvento('tutor_proactivo', { leccionId: leccion.id, senal: 'fallos_repetidos' });
-        setPistaTutor(texto);
+      if (fallos.current === FALLOS_PARA_AYUDA && estado.mentorIA) {
+        const texto = await mensajeProactivoMentor(leccion, { cursoId: estado.cursoId, ...contextoIA(estado) });
+        anadirMensaje({ autor: 'mentor', texto, proactivo: true });
+        registrarEvento('mentor_proactivo', { leccionId: leccion.id, senal: 'fallos_repetidos' });
+        setPistaMentor(texto);
       }
     }
   };
@@ -178,30 +178,30 @@ export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, a
         )}
       </div>
 
-      {pistaTutor && (
-        <aside className={estilos.pista} aria-label="Ayuda del tutor">
-          {estado.ajustes.tutor === 'ninguno' ? (
+      {pistaMentor && (
+        <aside className={estilos.pista} aria-label="Ayuda del mentor">
+          {estado.ajustes.mentor === 'ninguno' ? (
             <span className={estilos.iconoPista} aria-hidden="true">
-              <IconoTutor tamano={20} />
+              <IconoMentor tamano={20} />
             </span>
           ) : (
-            <Pato variante={estado.ajustes.tutor} reposo="animando_c" tamano={52} />
+            <Pato variante={estado.ajustes.mentor} reposo="animando_c" tamano={52} />
           )}
           <div className={estilos.textoPista}>
-            <strong>Tu tutor tiene una pista</strong>
-            <span>{pistaTutor}</span>
+            <strong>Tu mentor tiene una pista</strong>
+            <span>{pistaMentor}</span>
             <div className={comun.acciones}>
               <button
                 type="button"
                 className={estilos.botonPista}
                 onClick={() => {
-                  ponerContextoTutor({ leccionId: leccion.id, titulo: leccion.titulo });
-                  navegar('/tutor');
+                  ponerContextoMentor({ leccionId: leccion.id, titulo: leccion.titulo });
+                  navegar('/mentor');
                 }}
               >
-                Hablar con el tutor
+                Hablar con el mentor
               </button>
-              <button type="button" className={estilos.botonAhoraNo} onClick={() => setPistaTutor(null)}>
+              <button type="button" className={estilos.botonAhoraNo} onClick={() => setPistaMentor(null)}>
                 Ahora no
               </button>
             </div>

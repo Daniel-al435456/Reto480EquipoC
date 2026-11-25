@@ -1,5 +1,5 @@
 /*
- * Personalidad del tutor y forma de dirigirse al alumno. El alumno las elige en el alta o en su perfil.
+ * Personalidad del mentor y forma de dirigirse al alumno. El alumno las elige en el alta o en su perfil.
  * Con backend, ambas se envían al agente Mentor para que redacte con ese tono; sin backend, se usan aquí
  * para las respuestas de ejemplo. No son datos personales identificativos.
  */
@@ -28,10 +28,10 @@ export function palabra(tratamiento, formas) {
 }
 
 /**
- * Frases con las que el tutor abre y cierra sus mensajes según su personalidad y el tratamiento.
+ * Frases con las que el mentor abre y cierra sus mensajes según su personalidad y el tratamiento.
  * Las usan las respuestas de ejemplo mientras no hay backend.
  */
-export function frasesTutor(personalidad = PERSONALIDAD_INICIAL, tratamiento = TRATAMIENTO_INICIAL) {
+export function frasesMentor(personalidad = PERSONALIDAD_INICIAL, tratamiento = TRATAMIENTO_INICIAL) {
   const listo = palabra(tratamiento, { femenino: '¿Lista para intentarlo otra vez?', masculino: '¿Listo para intentarlo otra vez?', neutro: '¿Lo intentamos otra vez?' });
   const frases = {
     amable: {
@@ -67,13 +67,13 @@ export function frasesTutor(personalidad = PERSONALIDAD_INICIAL, tratamiento = T
 }
 
 /**
- * Lo único del alumno que se envía a la IA junto a su consulta: si es menor, la personalidad elegida para el tutor
+ * Lo único del alumno que se envía a la IA junto a su consulta: si es menor, la personalidad elegida para el mentor
  * y el tratamiento. Nunca el nombre, el correo, la empresa ni la fecha de nacimiento (SPEC §6).
  */
 export function contextoIA(estado) {
   return {
     esMenor: esMenor(estado),
-    personalidad: estado.personalidadTutor ?? PERSONALIDAD_INICIAL,
+    personalidad: estado.personalidadMentor ?? PERSONALIDAD_INICIAL,
     tratamiento: estado.tratamiento ?? TRATAMIENTO_INICIAL,
   };
 }

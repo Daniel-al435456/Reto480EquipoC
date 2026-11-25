@@ -9,15 +9,15 @@ import { IconoMas } from '../componentes/Iconos.jsx';
 import { Interruptor } from '../componentes/Interruptor.jsx';
 import { PieLegal } from '../componentes/PieLegal.jsx';
 import { tramoDe } from '../api/edad.js';
-import { PERSONALIDADES } from '../api/tutor.js';
+import { PERSONALIDADES } from '../api/mentor.js';
 import { esMenor, useEstado } from '../hooks/useEstado.jsx';
 import { useTituloPantalla } from '../hooks/useTituloPantalla.js';
 import comun from './comun.module.css';
 import estilos from './Perfil.module.css';
 
-const NOMBRE_TUTOR = { pato: 'Pato', pata: 'Pata', ninguno: 'Solo texto' };
+const NOMBRE_FORMA = { pato: 'Pato', pata: 'Pata', ninguno: 'Solo texto' };
 
-/** Perfil del alumno, organizado por secciones: cuenta, tutor, apariencia, seguridad, privacidad y cursos. */
+/** Perfil del alumno, organizado por secciones: cuenta, mentor, apariencia, seguridad, privacidad y cursos. */
 export function Perfil({ navegar }) {
   const { estado, cambiarAnonimo, cerrarSesion, registrarEvento } = useEstado();
   const encabezado = useTituloPantalla('Perfil');
@@ -58,7 +58,7 @@ export function Perfil({ navegar }) {
             ? `Cuenta de menor de 14 años · consentimiento de tu familia registrado el ${new Date(
                 estado.consentimientoFamilia,
               ).toLocaleDateString('es-ES')}.`
-            : 'Cuenta de menor de edad · el tutor adapta su tono y te pasa con una persona si algo te preocupa.'}
+            : 'Cuenta de menor de edad · el mentor adapta su tono y te pasa con una persona si algo te preocupa.'}
         </p>
       )}
 
@@ -106,9 +106,9 @@ export function Perfil({ navegar }) {
         <div className={estilos.ajustes}>
           <FilaAjuste texto="Mi cuenta" valor="Datos y alias" alPulsar={() => navegar('/perfil/cuenta')} />
           <FilaAjuste
-            texto="Tu tutor"
-            valor={`${NOMBRE_TUTOR[ajustes.tutor]} · ${PERSONALIDADES.find((p) => p.id === estado.personalidadTutor)?.nombre ?? ''}`}
-            alPulsar={() => navegar('/perfil/tutor')}
+            texto="Tu mentor"
+            valor={`${NOMBRE_FORMA[ajustes.mentor]} · ${PERSONALIDADES.find((p) => p.id === estado.personalidadMentor)?.nombre ?? ''}`}
+            alPulsar={() => navegar('/perfil/mentor')}
           />
           <FilaAjuste texto="Apariencia" valor={tema} alPulsar={() => navegar('/perfil/apariencia')} />
           <FilaAjuste
@@ -119,7 +119,7 @@ export function Perfil({ navegar }) {
           <FilaAjuste texto="Seguridad" valor="Contraseña y sesión" alPulsar={() => navegar('/perfil/seguridad')} />
           <FilaAjuste
             texto="Privacidad y datos"
-            valor={estado.tutorIA ? 'Tutor con IA activado' : 'Tutor con IA desactivado'}
+            valor={estado.mentorIA ? 'Mentor con IA activado' : 'Mentor con IA desactivado'}
             alPulsar={() => navegar('/perfil/privacidad')}
           />
           <BotonInstalar className={estilos.ajuste} claseValor={estilos.valor} />

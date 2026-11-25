@@ -17,7 +17,7 @@
   display: none;
 }
 
-/* Pista del tutor proactivo: tarjeta en grafito, como en los prototipos. */
+/* Pista del mentor proactivo: tarjeta en grafito, como en los prototipos. */
 .pista {
   display: flex;
   gap: var(--espacio-3);

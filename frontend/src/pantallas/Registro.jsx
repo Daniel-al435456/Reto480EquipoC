@@ -128,7 +128,7 @@ export function Registro({ navegar }) {
             >
               política de privacidad
             </a>
-            , incluido el uso de un tutor con IA, que puedo desactivar cuando quiera.
+            , incluido el uso de un mentor con IA, que puedo desactivar cuando quiera.
           </span>
         </label>
         {errores.acepta && <p className={comun.secundario} style={{ color: 'var(--color-error)', fontWeight: 600 }}>{errores.acepta}</p>}

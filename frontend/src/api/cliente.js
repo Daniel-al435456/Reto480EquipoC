@@ -14,7 +14,7 @@
  */
 import { cursos } from './datos.js';
 import { planificarSesion as planificar } from './planificador.js';
-import { frasesTutor } from './tutor.js';
+import { frasesMentor } from './mentor.js';
 
 const esperar = (ms) => new Promise((resolver) => setTimeout(resolver, ms));
 
@@ -136,16 +136,16 @@ export function corregirRespuestaEscrita(actividad, texto) {
 }
 
 /**
- * Mensaje proactivo del tutor ante una señal de bloqueo.
+ * Mensaje proactivo del mentor ante una señal de bloqueo.
  * contexto: { cursoId, esMenor, personalidad, tratamiento }. Devuelve el texto.
  */
-export async function mensajeProactivoTutor(leccion, contexto = {}) {
+export async function mensajeProactivoMentor(leccion, contexto = {}) {
   const { texto } = await conRespaldo(
     '/api/mentor/proactivo',
     { ...contexto, leccionId: leccion.id, senal: 'bloqueo' },
     async () => {
       await esperar(300);
-      const frases = frasesTutor(contexto.personalidad, contexto.tratamiento);
+      const frases = frasesMentor(contexto.personalidad, contexto.tratamiento);
       return { texto: `«${leccion.titulo}». ${frases.atasco} ${leccion.resumen} ${frases.reintento}` };
     },
   );
@@ -153,16 +153,16 @@ export async function mensajeProactivoTutor(leccion, contexto = {}) {
 }
 
 /**
- * Respuesta del tutor (agente Mentor) a una consulta del alumno.
+ * Respuesta del mentor (agente Mentor) a una consulta del alumno.
  * contexto: { cursoId, leccionId, esMenor, personalidad, tratamiento }. leccionId es la lección de la que se habla, si la hay.
  * Devuelve { texto, derivado, origen }.
  */
-export function preguntarTutor(texto, contexto = {}) {
-  return conRespaldo('/api/mentor/mensaje', { ...contexto, texto }, () => respuestaTutorSimulada(texto, contexto));
+export function preguntarMentor(texto, contexto = {}) {
+  return conRespaldo('/api/mentor/mensaje', { ...contexto, texto }, () => respuestaMentorSimulada(texto, contexto));
 }
 
-async function respuestaTutorSimulada(texto, { cursoId, leccionId, personalidad, tratamiento }) {
-  const frases = frasesTutor(personalidad, tratamiento);
+async function respuestaMentorSimulada(texto, { cursoId, leccionId, personalidad, tratamiento }) {
+  const frases = frasesMentor(personalidad, tratamiento);
   await esperar(700);
   const curso = obtenerCurso(cursoId) ?? cursos[0];
   const consulta = normalizar(texto);

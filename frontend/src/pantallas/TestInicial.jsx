@@ -3,7 +3,7 @@ import { evaluarTestInicial, obtenerCurso, obtenerTestInicial } from '../api/cli
 import { leccionesPendientes } from '../api/planificador.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { contextoIA } from '../api/tutor.js';
+import { contextoIA } from '../api/mentor.js';
 import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './TestInicial.module.css';

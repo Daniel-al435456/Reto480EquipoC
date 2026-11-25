@@ -2,11 +2,11 @@ import { coincide } from '../hooks/useRuta.js';
 import { useEstado } from '../hooks/useEstado.jsx';
 import { obtenerLeccion } from '../api/cliente.js';
 import { IconoIA } from './Iconos.jsx';
-import estilos from './BotonTutor.module.css';
+import estilos from './BotonMentor.module.css';
 
-/** Pantallas donde no se muestra: el propio tutor, el alta, el test inicial (para no condicionarlo) y los formularios del perfil. */
+/** Pantallas donde no se muestra: el propio mentor, el alta, el test inicial (para no condicionarlo) y los formularios del perfil. */
 const OCULTO_EN = [
-  '/tutor',
+  '/mentor',
   '/bienvenida',
   '/registro',
   '/entrar',
@@ -20,13 +20,13 @@ const OCULTO_EN = [
   // Formularios del perfil: el botón taparía los campos.
   '/perfil/cuenta',
   '/perfil/apariencia',
-  '/perfil/tutor',
+  '/perfil/mentor',
   '/perfil/seguridad',
   '/perfil/privacidad',
   '/ajustes',
 ];
 
-/** Lección que el alumno tiene delante, para que el tutor sepa de qué se habla. */
+/** Lección que el alumno tiene delante, para que el mentor sepa de qué se habla. */
 function leccionActual(ruta, estado) {
   const enLeccion = coincide('/curso/:cursoId/leccion/:leccionId', ruta);
   if (enLeccion) return obtenerLeccion(enLeccion.cursoId, enLeccion.leccionId);
@@ -39,17 +39,17 @@ function leccionActual(ruta, estado) {
 }
 
 /**
- * Acceso al tutor desde cualquier pantalla (historia H9), con el símbolo de IA.
- * Si el alumno está en una lección, el tutor se abre sabiendo de qué lección se habla.
+ * Acceso al mentor desde cualquier pantalla (historia H9), con el símbolo de IA.
+ * Si el alumno está en una lección, el mentor se abre sabiendo de qué lección se habla.
  */
-export function BotonTutor({ ruta, navegar }) {
-  const { estado, ponerContextoTutor } = useEstado();
+export function BotonMentor({ ruta, navegar }) {
+  const { estado, ponerContextoMentor } = useEstado();
   if (OCULTO_EN.some((patron) => coincide(patron, ruta))) return null;
 
   const leccion = leccionActual(ruta, estado);
   const abrir = () => {
-    ponerContextoTutor(leccion ? { leccionId: leccion.id, titulo: leccion.titulo } : null);
-    navegar('/tutor');
+    ponerContextoMentor(leccion ? { leccionId: leccion.id, titulo: leccion.titulo } : null);
+    navegar('/mentor');
   };
 
   return (
@@ -57,11 +57,11 @@ export function BotonTutor({ ruta, navegar }) {
       type="button"
       className={estilos.boton}
       onClick={abrir}
-      aria-label={leccion ? `Preguntar al tutor sobre ${leccion.titulo}` : 'Abrir el tutor'}
-      title="Pregunta al tutor"
+      aria-label={leccion ? `Preguntar al mentor sobre ${leccion.titulo}` : 'Abrir el mentor'}
+      title="Pregunta al mentor"
     >
       <IconoIA tamano={26} />
-      {estado.tutorNoLeido && (
+      {estado.mentorNoLeido && (
         <>
           <span className={estilos.punto} aria-hidden="true" />
           <span className="visualmente-oculto">(mensaje nuevo)</span>

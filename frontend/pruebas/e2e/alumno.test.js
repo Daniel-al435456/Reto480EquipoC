@@ -53,7 +53,7 @@ async function indicarNacimiento(pagina, fecha) {
   await boton(pagina, 'Continuar').click();
 }
 
-/** Completa el alta de un alumno adulto. En las preferencias se puede elegir el tutor. */
+/** Completa el alta de un alumno adulto. En las preferencias se puede elegir el mentor. */
 async function completarAlta(pagina, { personalidad, tratamiento } = {}) {
   await crearCuenta(pagina);
   await indicarNacimiento(pagina, '1990-05-10');
@@ -109,12 +109,12 @@ describe('alta: fecha de nacimiento', () => {
   });
 });
 
-describe('tutor', () => {
+describe('mentor', () => {
   it('responde con la personalidad y el trato elegidos en el alta', async () => {
     const { contexto, pagina, errores } = await abrir();
     await completarAlta(pagina, { personalidad: 'Gracioso', tratamiento: 'Femenino' });
-    await pagina.goto(servidor.url + '#/tutor');
-    await pagina.locator('#pregunta-tutor').fill('¿Qué es una variable?');
+    await pagina.goto(servidor.url + '#/mentor');
+    await pagina.locator('#pregunta-mentor').fill('¿Qué es una variable?');
     await pagina.keyboard.press('Enter');
     // El texto aparece letra a letra; el lector de pantalla recibe la respuesta completa desde el principio.
     await pagina.getByText(/Cuac, esta me la sé/).first().waitFor({ state: 'attached', timeout: 15000 });

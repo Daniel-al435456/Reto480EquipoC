@@ -1,24 +1,24 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { cambiosPermitidos } from '../api/cuenta.js';
 import { esMenor } from '../api/edad.js';
-import { PERSONALIDAD_INICIAL, TRATAMIENTO_INICIAL } from '../api/tutor.js';
+import { PERSONALIDAD_INICIAL, TRATAMIENTO_INICIAL } from '../api/mentor.js';
 
 export { esMenor };
 
 /*
- * Estado del alumno en el dispositivo: cuenta y sesión, ajustes de visualización, fecha de nacimiento y consentimiento familiar, tutor,
+ * Estado del alumno en el dispositivo: cuenta y sesión, ajustes de visualización, fecha de nacimiento y consentimiento familiar, mentor,
  * perfil (alias y modo anónimo), curso elegido, resultado del test, progreso,
- * modo de estudio, sesión en curso, conversación con el tutor y eventos de aprendizaje.
+ * modo de estudio, sesión en curso, conversación con el mentor y eventos de aprendizaje.
  * Se guarda en el almacenamiento local para no perder el progreso al cerrar la app.
  * Cuando exista backend, la cuenta y la sesión se gestionarán en el servidor y los eventos se enviarán a la API.
  */
 
-const CLAVE = 'reto480-estado-v3';
+const CLAVE = 'reto480-estado-v4';
 
-const MENSAJE_INICIAL_TUTOR = {
+const MENSAJE_INICIAL_MENTOR = {
   id: 'bienvenida',
-  autor: 'tutor',
-  texto: 'Hola, soy tu tutor. Pregúntame cualquier duda sobre el curso.',
+  autor: 'mentor',
+  texto: 'Hola, soy tu mentor. Pregúntame cualquier duda sobre el curso.',
 };
 
 /** Ajustes de visualización. "auto" sigue la configuración del dispositivo. */
@@ -27,7 +27,7 @@ export const AJUSTES_INICIALES = {
   tema: 'auto', // auto | claro | oscuro
   contraste: 'normal', // normal | alto
   movimiento: 'auto', // auto | reducido
-  tutor: 'pato', // pato | pata | ninguno: cómo aparece el tutor
+  mentor: 'pato', // pato | pata | ninguno: cómo aparece el mentor
 };
 
 const estadoInicial = {
@@ -40,11 +40,11 @@ const estadoInicial = {
   sesionIniciada: false,
   /** true cuando el alumno ha completado todos los pasos del alta. */
   altaCompleta: false,
-  /** El alumno puede desactivar el tutor con IA (propuesta P3, "Base legal"). */
-  tutorIA: true,
-  /** Carácter del tutor: amable | motivador | gracioso | estricto (api/tutor.js). */
-  personalidadTutor: PERSONALIDAD_INICIAL,
-  /** Cómo se dirige el tutor al alumno: femenino | masculino | neutro. */
+  /** El alumno puede desactivar el mentor con IA (propuesta P3, "Base legal"). */
+  mentorIA: true,
+  /** Carácter del mentor: amable | motivador | gracioso | estricto (api/mentor.js). */
+  personalidadMentor: PERSONALIDAD_INICIAL,
+  /** Cómo se dirige el mentor al alumno: femenino | masculino | neutro. */
   tratamiento: TRATAMIENTO_INICIAL,
   ajustes: AJUSTES_INICIALES,
   /**
@@ -64,10 +64,10 @@ const estadoInicial = {
   completadas: [],
   modo: { minutos: 10, audio: true },
   sesion: null,
-  mensajesTutor: [MENSAJE_INICIAL_TUTOR],
-  tutorNoLeido: false,
-  /** Lección de la que se habla al abrir el tutor desde una lección: { leccionId, titulo }. */
-  contextoTutor: null,
+  mensajesMentor: [MENSAJE_INICIAL_MENTOR],
+  mentorNoLeido: false,
+  /** Lección de la que se habla al abrir el mentor desde una lección: { leccionId, titulo }. */
+  contextoMentor: null,
   eventos: [],
 };
 
@@ -111,7 +111,7 @@ export function EstadoProvider({ children }) {
       guardarFechaNacimiento: (fechaNacimiento) => setEstado((e) => (e.altaCompleta ? e : { ...e, fechaNacimiento })),
       registrarConsentimiento: () =>
         setEstado((e) => (e.altaCompleta ? e : { ...e, consentimientoFamilia: new Date().toISOString() })),
-      ponerContextoTutor: (contexto) => setEstado((e) => ({ ...e, contextoTutor: contexto })),
+      ponerContextoMentor: (contexto) => setEstado((e) => ({ ...e, contextoMentor: contexto })),
       crearCuenta: (cuenta) =>
         setEstado((e) => ({ ...e, cuenta: { ...cuenta, creada: new Date().toISOString() }, sesionIniciada: true })),
       // Desde el perfil solo se pueden cambiar algunos datos (CAMPOS_EDITABLES en api/cuenta.js); el resto solo la academia.
@@ -121,10 +121,10 @@ export function EstadoProvider({ children }) {
         }),
       guardarContrasena: (hashContrasena) => setEstado((e) => ({ ...e, cuenta: { ...e.cuenta, hashContrasena } })),
       iniciarSesion: () => setEstado((e) => ({ ...e, sesionIniciada: true })),
-      cerrarSesion: () => setEstado((e) => ({ ...e, sesionIniciada: false, sesion: null, contextoTutor: null })),
+      cerrarSesion: () => setEstado((e) => ({ ...e, sesionIniciada: false, sesion: null, contextoMentor: null })),
       completarAlta: () => setEstado((e) => ({ ...e, altaCompleta: true })),
-      cambiarTutorIA: (tutorIA) => setEstado((e) => ({ ...e, tutorIA })),
-      cambiarPersonalidadTutor: (personalidadTutor) => setEstado((e) => ({ ...e, personalidadTutor })),
+      cambiarMentorIA: (mentorIA) => setEstado((e) => ({ ...e, mentorIA })),
+      cambiarPersonalidadMentor: (personalidadMentor) => setEstado((e) => ({ ...e, personalidadMentor })),
       cambiarTratamiento: (tratamiento) => setEstado((e) => ({ ...e, tratamiento })),
       guardarPerfil: ({ alias, anonimo }) => setEstado((e) => ({ ...e, alias, anonimo })),
       cambiarAnonimo: (anonimo) => setEstado((e) => ({ ...e, anonimo })),
@@ -137,8 +137,8 @@ export function EstadoProvider({ children }) {
                 cuenta: e.cuenta,
                 sesionIniciada: e.sesionIniciada,
                 altaCompleta: e.altaCompleta,
-                tutorIA: e.tutorIA,
-                personalidadTutor: e.personalidadTutor,
+                mentorIA: e.mentorIA,
+                personalidadMentor: e.personalidadMentor,
                 tratamiento: e.tratamiento,
                 ajustes: e.ajustes,
                 fechaNacimiento: e.fechaNacimiento,
@@ -147,7 +147,7 @@ export function EstadoProvider({ children }) {
                 anonimo: e.anonimo,
                 modo: e.modo,
                 cursoId,
-                mensajesTutor: e.mensajesTutor,
+                mensajesMentor: e.mensajesMentor,
               },
         ),
       guardarTest: (dominio) => setEstado((e) => ({ ...e, testHecho: true, dominio, dominioTest: dominio })),
@@ -169,12 +169,12 @@ export function EstadoProvider({ children }) {
       anadirMensaje: (mensaje) =>
         setEstado((e) => ({
           ...e,
-          tutorNoLeido: e.tutorNoLeido || Boolean(mensaje.proactivo),
-          mensajesTutor: [...e.mensajesTutor, { id: `${Date.now()}-${Math.random()}`, ...mensaje }].slice(-100),
+          mentorNoLeido: e.mentorNoLeido || Boolean(mensaje.proactivo),
+          mensajesMentor: [...e.mensajesMentor, { id: `${Date.now()}-${Math.random()}`, ...mensaje }].slice(-100),
         })),
-      borrarHistorialTutor: () =>
-        setEstado((e) => ({ ...e, mensajesTutor: [MENSAJE_INICIAL_TUTOR], tutorNoLeido: false })),
-      marcarTutorLeido: () => setEstado((e) => (e.tutorNoLeido ? { ...e, tutorNoLeido: false } : e)),
+      borrarHistorialMentor: () =>
+        setEstado((e) => ({ ...e, mensajesMentor: [MENSAJE_INICIAL_MENTOR], mentorNoLeido: false })),
+      marcarMentorLeido: () => setEstado((e) => (e.mentorNoLeido ? { ...e, mentorNoLeido: false } : e)),
       // Eliminar la cuenta borra todos los datos del alumno de este dispositivo. Se conservan los ajustes de visualización.
       eliminarCuenta: () => setEstado((e) => ({ ...estadoInicial, ajustes: e.ajustes })),
     }),

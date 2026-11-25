@@ -36,7 +36,7 @@ export function Edad({ navegar }) {
   return (
     <Pantalla
       titulo="¿Cuándo naciste?"
-      subtitulo="Lo usamos para proteger tus datos si eres menor y adaptar el tono del tutor. A la IA nunca le llega tu edad, solo si eres menor o no."
+      subtitulo="Lo usamos para proteger tus datos si eres menor y adaptar el tono del mentor. A la IA nunca le llega tu edad, solo si eres menor o no."
       progreso={{ valor: 2, maximo: PASOS_ALTA, etiqueta: `Paso 2 de ${PASOS_ALTA}` }}
       pie={
         <Boton anchoCompleto onClick={continuar}>

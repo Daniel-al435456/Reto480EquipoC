@@ -1,33 +1,33 @@
-import { frasesTutor, PERSONALIDADES, TRATAMIENTOS } from '../api/tutor.js';
+import { frasesMentor, PERSONALIDADES, TRATAMIENTOS } from '../api/mentor.js';
 import { useEstado } from '../hooks/useEstado.jsx';
 import comun from '../pantallas/comun.module.css';
-import { ElegirTutor } from './ElegirTutor.jsx';
-import estilos from './AjustesTutor.module.css';
+import { ElegirMentor } from './ElegirMentor.jsx';
+import estilos from './AjustesMentor.module.css';
 
-/** Cómo es el tutor: forma (pato, pata o solo texto), personalidad y cómo se dirige al alumno. Alta y perfil. */
-export function AjustesTutor() {
-  const { estado, cambiarPersonalidadTutor, cambiarTratamiento } = useEstado();
+/** Cómo es el mentor: forma (pato, pata o solo texto), personalidad y cómo se dirige al alumno. Alta y perfil. */
+export function AjustesMentor() {
+  const { estado, cambiarPersonalidadMentor, cambiarTratamiento } = useEstado();
   const tratamiento = TRATAMIENTOS.find((t) => t.id === estado.tratamiento) ?? TRATAMIENTOS[2];
 
   return (
     <>
-      <ElegirTutor />
+      <ElegirMentor />
 
       <fieldset className={comun.grupo}>
-        <legend>Personalidad del tutor</legend>
+        <legend>Personalidad del mentor</legend>
         <div className={comun.opciones}>
           {PERSONALIDADES.map(({ id, nombre, descripcion }) => (
             <label key={id} className={comun.opcion}>
               <input
                 type="radio"
                 name="personalidad"
-                checked={estado.personalidadTutor === id}
-                onChange={() => cambiarPersonalidadTutor(id)}
+                checked={estado.personalidadMentor === id}
+                onChange={() => cambiarPersonalidadMentor(id)}
               />
               <span className={estilos.texto}>
                 <strong>{nombre}</strong>
                 <span className={comun.secundario}>{descripcion}</span>
-                <span className={estilos.ejemplo}>«{frasesTutor(id, estado.tratamiento).atasco}»</span>
+                <span className={estilos.ejemplo}>«{frasesMentor(id, estado.tratamiento).atasco}»</span>
               </span>
             </label>
           ))}
@@ -35,7 +35,7 @@ export function AjustesTutor() {
       </fieldset>
 
       <fieldset className={comun.grupo}>
-        <legend>¿Cómo quieres que el tutor se dirija a ti?</legend>
+        <legend>¿Cómo quieres que el mentor se dirija a ti?</legend>
         <div className={comun.segmentado}>
           {TRATAMIENTOS.map(({ id, nombre }) => (
             <label key={id} className={comun.segmento}>
@@ -50,7 +50,7 @@ export function AjustesTutor() {
           ))}
         </div>
         <p className={comun.secundario}>
-          Por ejemplo: «{tratamiento.ejemplo}». Solo cambia cómo te habla el tutor; no se usa para nada más.
+          Por ejemplo: «{tratamiento.ejemplo}». Solo cambia cómo te habla el mentor; no se usa para nada más.
         </p>
       </fieldset>
     </>

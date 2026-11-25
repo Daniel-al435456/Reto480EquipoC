@@ -19,13 +19,13 @@ function descargarDatos(estado) {
     consentimientoFamilia: estado.consentimientoFamilia,
     preferencias: {
       ...estado.ajustes,
-      tutorIA: estado.tutorIA,
-      personalidadTutor: estado.personalidadTutor,
+      mentorIA: estado.mentorIA,
+      personalidadMentor: estado.personalidadMentor,
       tratamiento: estado.tratamiento,
       modoEstudio: estado.modo,
     },
     progreso: { cursoId: estado.cursoId, dominio: estado.dominio, completadas: estado.completadas },
-    conversacionTutor: estado.mensajesTutor,
+    conversacionMentor: estado.mensajesMentor,
     eventos: estado.eventos,
   };
   const url = URL.createObjectURL(new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' }));
@@ -36,21 +36,21 @@ function descargarDatos(estado) {
   URL.revokeObjectURL(url);
 }
 
-/** Perfil → Privacidad y datos: tutor con IA, qué datos usa, descargar y borrar datos. */
+/** Perfil → Privacidad y datos: mentor con IA, qué datos usa, descargar y borrar datos. */
 export function PerfilPrivacidad({ navegar }) {
-  const { estado, cambiarTutorIA, borrarHistorialTutor, registrarEvento } = useEstado();
+  const { estado, cambiarMentorIA, borrarHistorialMentor, registrarEvento } = useEstado();
   const [confirmarBorrado, setConfirmarBorrado] = useState(false);
   const [aviso, setAviso] = useState('');
 
   return (
     <Pantalla titulo="Privacidad y datos" alVolver={() => navegar('/perfil')} textoVolver="Volver al perfil">
       <Interruptor
-        titulo="Tutor con IA"
+        titulo="Mentor con IA"
         descripcion="Si lo desactivas, no se envía nada a la IA y puedes escribir a un tutor de la academia."
-        activo={estado.tutorIA}
+        activo={estado.mentorIA}
         alCambiar={(valor) => {
-          cambiarTutorIA(valor);
-          registrarEvento('tutor_ia_cambiado', { activo: valor });
+          cambiarMentorIA(valor);
+          registrarEvento('mentor_ia_cambiado', { activo: valor });
         }}
       />
 
@@ -58,13 +58,13 @@ export function PerfilPrivacidad({ navegar }) {
         <h2 id="titulo-datos-ia">Qué datos usa la IA</h2>
         <p>
           <strong>Sí recibe:</strong> tu alias, {esMenor(estado) ? 'que eres menor de edad (para adaptar el tono), ' : ''}
-          la personalidad del tutor y cómo quieres que se dirija a ti, tu nivel en cada tema, tus respuestas y el texto de
-          tus preguntas al tutor, sin correos, teléfonos ni nombres.
+          la personalidad del mentor y cómo quieres que se dirija a ti, tu nivel en cada tema, tus respuestas y el texto de
+          tus preguntas al mentor, sin correos, teléfonos ni nombres.
         </p>
         <p>
           <strong>Nunca recibe:</strong> tu nombre, apellidos, correo, empresa ni tu fecha de nacimiento.
         </p>
-        <p className={comun.secundario}>Las conversaciones con el tutor se guardan 90 días.</p>
+        <p className={comun.secundario}>Las conversaciones con el mentor se guardan 90 días.</p>
       </section>
 
       <section className={estilos.seccion} aria-labelledby="titulo-mis-datos">
@@ -82,15 +82,15 @@ export function PerfilPrivacidad({ navegar }) {
         </div>
         {confirmarBorrado ? (
           <div className={estilos.confirmarBloque} role="group" aria-label="Confirmar borrado">
-            <p>¿Borrar toda la conversación con el tutor? No se puede deshacer.</p>
+            <p>¿Borrar toda la conversación con el mentor? No se puede deshacer.</p>
             <div className={comun.acciones}>
               <Boton
                 variante="secundario"
                 onClick={() => {
-                  borrarHistorialTutor();
-                  registrarEvento('historial_tutor_borrado');
+                  borrarHistorialMentor();
+                  registrarEvento('historial_mentor_borrado');
                   setConfirmarBorrado(false);
-                  setAviso('Historial con el tutor borrado.');
+                  setAviso('Historial con el mentor borrado.');
                 }}
               >
                 Sí, borrar
@@ -102,7 +102,7 @@ export function PerfilPrivacidad({ navegar }) {
           </div>
         ) : (
           <Boton variante="peligro" onClick={() => setConfirmarBorrado(true)}>
-            Borrar mi historial con el tutor
+            Borrar mi historial con el mentor
           </Boton>
         )}
         <p role="status" className={comun.secundario}>

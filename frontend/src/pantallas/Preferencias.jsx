@@ -1,5 +1,5 @@
 import { Boton } from '../componentes/Boton.jsx';
-import { AjustesTutor } from '../componentes/AjustesTutor.jsx';
+import { AjustesMentor } from '../componentes/AjustesMentor.jsx';
 import { Interruptor } from '../componentes/Interruptor.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
 import { useEstado } from '../hooks/useEstado.jsx';
@@ -17,17 +17,17 @@ const TEXTOS = [
   ['muy-grande', 'Muy grande'],
 ];
 
-/** Alta, paso 4 de 4: preferencias (tutor, tema y tamaño del texto). Se pueden cambiar después en el perfil. */
+/** Alta, paso 4 de 4: preferencias (mentor, tema y tamaño del texto). Se pueden cambiar después en el perfil. */
 export function Preferencias({ navegar }) {
-  const { estado, cambiarAjuste, cambiarTutorIA, completarAlta, registrarEvento } = useEstado();
+  const { estado, cambiarAjuste, cambiarMentorIA, completarAlta, registrarEvento } = useEstado();
   const { ajustes } = estado;
 
   const terminar = () => {
     completarAlta();
     registrarEvento('alta_completada', {
-      tutor: ajustes.tutor,
-      personalidad: estado.personalidadTutor,
-      tutorIA: estado.tutorIA,
+      forma: ajustes.mentor,
+      personalidad: estado.personalidadMentor,
+      mentorIA: estado.mentorIA,
     });
     navegar('/');
   };
@@ -44,7 +44,7 @@ export function Preferencias({ navegar }) {
         </Boton>
       }
     >
-      <AjustesTutor />
+      <AjustesMentor />
 
       <fieldset className={comun.grupo}>
         <legend>Tema</legend>
@@ -71,10 +71,10 @@ export function Preferencias({ navegar }) {
       </fieldset>
 
       <Interruptor
-        titulo="Tutor con IA"
+        titulo="Mentor con IA"
         descripcion="Resuelve dudas con el contenido del curso y te avisa si te atascas. Solo recibe tu alias, nunca tu nombre."
-        activo={estado.tutorIA}
-        alCambiar={cambiarTutorIA}
+        activo={estado.mentorIA}
+        alCambiar={cambiarMentorIA}
       />
     </Pantalla>
   );

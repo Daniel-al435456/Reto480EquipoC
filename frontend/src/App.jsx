@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { AvisosApp } from './componentes/AvisosApp.jsx';
 import { BarraInferior } from './componentes/BarraInferior.jsx';
 import { Boton } from './componentes/Boton.jsx';
-import { BotonTutor } from './componentes/BotonTutor.jsx';
+import { BotonMentor } from './componentes/BotonMentor.jsx';
 import { LimiteErrores } from './componentes/LimiteErrores.jsx';
 import { Pantalla } from './componentes/Pantalla.jsx';
 import { useAplicarAjustes } from './hooks/useAplicarAjustes.js';
@@ -18,7 +18,7 @@ import { Entrar } from './pantallas/Entrar.jsx';
 import { Legal } from './pantallas/Legal.jsx';
 import { PerfilCuenta } from './pantallas/PerfilCuenta.jsx';
 import { PerfilPrivacidad } from './pantallas/PerfilPrivacidad.jsx';
-import { PerfilTutor } from './pantallas/PerfilTutor.jsx';
+import { PerfilMentor } from './pantallas/PerfilMentor.jsx';
 import { PerfilSeguridad } from './pantallas/PerfilSeguridad.jsx';
 import { Preferencias } from './pantallas/Preferencias.jsx';
 import { Registro } from './pantallas/Registro.jsx';
@@ -30,7 +30,7 @@ import { Progreso } from './pantallas/Progreso.jsx';
 import { SeleccionCurso } from './pantallas/SeleccionCurso.jsx';
 import { Sesion } from './pantallas/Sesion.jsx';
 import { TestInicial } from './pantallas/TestInicial.jsx';
-import { Tutor } from './pantallas/Tutor.jsx';
+import { Mentor } from './pantallas/Mentor.jsx';
 import estilos from './App.module.css';
 
 /*
@@ -53,11 +53,11 @@ const RUTAS = [
   { patron: '/curso/:cursoId/leccion/:leccionId', Componente: Leccion },
   { patron: '/curso/:cursoId/hoy', Componente: PrevioSesion },
   { patron: '/curso/:cursoId/sesion/:paso', Componente: Sesion, sinBarra: true },
-  { patron: '/tutor', Componente: Tutor },
+  { patron: '/mentor', Componente: Mentor },
   { patron: '/progreso', Componente: Progreso },
   { patron: '/perfil', Componente: Perfil },
   { patron: '/perfil/cuenta', Componente: PerfilCuenta },
-  { patron: '/perfil/tutor', Componente: PerfilTutor },
+  { patron: '/perfil/mentor', Componente: PerfilMentor },
   { patron: '/perfil/apariencia', Componente: Ajustes },
   { patron: '/perfil/seguridad', Componente: PerfilSeguridad },
   { patron: '/perfil/privacidad', Componente: PerfilPrivacidad },
@@ -76,16 +76,16 @@ function NoEncontrada({ navegar }) {
 
 function Aplicacion() {
   const { ruta, navegar } = useRuta();
-  const { estado, ponerContextoTutor } = useEstado();
+  const { estado, ponerContextoMentor } = useEstado();
   useAplicarAjustes(estado.ajustes);
 
-  // Desde la barra de navegación, el tutor se abre sin lección concreta (pregunta general).
+  // Desde la barra de navegación, el mentor se abre sin lección concreta (pregunta general).
   const navegarDesdeBarra = useCallback(
     (destino) => {
-      if (destino === '/tutor') ponerContextoTutor(null);
+      if (destino === '/mentor') ponerContextoMentor(null);
       navegar(destino);
     },
-    [navegar, ponerContextoTutor],
+    [navegar, ponerContextoMentor],
   );
 
   let contenido = <NoEncontrada navegar={navegar} />;
@@ -126,10 +126,10 @@ function Aplicacion() {
         <BarraInferior
           ruta={ruta}
           navegar={navegarDesdeBarra}
-          avisoTutor={estado.tutorNoLeido && ruta !== '/tutor'}
+          avisoMentor={estado.mentorNoLeido && ruta !== '/mentor'}
         />
       )}
-      {!enAlta && estado.tutorIA && <BotonTutor ruta={ruta} navegar={navegar} />}
+      {!enAlta && estado.mentorIA && <BotonMentor ruta={ruta} navegar={navegar} />}
     </div>
   );
 }

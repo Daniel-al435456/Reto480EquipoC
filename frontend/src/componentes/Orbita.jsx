@@ -11,7 +11,7 @@ export const VENTAJAS = [
   },
   {
     Icono: IconoIA,
-    texto: 'Tutor IA + tutor personal',
+    texto: 'Mentor IA + tutor personal',
     detalle: 'Resuelve tus dudas al momento y, si hace falta, te pasa con un tutor de la academia.',
   },
   {

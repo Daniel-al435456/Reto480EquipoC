@@ -27,6 +27,10 @@ def _app_con_rutas_de_prueba() -> FastAPI:
     def _con_minutos(minutos: int) -> dict[str, int]:
         return {"minutos": minutos}
 
+    @app.get("/explota")
+    def _explota() -> None:
+        raise RuntimeError("fallo interno de mentira")
+
     return app
 
 
@@ -40,9 +44,8 @@ def test_las_rutas_desconocidas_devuelven_el_formato_de_error(cliente: TestClien
     }
 
 
-def test_los_errores_de_dominio_llevan_su_codigo(cliente: TestClient) -> None:
+def test_los_errores_de_dominio_llevan_su_codigo() -> None:
     """Un error de negocio conserva el código que eligió quien lo lanzó."""
-    del cliente
     respuesta = TestClient(_app_con_rutas_de_prueba()).get("/sin-sesion")
     assert respuesta.status_code == 401
     assert respuesta.json() == {
@@ -51,9 +54,8 @@ def test_los_errores_de_dominio_llevan_su_codigo(cliente: TestClient) -> None:
     }
 
 
-def test_los_errores_de_validacion_se_explican_en_espanol(cliente: TestClient) -> None:
+def test_los_errores_de_validacion_se_explican_en_espanol() -> None:
     """Un campo ausente o inválido nombra al campo en español, sin mensajes del framework."""
-    del cliente
     respuesta = TestClient(_app_con_rutas_de_prueba()).get("/con-minutos")
     assert respuesta.status_code == 422
     cuerpo = respuesta.json()
@@ -61,8 +63,24 @@ def test_los_errores_de_validacion_se_explican_en_espanol(cliente: TestClient) -
     assert "minutos" in cuerpo["mensaje"]
 
 
-def test_ningun_error_ama_la_culpa_interna(cliente: TestClient) -> None:
-    """Las respuestas de error no cuentan rutas del disco ni trazas de la excepción."""
-    texto = str(cliente.get("/ruta-que-no-existe").json()).lower()
-    for reservado in ("traceback", "stack", "/users/", 'file "'):
+def test_los_metodos_no_permitidos_usan_el_formato(cliente: TestClient) -> None:
+    """Un método que la ruta no acepta responde 405 con código y mensaje propios."""
+    respuesta = cliente.request("DELETE", "/salud")
+    assert respuesta.status_code == 405
+    assert respuesta.json() == {
+        "error": "metodo_no_permitido",
+        "mensaje": "Ese método no está permitido en esta dirección.",
+    }
+
+
+def test_los_errores_inesperados_no_cuentan_nada_interno() -> None:
+    """Un fallo inesperado responde 500 sin rutas, trazas ni el mensaje original."""
+    respuesta = TestClient(_app_con_rutas_de_prueba(), raise_server_exceptions=False).get(
+        "/explota"
+    )
+    assert respuesta.status_code == 500
+    cuerpo = respuesta.json()
+    assert cuerpo["error"] == "interno"
+    texto = str(cuerpo).lower()
+    for reservado in ("traceback", "stack", "/users/", 'file "', "fallo interno de mentira"):
         assert reservado not in texto, f"El error filtra información interna: {reservado}"

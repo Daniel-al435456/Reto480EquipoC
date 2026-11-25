@@ -15,7 +15,12 @@ Lo que se puede comprobar no se pide aquí: lo comprueban las pruebas (`npm run 
 | Comprobación rápida | `npm test` | Tras cada cambio (menos de un segundo) |
 | Comprobación completa | `npm run verificar` | Antes de dar algo por terminado y antes de cada pull request |
 
-`npm run verificar` ejecuta las pruebas unitarias y de arquitectura, compila y prueba la app en un navegador real con tamaño de móvil. GitHub Actions lo repite en cada pull request. El backend aún no existe; cuando exista, tendrá sus propios comandos aquí.
+`npm run verificar` ejecuta las pruebas unitarias y de arquitectura, compila y prueba la app en un navegador real con tamaño de móvil. GitHub Actions lo repite en cada pull request.
+
+| Qué | Comando (desde `backend/`) | Cuándo |
+|---|---|---|
+| Crear las tablas | `./migraciones/aplicar.sh` | Al clonar y al añadir una migración |
+| Probar el esquema | `./migraciones/probar.sh` | Antes de cada pull request que cambie la base de datos |
 
 ## Forma de trabajar
 
@@ -74,11 +79,11 @@ frontend/
 - `src/api/pato.js` no se edita a mano: se genera con `python3 herramientas/pato.py`.
 - Si cambia la forma del estado guardado, se sube la versión de la clave en `useEstado.jsx` y en `index.html`.
 
-## Backend y base de datos (acordado, aún sin código)
+## Backend y base de datos ([puesta en marcha](backend/README.md))
 
 - Python 3.12 y FastAPI. Formato y lint con Ruff; tipos en las funciones públicas. Pruebas con pytest, al menos una por endpoint.
 - Los routers validan y delegan; la lógica va en `servicios/`. Entrada y salida con esquemas Pydantic. Errores con el formato `{"error": "codigo", "mensaje": "..."}`.
-- PostgreSQL: tablas en plural y `snake_case`, clave `id`, foráneas `<entidad>_id`, fechas `creado_en` y `actualizado_en` con zona horaria. `identidades` separada del resto. Cambios de esquema solo con scripts en `backend/migraciones/`.
+- PostgreSQL: tablas en plural y `snake_case`, clave `id`, foráneas `<entidad>_id`, fechas `creado_en` y `actualizado_en` con zona horaria. `identidades` separada del resto. Cambios de esquema solo con un script nuevo en `backend/migraciones/` (nunca se edita uno ya fusionado), con su prueba en `pruebas.sql`.
 - La API que espera el frontend está en [frontend/README.md](frontend/README.md#datos-y-conexión-con-el-backend).
 
 ## Límites

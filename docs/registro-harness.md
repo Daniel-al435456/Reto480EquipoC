@@ -30,6 +30,7 @@ Las comprobaciones viven en los scripts de `frontend/package.json`, así que sir
 | 25/11/2026 | Al cambiar el nombre de una acción del estado, el asistente dejó dos funciones con el mismo nombre y la app dejó de compilar. | La compilación forma parte de `npm run verificar` y de la comprobación al terminar de Claude Code. |
 | 25/11/2026 | Los dibujos del pato (`src/api/pato.js`) se retocaban a mano y se separaban del diseño. | Script `frontend/herramientas/pato.py` que los genera; AGENTS.md indica que no se editan a mano y `.claude/settings.json` lo impide. |
 | 25/11/2026 | La clave del estado guardado cambió en el código, pero no en el script de `index.html` que aplica el tema antes de cargar la app. | Prueba de arquitectura que comprueba que ambas coinciden. |
+| 25/11/2026 | Al montar la configuración del backend, el asistente escribió la URL de conexión con el usuario de la base de datos en el código, incumpliendo «sin credenciales en el repositorio». Lo detectó quien revisaba, no ninguna prueba. | Prueba de arquitectura `test_las_urls_de_los_servicios_viven_en_el_entorno`; el valor por defecto queda vacío y la URL se lee solo del entorno (`.env`). |
 
 ## Revisión periódica
 

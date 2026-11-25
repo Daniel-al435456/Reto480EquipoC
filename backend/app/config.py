@@ -9,16 +9,21 @@ internos van en español, como el resto del proyecto.
 from __future__ import annotations
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+#: `.env` vive en `backend/`, junto a este paquete: la ruta no depende de la
+#: carpeta desde la que se arrance el servidor.
+ARCHIVO_ENV = Path(__file__).resolve().parent.parent / ".env"
 
 
 class Configuracion(BaseSettings):
     """Variables de entorno que necesita el backend para arrancar."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=ARCHIVO_ENV,
         env_file_encoding="utf-8",
         extra="ignore",
         populate_by_name=True,

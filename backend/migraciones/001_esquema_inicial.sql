@@ -143,16 +143,20 @@ CREATE TABLE empresas (
   actualizado_en timestamptz NOT NULL DEFAULT now()
 );
 
--- El alumno sin datos personales. A la IA solo le llega seudonimo_ia (y si es menor, calculado aparte).
--- El alias lo escribe el alumno y puede contener su nombre: es para los tutores, no para la IA.
+-- El alumno sin datos personales. A la IA le llegan seudonimo_ia, la personalidad del mentor, el tratamiento
+-- y si es menor (calculado aparte). El alias lo escribe el alumno y puede contener su nombre: es para los
+-- tutores de la academia, no para la IA. "Mentor" es la IA y "tutor", la persona de la academia.
 CREATE TABLE alumnos (
-  id              bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  seudonimo_ia    uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
-  alias           text NOT NULL,
-  anonimo         boolean NOT NULL DEFAULT true,
-  tutor_ia_activo boolean NOT NULL DEFAULT true,
-  creado_en       timestamptz NOT NULL DEFAULT now(),
-  actualizado_en  timestamptz NOT NULL DEFAULT now()
+  id                  bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  seudonimo_ia        uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+  alias               text NOT NULL,
+  anonimo             boolean NOT NULL DEFAULT true,
+  mentor_ia_activo    boolean NOT NULL DEFAULT true,
+  personalidad_mentor text NOT NULL DEFAULT 'amable'
+                      CHECK (personalidad_mentor IN ('amable', 'motivador', 'gracioso', 'estricto')),
+  tratamiento         text NOT NULL DEFAULT 'neutro' CHECK (tratamiento IN ('femenino', 'masculino', 'neutro')),
+  creado_en           timestamptz NOT NULL DEFAULT now(),
+  actualizado_en      timestamptz NOT NULL DEFAULT now()
 );
 
 -- El vínculo con el alumno vive aquí: desde alumnos no hay ningún camino hacia los datos personales.

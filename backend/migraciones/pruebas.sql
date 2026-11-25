@@ -71,8 +71,15 @@ SELECT pg_temp.comprobar(true, 'acepta un conjunto completo de datos válidos');
 -- 2. Valores automáticos.
 SELECT pg_temp.comprobar((SELECT seudonimo_ia IS NOT NULL FROM alumnos WHERE id = 1),
   'el seudónimo para la IA se genera solo');
-SELECT pg_temp.comprobar((SELECT anonimo AND tutor_ia_activo FROM alumnos WHERE id = 1),
-  'modo anónimo y tutor con IA activados por defecto');
+SELECT pg_temp.comprobar((SELECT anonimo AND mentor_ia_activo FROM alumnos WHERE id = 1),
+  'modo anónimo y mentor con IA activados por defecto');
+SELECT pg_temp.comprobar(
+  (SELECT personalidad_mentor = 'amable' AND tratamiento = 'neutro' FROM alumnos WHERE id = 1),
+  'el mentor empieza amable y con trato neutro, como en el frontend');
+SELECT pg_temp.debe_fallar($$UPDATE alumnos SET personalidad_mentor = 'borde' WHERE id = 1$$, '23514',
+  'una personalidad del mentor desconocida se rechaza');
+SELECT pg_temp.debe_fallar($$UPDATE alumnos SET tratamiento = 'formal' WHERE id = 1$$, '23514',
+  'un tratamiento desconocido se rechaza');
 SELECT pg_temp.comprobar((SELECT creado_en IS NOT NULL AND actualizado_en IS NOT NULL FROM cursos),
   'creado_en y actualizado_en se rellenan solos');
 SELECT pg_temp.comprobar(

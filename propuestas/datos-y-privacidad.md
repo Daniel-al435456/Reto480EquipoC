@@ -65,7 +65,7 @@ Actualizadas el 25/11/2026 con la cuenta de usuario de P7 y la implementación d
 Empresa(id, nombre)
 Identidad(id, alumno_id, empresa_id, id_externo, nombre, apellidos, email, hash_contrasena,
           fecha_nacimiento, consentimiento_familia_en, privacidad_aceptada_en)   -- nunca se envía a la IA
-Alumno(id, seudonimo_ia, alias, anonimo, tutor_ia_activo)
+Alumno(id, seudonimo_ia, alias, anonimo, mentor_ia_activo, personalidad_mentor, tratamiento)
 Curso(id, titulo, descripcion, nivel)
 Video(id, curso_id, titulo, youtube_id, duracion_s, orden, transcripcion, origen_transcripcion)
 Leccion(id, video_id, titulo, descripcion, inicio_s, fin_s, duracion_lectura_min, resumen, lectura, ejercicio)
@@ -79,7 +79,7 @@ Sesion(id, alumno_id, minutos, audio, estado)
 MensajeMentor(id, alumno_id, leccion_id, rol, texto_filtrado, proactivo)   -- se elimina a los 90 días
 ```
 
-Todas las tablas tienen además `creado_en` y `actualizado_en`. La contraseña solo se guarda como hash (Argon2 o bcrypt), calculado por el backend. La fecha de nacimiento no sale de `Identidad`: el backend calcula el tramo de edad y a la IA solo le llega si el alumno es menor. Las preferencias visuales (tema, tamaño del texto, forma del tutor) se guardan en el dispositivo, no en la base de datos.
+Todas las tablas tienen además `creado_en` y `actualizado_en`. La contraseña solo se guarda como hash (Argon2 o bcrypt), calculado por el backend. La fecha de nacimiento no sale de `Identidad`: el backend calcula el tramo de edad y a la IA solo le llega si el alumno es menor. La personalidad del mentor y el tratamiento (femenino, masculino o neutro) se guardan en `Alumno` porque el backend los envía a la IA. Las preferencias visuales (tema, tamaño del texto, forma del mentor) se guardan en el dispositivo, no en la base de datos.
 
 **Relaciones**
 

@@ -125,7 +125,7 @@ Aprobado el 24/11/2026 ([propuesta P3](propuestas/datos-y-privacidad.md#modelo-d
 |---|---|---|
 | Empresa | Empresas clientes de la academia | Nunca |
 | Identidad | Nombre, apellidos, email, hash de la contraseña, fecha de nacimiento, empresa, identificador externo, consentimiento de la familia y aceptación de la privacidad | Nunca. El backend calcula a partir de la fecha si el alumno es menor |
-| Alumno | Seudónimo para la IA, alias, modo anónimo y si usa el tutor con IA | Solo el seudónimo, y si es menor (calculado) |
+| Alumno | Seudónimo para la IA, alias, modo anónimo, si usa el mentor con IA, personalidad del mentor y tratamiento | El seudónimo, la personalidad, el tratamiento y si es menor (calculado) |
 | Curso, Vídeo, Lección, Concepto, Pregunta, Recurso | Contenido del curso y material preparado | Sí (es contenido de la academia) |
 | Dominio (Alumno – Concepto) | Nivel por concepto | Sí, agregado |
 | Evento, Sesión | Respuestas, vídeos vistos, sesiones | Solo eventos recientes agregados |

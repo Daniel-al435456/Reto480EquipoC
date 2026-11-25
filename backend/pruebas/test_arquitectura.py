@@ -23,7 +23,17 @@ PATRON_SECRETO = re.compile(
 )
 PREFIJOS_DE_CLAVE = ("gsk_", "sk-ant-", "ghp_", "glpat-")
 
-LLAMADAS_A_LA_IA = ("httpx", "urllib.request", "api.groq.com", "api.anthropic.com")
+#: Importaciones y direcciones que solo pueden aparecer en `app/privacidad.py`.
+#: Se buscan imports de verdad: leer una clave del entorno (`GROQ_API_KEY` en
+#: `config.py`) no es hablar con la IA, eso sí está permitido fuera del filtro.
+LLAMADAS_A_LA_IA = re.compile(
+    r"""(?ix)
+    \b (?: import | from ) \s+ (?: groq | anthropic | openai | httpx | requests | urllib ) \b
+    | \b api \. groq \. com
+    | \b api \. anthropic \. com
+    | \b openai \. com
+    """
+)
 
 PATRON_DDL = re.compile(r"\b(?:CREATE|ALTER|DROP)\s+TABLE\b", re.IGNORECASE)
 
@@ -58,16 +68,20 @@ def test_las_urls_de_los_servicios_viven_en_el_entorno() -> None:
 
 
 def test_solo_privacidad_puede_hablar_con_la_ia() -> None:
-    """SPEC §5: el filtro de privacidad es el único módulo que habla con la IA."""
+    """SPEC §5: el filtro de privacidad es el único módulo que habla con la IA.
+
+    Cazan los SDK de los proveedores (groq, anthropic, openai), los clientes
+    HTTP habituales (httpx, requests, urllib) y las URL de las API. Antes solo
+    se miraban tres cadenas y `import groq` en `servicios/` pasaba en verde.
+    """
     privilegiado = CARPETA_APP / "privacidad.py"
     culpables = []
     for ruta in _ficheros_python():
         if ruta == privilegiado:
             continue
-        fuente = _fuente(ruta)
-        for marca in LLAMADAS_A_LA_IA:
-            if marca in fuente:
-                culpables.append(f"{ruta.relative_to(RAIZ)} → {marca}")
+        coincidencia = LLAMADAS_A_LA_IA.search(_fuente(ruta))
+        if coincidencia:
+            culpables.append(f"{ruta.relative_to(RAIZ)} → {coincidencia.group(0).strip()}")
     assert not culpables, f"Llamadas a la IA fuera de privacidad.py: {', '.join(culpables)}"
 
 
@@ -98,18 +112,35 @@ def test_el_esquema_de_la_base_de_datos_solo_vive_en_migraciones() -> None:
 
 
 def test_cada_endpoint_tiene_su_prueba() -> None:
-    """AGENTS.md: pruebas con pytest, al menos una por endpoint."""
+    """AGENTS.md: pruebas con pytest, al menos una por endpoint.
+
+    Las rutas se leen de `openapi()`, API pública de FastAPI. Mirar
+    `app.routes` no sirve: desde FastAPI 0.165 las rutas montadas con
+    `include_router` se envuelven en un objeto sin `path`, así que esta
+    prueba pasaba sin revisar ningún endpoint. Una ruta con parámetro
+    (`/alumnos/{alumno_id}`) se busca como `/alumnos/<algo>` en el texto.
+    """
     from app.main import crear_app
 
     ignoradas = ("/docs", "/redoc", "/openapi.json")
-    texto_pruebas = "\n".join(
-        _fuente(ruta) for ruta in sorted(CARPETA_PRUEBAS.rglob("*.py")) if ".venv" not in ruta.parts
+    ficheros = (
+        ruta
+        for ruta in sorted(CARPETA_PRUEBAS.rglob("*.py"))
+        # Este fichero no llama a ningún endpoint: si lo leyera, cualquier ruta
+        # mencionada en su docstring parecería probada.
+        if ".venv" not in ruta.parts and ruta.name != "test_arquitectura.py"
     )
+    texto_pruebas = "\n".join(_fuente(ruta) for ruta in ficheros)
     sin_prueba = []
-    for ruta in crear_app().routes:
-        destino = getattr(ruta, "path", None)
-        if not destino or destino.startswith(ignoradas):
+    for destino in crear_app().openapi()["paths"]:
+        if destino.startswith(ignoradas):
             continue
-        if destino not in texto_pruebas:
+        patron = "/".join(
+            re.escape(parte) if not parte.startswith("{") else "[^/]+"
+            for parte in destino.split("/")
+        )
+        # La ruta tiene que aparecer tras una comilla: así solo cuenta una
+        # llamada real (`cliente.get("/salud")`), no una mención en un texto.
+        if not re.search(rf"(?<=['\"]){patron}", texto_pruebas):
             sin_prueba.append(destino)
     assert not sin_prueba, f"Endpoints sin prueba: {', '.join(sin_prueba)}"

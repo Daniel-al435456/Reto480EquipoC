@@ -1,3 +1,4 @@
+import { necesitaConsentimiento } from './edad.js';
 import { coincide } from './rutas.js';
 
 /*
@@ -11,7 +12,7 @@ export const PUBLICAS = ['/bienvenida', '/registro', '/entrar', '/legal/:pagina'
 export const ALTA = ['/edad', '/consentimiento', '/alias', '/preferencias'];
 /** Con la sesión iniciada no tiene sentido volver a la bienvenida, al registro ni al inicio de sesión. */
 export const SOLO_SIN_SESION = ['/bienvenida', '/registro', '/entrar'];
-/** Pasos del alta que no se repiten: la edad y el consentimiento solo puede cambiarlos la academia. */
+/** Pasos del alta que no se repiten: la fecha de nacimiento y el consentimiento solo puede corregirlos la academia. */
 export const SOLO_EN_ALTA = ['/edad', '/consentimiento', '/preferencias'];
 const esUna = (patrones, ruta) => patrones.some((p) => coincide(p, ruta));
 
@@ -28,10 +29,10 @@ export function rutaPermitida(estado, ruta) {
  * Adónde lleva la pestaña "Hoy": al punto en el que se quedó el alumno.
  * Sin sesión → bienvenida; alta a medias → el paso que falte; sin curso → catálogo; sin test → test inicial; si no, la lección de hoy.
  */
-export function destinoInicio(estado) {
+export function destinoInicio(estado, hoy = new Date()) {
   if (!estado.cuenta || !estado.sesionIniciada) return '/bienvenida';
-  if (!estado.tramoEdad) return '/edad';
-  if (estado.tramoEdad === 'menor14' && !estado.consentimientoFamilia) return '/consentimiento';
+  if (!estado.fechaNacimiento) return '/edad';
+  if (necesitaConsentimiento(estado, hoy)) return '/consentimiento';
   if (!estado.alias) return '/alias';
   if (!estado.altaCompleta) return '/preferencias';
   if (!estado.cursoId) return '/cursos';

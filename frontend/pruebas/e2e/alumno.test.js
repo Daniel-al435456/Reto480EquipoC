@@ -44,17 +44,25 @@ async function crearCuenta(pagina) {
   await pagina.getByLabel('Contraseña', { exact: true }).fill('clave1234');
   await pagina.getByLabel(/política de privacidad/).check();
   await pagina.getByRole('button', { name: 'Crear cuenta' }).last().click();
-  await pagina.getByText('¿Cuántos años tienes?').waitFor();
+  await pagina.getByText('¿Cuándo naciste?').waitFor();
 }
 
-/** Completa el alta de un alumno adulto. */
-async function completarAlta(pagina) {
-  await crearCuenta(pagina);
-  await pagina.getByLabel('18 años o más').check();
+/** Indica la fecha de nacimiento (AAAA-MM-DD) y continúa. */
+async function indicarNacimiento(pagina, fecha) {
+  await pagina.getByLabel('Fecha de nacimiento').fill(fecha);
   await boton(pagina, 'Continuar').click();
+}
+
+/** Completa el alta de un alumno adulto. En las preferencias se puede elegir el tutor. */
+async function completarAlta(pagina, { personalidad, tratamiento } = {}) {
+  await crearCuenta(pagina);
+  await indicarNacimiento(pagina, '1990-05-10');
   await pagina.getByText('¿Cómo quieres que te llamemos?').waitFor();
   await boton(pagina, 'Continuar').click();
   await pagina.getByText('Hazla a tu medida').waitFor();
+  // El pie fijo con el botón puede tapar las opciones: se pulsan sin depender de la posición en pantalla.
+  if (personalidad) await pagina.getByRole('radio', { name: new RegExp(`^${personalidad}`) }).dispatchEvent('click');
+  if (tratamiento) await pagina.getByRole('radio', { name: tratamiento, exact: true }).dispatchEvent('click');
   await boton(pagina, 'Empezar a aprender').click();
   await pagina.getByText('Elige un curso').waitFor();
 }
@@ -81,12 +89,36 @@ describe('alta del alumno', () => {
   it('un menor de 14 años necesita el consentimiento de su familia para continuar', async () => {
     const { contexto, pagina } = await abrir();
     await crearCuenta(pagina);
-    await pagina.getByLabel('Menos de 14 años').check();
-    await boton(pagina, 'Continuar').click();
+    await indicarNacimiento(pagina, '2015-03-01');
     await pagina.getByText('Necesitamos el permiso de tu familia').waitFor();
     await pagina.goto(servidor.url + '#/progreso');
     await pagina.waitForTimeout(300);
     assert.equal(await ruta(pagina), '/consentimiento');
+    await contexto.close();
+  });
+});
+
+describe('alta: fecha de nacimiento', () => {
+  it('no acepta una fecha de nacimiento futura', async () => {
+    const { contexto, pagina } = await abrir();
+    await crearCuenta(pagina);
+    await indicarNacimiento(pagina, '2099-01-01');
+    await pagina.getByText('La fecha no puede ser posterior a hoy.').waitFor();
+    assert.equal(await ruta(pagina), '/edad');
+    await contexto.close();
+  });
+});
+
+describe('tutor', () => {
+  it('responde con la personalidad y el trato elegidos en el alta', async () => {
+    const { contexto, pagina, errores } = await abrir();
+    await completarAlta(pagina, { personalidad: 'Gracioso', tratamiento: 'Femenino' });
+    await pagina.goto(servidor.url + '#/tutor');
+    await pagina.locator('#pregunta-tutor').fill('¿Qué es una variable?');
+    await pagina.keyboard.press('Enter');
+    // El texto aparece letra a letra; el lector de pantalla recibe la respuesta completa desde el principio.
+    await pagina.getByText(/Cuac, esta me la sé/).first().waitFor({ state: 'attached', timeout: 15000 });
+    assert.deepEqual(errores, []);
     await contexto.close();
   });
 });

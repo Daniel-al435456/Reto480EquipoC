@@ -20,6 +20,7 @@ const OCULTO_EN = [
   // Formularios del perfil: el botón taparía los campos.
   '/perfil/cuenta',
   '/perfil/apariencia',
+  '/perfil/tutor',
   '/perfil/seguridad',
   '/perfil/privacidad',
   '/ajustes',

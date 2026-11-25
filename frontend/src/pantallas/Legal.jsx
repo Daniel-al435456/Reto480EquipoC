@@ -29,8 +29,8 @@ const PAGINAS = {
             área. Sirven para darte acceso y gestionar tu formación.
           </li>
           <li>
-            <strong>Tramo de edad:</strong> solo si eres menor de 14 años, de 14 a 17 o mayor de edad, nunca tu edad
-            exacta. Sirve para proteger tus datos y adaptar el tono del tutor.
+            <strong>Fecha de nacimiento:</strong> para saber si eres menor de 14 años, de 14 a 17 o mayor de edad, y
+            actualizarlo solo cuando cumplas años. Sirve para proteger tus datos y adaptar el tono del tutor.
           </li>
           <li>
             <strong>Datos de aprendizaje:</strong> respuestas al test y a las actividades, lecciones completadas, tiempo
@@ -44,8 +44,9 @@ const PAGINAS = {
         <h2>El tutor con inteligencia artificial</h2>
         <p>
           El tutor usa un servicio de IA externo. Antes de enviarle nada, eliminamos tu identidad: solo recibe un alias,
-          si eres menor de edad o no, tu nivel en cada tema y el texto de tu pregunta, del que quitamos correos,
-          teléfonos o nombres que escribas. Nunca recibe tu nombre, tus apellidos ni tu correo.
+          si eres menor de edad o no, la personalidad que has elegido para el tutor, cómo quieres que se dirija a ti,
+          tu nivel en cada tema y el texto de tu pregunta, del que quitamos correos, teléfonos o nombres que escribas.
+          Nunca recibe tu nombre, tus apellidos, tu correo ni tu fecha de nacimiento.
         </p>
         <p>
           El proveedor ({PENDIENTE('proveedor definitivo')}) no usa estos datos para entrenar sus modelos, según su

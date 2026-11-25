@@ -1,3 +1,4 @@
+import { tramoDe } from '../api/edad.js';
 import { useState } from 'react';
 import { generarAlias } from '../api/perfil.js';
 import { AvatarPixel } from '../componentes/AvatarPixel.jsx';
@@ -31,7 +32,7 @@ export function Alias({ navegar }) {
     <Pantalla
       titulo="¿Cómo quieres que te llamemos?"
       subtitulo="Con el modo anónimo, los tutores te ven con tu alias. Tu nombre real nunca se envía a la IA."
-      alVolver={() => navegar(desdePerfil ? '/perfil/cuenta' : estado.tramoEdad === 'menor14' ? '/consentimiento' : '/edad')}
+      alVolver={() => navegar(desdePerfil ? '/perfil/cuenta' : tramoDe(estado) === 'menor14' ? '/consentimiento' : '/edad')}
       progreso={desdePerfil ? undefined : { valor: 3, maximo: PASOS_ALTA, etiqueta: `Paso 3 de ${PASOS_ALTA}` }}
       pie={
         <Boton anchoCompleto disabled={!aliasLimpio} onClick={continuar}>

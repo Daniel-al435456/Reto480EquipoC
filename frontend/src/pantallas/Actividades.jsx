@@ -4,7 +4,8 @@ import { Boton } from '../componentes/Boton.jsx';
 import { IconoTutor } from '../componentes/Iconos.jsx';
 import { Pato } from '../componentes/Pato.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { esMenor, useEstado } from '../hooks/useEstado.jsx';
+import { contextoIA } from '../api/tutor.js';
+import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './Actividades.module.css';
 
@@ -47,7 +48,7 @@ export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, a
     } else {
       fallos.current += 1;
       if (fallos.current === FALLOS_PARA_AYUDA && estado.tutorIA) {
-        const texto = await mensajeProactivoTutor(leccion, { cursoId: estado.cursoId, esMenor: esMenor(estado) });
+        const texto = await mensajeProactivoTutor(leccion, { cursoId: estado.cursoId, ...contextoIA(estado) });
         anadirMensaje({ autor: 'tutor', texto, proactivo: true });
         registrarEvento('tutor_proactivo', { leccionId: leccion.id, senal: 'fallos_repetidos' });
         setPistaTutor(texto);

@@ -8,6 +8,8 @@ import { FilaAjuste } from '../componentes/FilaAjuste.jsx';
 import { IconoMas } from '../componentes/Iconos.jsx';
 import { Interruptor } from '../componentes/Interruptor.jsx';
 import { PieLegal } from '../componentes/PieLegal.jsx';
+import { tramoDe } from '../api/edad.js';
+import { PERSONALIDADES } from '../api/tutor.js';
 import { esMenor, useEstado } from '../hooks/useEstado.jsx';
 import { useTituloPantalla } from '../hooks/useTituloPantalla.js';
 import comun from './comun.module.css';
@@ -15,7 +17,7 @@ import estilos from './Perfil.module.css';
 
 const NOMBRE_TUTOR = { pato: 'Pato', pata: 'Pata', ninguno: 'Solo texto' };
 
-/** Perfil del alumno, organizado por secciones: cuenta, apariencia, seguridad, privacidad y cursos. */
+/** Perfil del alumno, organizado por secciones: cuenta, tutor, apariencia, seguridad, privacidad y cursos. */
 export function Perfil({ navegar }) {
   const { estado, cambiarAnonimo, cerrarSesion, registrarEvento } = useEstado();
   const encabezado = useTituloPantalla('Perfil');
@@ -52,7 +54,7 @@ export function Perfil({ navegar }) {
 
       {esMenor(estado) && (
         <p className={estilos.menor}>
-          {estado.tramoEdad === 'menor14' && estado.consentimientoFamilia
+          {tramoDe(estado) === 'menor14' && estado.consentimientoFamilia
             ? `Cuenta de menor de 14 años · consentimiento de tu familia registrado el ${new Date(
                 estado.consentimientoFamilia,
               ).toLocaleDateString('es-ES')}.`
@@ -103,7 +105,12 @@ export function Perfil({ navegar }) {
         <h2 id="titulo-ajustes">Ajustes</h2>
         <div className={estilos.ajustes}>
           <FilaAjuste texto="Mi cuenta" valor="Datos y alias" alPulsar={() => navegar('/perfil/cuenta')} />
-          <FilaAjuste texto="Apariencia" valor={`${NOMBRE_TUTOR[ajustes.tutor]} · ${tema}`} alPulsar={() => navegar('/perfil/apariencia')} />
+          <FilaAjuste
+            texto="Tu tutor"
+            valor={`${NOMBRE_TUTOR[ajustes.tutor]} · ${PERSONALIDADES.find((p) => p.id === estado.personalidadTutor)?.nombre ?? ''}`}
+            alPulsar={() => navegar('/perfil/tutor')}
+          />
+          <FilaAjuste texto="Apariencia" valor={tema} alPulsar={() => navegar('/perfil/apariencia')} />
           <FilaAjuste
             texto="Modo de estudio habitual"
             valor={`${estado.modo.minutos} min · ${estado.modo.audio ? 'con audio' : 'sin audio'}`}

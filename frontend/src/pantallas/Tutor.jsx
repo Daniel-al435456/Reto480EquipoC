@@ -5,7 +5,8 @@ import { IconoCerrar, IconoEnviar, IconoTutor } from '../componentes/Iconos.jsx'
 import { Pato } from '../componentes/Pato.jsx';
 import { TextoTecleado } from '../componentes/TextoTecleado.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { esMenor, useEstado } from '../hooks/useEstado.jsx';
+import { contextoIA } from '../api/tutor.js';
+import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './Tutor.module.css';
 
@@ -37,7 +38,7 @@ export function Tutor({ navegar }) {
     setCaraPato(null);
   }, []);
   const ultimoTutor = [...estado.mensajesTutor].reverse().find((m) => m.autor === 'tutor');
-  const datosConsulta = { cursoId: estado.cursoId, leccionId: contexto?.leccionId, esMenor: esMenor(estado) };
+  const datosConsulta = { cursoId: estado.cursoId, leccionId: contexto?.leccionId, ...contextoIA(estado) };
   const [texto, setTexto] = useState('');
   const [esperando, setEsperando] = useState(false);
   const finConversacion = useRef(null);

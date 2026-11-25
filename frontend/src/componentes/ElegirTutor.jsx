@@ -9,7 +9,7 @@ const OPCIONES = [
   { valor: 'ninguno', texto: 'Solo texto' },
 ];
 
-/** Elección de cómo aparece el tutor: pato, pata o solo texto. Se usa en el alta y en Apariencia. */
+/** Elección de cómo aparece el tutor: pato, pata o solo texto. Se usa en el alta y en Perfil → Tu tutor. */
 export function ElegirTutor() {
   const { estado, cambiarAjuste } = useEstado();
   return (

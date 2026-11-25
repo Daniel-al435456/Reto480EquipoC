@@ -15,9 +15,15 @@ function descargarDatos(estado) {
     cuenta,
     alias: estado.alias,
     modoAnonimo: estado.anonimo,
-    tramoEdad: estado.tramoEdad,
+    fechaNacimiento: estado.fechaNacimiento,
     consentimientoFamilia: estado.consentimientoFamilia,
-    preferencias: { ...estado.ajustes, tutorIA: estado.tutorIA, modoEstudio: estado.modo },
+    preferencias: {
+      ...estado.ajustes,
+      tutorIA: estado.tutorIA,
+      personalidadTutor: estado.personalidadTutor,
+      tratamiento: estado.tratamiento,
+      modoEstudio: estado.modo,
+    },
     progreso: { cursoId: estado.cursoId, dominio: estado.dominio, completadas: estado.completadas },
     conversacionTutor: estado.mensajesTutor,
     eventos: estado.eventos,
@@ -52,10 +58,11 @@ export function PerfilPrivacidad({ navegar }) {
         <h2 id="titulo-datos-ia">Qué datos usa la IA</h2>
         <p>
           <strong>Sí recibe:</strong> tu alias, {esMenor(estado) ? 'que eres menor de edad (para adaptar el tono), ' : ''}
-          tu nivel en cada tema, tus respuestas y el texto de tus preguntas al tutor, sin correos, teléfonos ni nombres.
+          la personalidad del tutor y cómo quieres que se dirija a ti, tu nivel en cada tema, tus respuestas y el texto de
+          tus preguntas al tutor, sin correos, teléfonos ni nombres.
         </p>
         <p>
-          <strong>Nunca recibe:</strong> tu nombre, apellidos, correo, empresa ni tu edad exacta.
+          <strong>Nunca recibe:</strong> tu nombre, apellidos, correo, empresa ni tu fecha de nacimiento.
         </p>
         <p className={comun.secundario}>Las conversaciones con el tutor se guardan 90 días.</p>
       </section>

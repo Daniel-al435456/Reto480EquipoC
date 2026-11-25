@@ -49,7 +49,7 @@ export function nombreCorto(estado) {
 
 /**
  * Datos de la cuenta que el alumno puede cambiar desde el perfil. El correo (con el que inicia sesión), la empresa,
- * el tramo de edad y el consentimiento de la familia se fijan en el alta y solo puede corregirlos la academia.
+ * la fecha de nacimiento y el consentimiento de la familia se fijan en el alta y solo puede corregirlos la academia.
  */
 export const CAMPOS_EDITABLES = ['nombre', 'apellidos', 'puesto'];
 

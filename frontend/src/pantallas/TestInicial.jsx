@@ -3,7 +3,8 @@ import { evaluarTestInicial, obtenerCurso, obtenerTestInicial } from '../api/cli
 import { leccionesPendientes } from '../api/planificador.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { esMenor, useEstado } from '../hooks/useEstado.jsx';
+import { contextoIA } from '../api/tutor.js';
+import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './TestInicial.module.css';
 
@@ -66,7 +67,7 @@ export function TestInicial({ cursoId, modo, navegar }) {
         return;
       }
       setFase('evaluando');
-      const resultado = await evaluarTestInicial(cursoId, respuestas, { esMenor: esMenor(estado) });
+      const resultado = await evaluarTestInicial(cursoId, respuestas, contextoIA(estado));
       setExplicacionIA(resultado.origen === 'api' ? resultado.mensaje : null);
       guardarTest(resultado.dominio);
       registrarEvento('test_completado', {

@@ -1,15 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { cambiosPermitidos } from '../api/cuenta.js';
+import { esMenor } from '../api/edad.js';
+import { PERSONALIDAD_INICIAL, TRATAMIENTO_INICIAL } from '../api/tutor.js';
+
+export { esMenor };
 
 /*
- * Estado del alumno en el dispositivo: cuenta y sesión, ajustes de visualización, tramo de edad y consentimiento familiar,
+ * Estado del alumno en el dispositivo: cuenta y sesión, ajustes de visualización, fecha de nacimiento y consentimiento familiar, tutor,
  * perfil (alias y modo anónimo), curso elegido, resultado del test, progreso,
  * modo de estudio, sesión en curso, conversación con el tutor y eventos de aprendizaje.
  * Se guarda en el almacenamiento local para no perder el progreso al cerrar la app.
  * Cuando exista backend, la cuenta y la sesión se gestionarán en el servidor y los eventos se enviarán a la API.
  */
 
-const CLAVE = 'reto480-estado-v2';
+const CLAVE = 'reto480-estado-v3';
 
 const MENSAJE_INICIAL_TUTOR = {
   id: 'bienvenida',
@@ -38,9 +42,16 @@ const estadoInicial = {
   altaCompleta: false,
   /** El alumno puede desactivar el tutor con IA (propuesta P3, "Base legal"). */
   tutorIA: true,
+  /** Carácter del tutor: amable | motivador | gracioso | estricto (api/tutor.js). */
+  personalidadTutor: PERSONALIDAD_INICIAL,
+  /** Cómo se dirige el tutor al alumno: femenino | masculino | neutro. */
+  tratamiento: TRATAMIENTO_INICIAL,
   ajustes: AJUSTES_INICIALES,
-  /** adulto | 14a17 | menor14. Solo el tramo, nunca la edad exacta (propuesta P3). */
-  tramoEdad: null,
+  /**
+   * Fecha de nacimiento (AAAA-MM-DD). Con ella el tramo de edad se actualiza solo al cumplir 14 o 18 años
+   * (api/edad.js). Nunca se envía a la IA: solo si el alumno es menor o no.
+   */
+  fechaNacimiento: null,
   /** Fecha en que se registró el consentimiento de la familia (menores de 14 años). */
   consentimientoFamilia: null,
   alias: '',
@@ -60,8 +71,6 @@ const estadoInicial = {
   eventos: [],
 };
 
-/** El alumno es menor de edad si su tramo no es adulto. */
-export const esMenor = (estado) => estado.tramoEdad === '14a17' || estado.tramoEdad === 'menor14';
 
 function cargar() {
   try {
@@ -98,13 +107,8 @@ export function EstadoProvider({ children }) {
     () => ({
       registrarEvento,
       cambiarAjuste: (clave, valor) => setEstado((e) => ({ ...e, ajustes: { ...e.ajustes, [clave]: valor } })),
-      // El tramo de edad y el consentimiento solo se indican durante el alta; después solo puede cambiarlos la academia.
-      guardarEdad: (tramoEdad) =>
-        setEstado((e) =>
-          e.altaCompleta
-            ? e
-            : { ...e, tramoEdad, consentimientoFamilia: tramoEdad === 'menor14' ? e.consentimientoFamilia : null },
-        ),
+      // La fecha de nacimiento y el consentimiento solo se indican durante el alta; después solo puede corregirlos la academia.
+      guardarFechaNacimiento: (fechaNacimiento) => setEstado((e) => (e.altaCompleta ? e : { ...e, fechaNacimiento })),
       registrarConsentimiento: () =>
         setEstado((e) => (e.altaCompleta ? e : { ...e, consentimientoFamilia: new Date().toISOString() })),
       ponerContextoTutor: (contexto) => setEstado((e) => ({ ...e, contextoTutor: contexto })),
@@ -120,6 +124,8 @@ export function EstadoProvider({ children }) {
       cerrarSesion: () => setEstado((e) => ({ ...e, sesionIniciada: false, sesion: null, contextoTutor: null })),
       completarAlta: () => setEstado((e) => ({ ...e, altaCompleta: true })),
       cambiarTutorIA: (tutorIA) => setEstado((e) => ({ ...e, tutorIA })),
+      cambiarPersonalidadTutor: (personalidadTutor) => setEstado((e) => ({ ...e, personalidadTutor })),
+      cambiarTratamiento: (tratamiento) => setEstado((e) => ({ ...e, tratamiento })),
       guardarPerfil: ({ alias, anonimo }) => setEstado((e) => ({ ...e, alias, anonimo })),
       cambiarAnonimo: (anonimo) => setEstado((e) => ({ ...e, anonimo })),
       seleccionarCurso: (cursoId) =>
@@ -132,8 +138,10 @@ export function EstadoProvider({ children }) {
                 sesionIniciada: e.sesionIniciada,
                 altaCompleta: e.altaCompleta,
                 tutorIA: e.tutorIA,
+                personalidadTutor: e.personalidadTutor,
+                tratamiento: e.tratamiento,
                 ajustes: e.ajustes,
-                tramoEdad: e.tramoEdad,
+                fechaNacimiento: e.fechaNacimiento,
                 consentimientoFamilia: e.consentimientoFamilia,
                 alias: e.alias,
                 anonimo: e.anonimo,

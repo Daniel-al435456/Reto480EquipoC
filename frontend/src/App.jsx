@@ -18,6 +18,7 @@ import { Entrar } from './pantallas/Entrar.jsx';
 import { Legal } from './pantallas/Legal.jsx';
 import { PerfilCuenta } from './pantallas/PerfilCuenta.jsx';
 import { PerfilPrivacidad } from './pantallas/PerfilPrivacidad.jsx';
+import { PerfilTutor } from './pantallas/PerfilTutor.jsx';
 import { PerfilSeguridad } from './pantallas/PerfilSeguridad.jsx';
 import { Preferencias } from './pantallas/Preferencias.jsx';
 import { Registro } from './pantallas/Registro.jsx';
@@ -56,6 +57,7 @@ const RUTAS = [
   { patron: '/progreso', Componente: Progreso },
   { patron: '/perfil', Componente: Perfil },
   { patron: '/perfil/cuenta', Componente: PerfilCuenta },
+  { patron: '/perfil/tutor', Componente: PerfilTutor },
   { patron: '/perfil/apariencia', Componente: Ajustes },
   { patron: '/perfil/seguridad', Componente: PerfilSeguridad },
   { patron: '/perfil/privacidad', Componente: PerfilPrivacidad },

@@ -4,10 +4,11 @@ import { describe, it } from 'node:test';
 import { destinoInicio, rutaPermitida } from '../../src/api/acceso.js';
 
 const cuenta = { email: 'lucia@acme.es', empresa: 'Acme' };
+const HOY = new Date(2026, 10, 25);
 const alumnoCompleto = {
   cuenta,
   sesionIniciada: true,
-  tramoEdad: 'adulto',
+  fechaNacimiento: '1990-05-10',
   alias: 'Rayo amable',
   altaCompleta: true,
   cursoId: 'python-desde-cero',
@@ -23,19 +24,25 @@ describe('destinoInicio', () => {
   it('recorre los pasos del alta en orden', () => {
     const base = { cuenta, sesionIniciada: true };
     assert.equal(destinoInicio(base), '/edad');
-    assert.equal(destinoInicio({ ...base, tramoEdad: 'adulto' }), '/alias');
-    assert.equal(destinoInicio({ ...base, tramoEdad: 'adulto', alias: 'X' }), '/preferencias');
+    assert.equal(destinoInicio({ ...base, fechaNacimiento: '1990-05-10' }), '/alias');
+    assert.equal(destinoInicio({ ...base, fechaNacimiento: '1990-05-10', alias: 'X' }), '/preferencias');
   });
 
   it('un menor de 14 años no avanza sin el consentimiento de su familia', () => {
-    const menor = { cuenta, sesionIniciada: true, tramoEdad: 'menor14', alias: 'X', altaCompleta: true };
-    assert.equal(destinoInicio(menor), '/consentimiento');
-    assert.equal(destinoInicio({ ...menor, consentimientoFamilia: '2026-11-25T10:00:00Z' }), '/cursos');
+    const menor = { cuenta, sesionIniciada: true, fechaNacimiento: '2014-01-15', alias: 'X', altaCompleta: true };
+    assert.equal(destinoInicio(menor, HOY), '/consentimiento');
+    assert.equal(destinoInicio({ ...menor, consentimientoFamilia: '2026-11-25T10:00:00Z' }, HOY), '/cursos');
+  });
+
+  it('al cumplir 14 años deja de necesitar el consentimiento', () => {
+    const alumno = { cuenta, sesionIniciada: true, fechaNacimiento: '2012-11-26', alias: 'X', altaCompleta: true };
+    assert.equal(destinoInicio(alumno, new Date(2026, 10, 25)), '/consentimiento');
+    assert.equal(destinoInicio(alumno, new Date(2026, 10, 26)), '/cursos');
   });
 
   it('entre 14 y 17 años no necesita consentimiento', () => {
-    const alumno = { cuenta, sesionIniciada: true, tramoEdad: '14a17', alias: 'X', altaCompleta: true };
-    assert.equal(destinoInicio(alumno), '/cursos');
+    const alumno = { cuenta, sesionIniciada: true, fechaNacimiento: '2010-03-01', alias: 'X', altaCompleta: true };
+    assert.equal(destinoInicio(alumno, HOY), '/cursos');
   });
 
   it('con el alta completa lleva al curso, al test o a la lección de hoy', () => {

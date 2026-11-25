@@ -1,5 +1,5 @@
 import { Boton } from '../componentes/Boton.jsx';
-import { ElegirTutor } from '../componentes/ElegirTutor.jsx';
+import { AjustesTutor } from '../componentes/AjustesTutor.jsx';
 import { Interruptor } from '../componentes/Interruptor.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
 import { useEstado } from '../hooks/useEstado.jsx';
@@ -24,7 +24,11 @@ export function Preferencias({ navegar }) {
 
   const terminar = () => {
     completarAlta();
-    registrarEvento('alta_completada', { tutor: ajustes.tutor, tutorIA: estado.tutorIA });
+    registrarEvento('alta_completada', {
+      tutor: ajustes.tutor,
+      personalidad: estado.personalidadTutor,
+      tutorIA: estado.tutorIA,
+    });
     navegar('/');
   };
 
@@ -40,7 +44,7 @@ export function Preferencias({ navegar }) {
         </Boton>
       }
     >
-      <ElegirTutor />
+      <AjustesTutor />
 
       <fieldset className={comun.grupo}>
         <legend>Tema</legend>

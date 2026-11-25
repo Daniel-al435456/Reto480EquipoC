@@ -2,28 +2,72 @@
  * Capa de acceso a datos.
  *
  * Las pantallas solo llaman a estas funciones, nunca a fetch directamente.
- * Hoy devuelven datos de ejemplo y respuestas simuladas; cuando el backend esté listo,
- * basta con sustituir el cuerpo de cada función por una llamada a la API
- * (la URL base se leerá de import.meta.env.VITE_API_URL).
  *
- * Las funciones de IA (evaluación del test, tutor) son SIMULADAS:
- * la IA está pendiente de decisión del equipo (propuesta P1).
+ * - Si está definida la variable de entorno VITE_API_URL (dirección del backend FastAPI),
+ *   las funciones llaman a la API.
+ * - Si no está definida, o si el backend no responde, usan los datos de ejemplo y las respuestas
+ *   simuladas de este archivo. Así la aplicación nunca se queda sin respuesta (por ejemplo, en la demo).
+ *
+ * La IA real está en el backend (propuesta P1): Claude prepara el contenido y Groq redacta el diagnóstico
+ * y responde como mentor. El frontend nunca llama a la IA directamente ni conoce sus claves.
+ * Contrato de la API: véase frontend/README.md, "Conexión con el backend".
  */
 import { cursos } from './datos.js';
 import { planificarSesion as planificar } from './planificador.js';
 
 const esperar = (ms) => new Promise((resolver) => setTimeout(resolver, ms));
 
-export async function obtenerCursos() {
-  await esperar(150);
-  return cursos.map(({ id, titulo, descripcion, nivel, lecciones }) => ({
-    id,
-    titulo,
-    descripcion,
-    nivel,
-    numeroLecciones: lecciones.length,
-  }));
+const API = ((import.meta.env && import.meta.env.VITE_API_URL) || '').replace(/\/$/, '');
+const TIEMPO_MAXIMO_MS = 8000;
+
+/** true si la aplicación está conectada a un backend (y, por tanto, a la IA real). */
+export const usaBackend = Boolean(API);
+
+/**
+ * Llama a la API y, si no hay backend o falla, ejecuta la versión simulada.
+ * La respuesta indica de dónde viene, para que la interfaz pueda avisar de que la ha generado la IA.
+ */
+async function conRespaldo(ruta, cuerpo, simulado) {
+  if (!API) return { ...(await simulado()), origen: 'simulado' };
+  const control = new AbortController();
+  const temporizador = setTimeout(() => control.abort(), TIEMPO_MAXIMO_MS);
+  try {
+    const respuesta = await fetch(`${API}${ruta}`, {
+      method: cuerpo ? 'POST' : 'GET',
+      headers: cuerpo ? { 'Content-Type': 'application/json' } : undefined,
+      body: cuerpo ? JSON.stringify(cuerpo) : undefined,
+      signal: control.signal,
+    });
+    if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+    return { ...(await respuesta.json()), origen: 'api' };
+  } catch (error) {
+    console.warn(`Backend no disponible en ${ruta}; se usa el modo simulado.`, error);
+    return { ...(await simulado()), origen: 'simulado' };
+  } finally {
+    clearTimeout(temporizador);
+  }
 }
+
+export async function obtenerCursos() {
+  const { cursos: lista } = await conRespaldo('/api/cursos', null, async () => {
+    await esperar(150);
+    return {
+      cursos: cursos.map(({ id, titulo, descripcion, nivel, lecciones }) => ({
+        id,
+        titulo,
+        descripcion,
+        nivel,
+        numeroLecciones: lecciones.length,
+      })),
+    };
+  });
+  return lista;
+}
+
+/*
+ * En el prototipo, la estructura del curso (lecciones, actividades) se lee de datos.js de forma síncrona.
+ * Con el backend, se cargará al elegir el curso y se guardará en el estado.
+ */
 
 export function obtenerCurso(id) {
   return cursos.find((c) => c.id === id) ?? null;
@@ -34,15 +78,25 @@ export function obtenerLeccion(cursoId, leccionId) {
 }
 
 export async function obtenerTestInicial(cursoId) {
-  await esperar(150);
-  return obtenerCurso(cursoId)?.testInicial ?? [];
+  const { preguntas } = await conRespaldo(`/api/cursos/${cursoId}/test`, null, async () => {
+    await esperar(150);
+    return { preguntas: obtenerCurso(cursoId)?.testInicial ?? [] };
+  });
+  return preguntas;
 }
 
 /**
- * Evalúa el test inicial. La puntuación es determinista: cada acierto marca
- * la lección como dominada. El mensaje para el alumno es simulado (IA pendiente).
+ * Evalúa el test inicial. La puntuación es determinista: cada acierto marca la lección como dominada.
+ * Con backend, la explicación la redacta la IA (agente Diagnóstico); sin backend, una plantilla.
+ * Devuelve { dominio, mensaje, origen }.
  */
-export async function evaluarTestInicial(cursoId, respuestas) {
+export function evaluarTestInicial(cursoId, respuestas, contexto = {}) {
+  return conRespaldo(`/api/cursos/${cursoId}/test/evaluacion`, { respuestas, ...contexto }, () =>
+    evaluarTestSimulado(cursoId, respuestas),
+  );
+}
+
+async function evaluarTestSimulado(cursoId, respuestas) {
   await esperar(500);
   const curso = obtenerCurso(cursoId);
   const dominio = {};
@@ -71,39 +125,70 @@ export function planificarSesion(cursoId, modo, dominio, completadas) {
  * Corrige una respuesta escrita comprobando palabras clave (simulado).
  * Con IA, se sustituiría por una corrección que entienda respuestas equivalentes.
  */
-export async function corregirRespuestaEscrita(actividad, texto) {
-  await esperar(400);
-  const normalizado = normalizar(texto);
-  const faltan = actividad.palabrasClave.filter((p) => !normalizado.includes(normalizar(p)));
-  return { correcta: faltan.length === 0, solucion: actividad.solucion };
+export function corregirRespuestaEscrita(actividad, texto) {
+  return conRespaldo('/api/actividades/correccion', { actividadId: actividad.id, texto }, async () => {
+    await esperar(400);
+    const normalizado = normalizar(texto);
+    const faltan = actividad.palabrasClave.filter((p) => !normalizado.includes(normalizar(p)));
+    return { correcta: faltan.length === 0, solucion: actividad.solucion };
+  });
 }
 
-/** Mensaje proactivo del tutor ante una señal de bloqueo (simulado). */
-export async function mensajeProactivoTutor(leccion) {
-  await esperar(300);
-  return `Veo que «${leccion.titulo}» se te está resistiendo. Te lo cuento de otra forma: ${leccion.resumen} ¿Lo repasamos juntos?`;
+/**
+ * Mensaje proactivo del tutor ante una señal de bloqueo.
+ * contexto: { cursoId, alias, esMenor }. Devuelve el texto.
+ */
+export async function mensajeProactivoTutor(leccion, contexto = {}) {
+  const { texto } = await conRespaldo(
+    '/api/mentor/proactivo',
+    { ...contexto, leccionId: leccion.id, senal: 'bloqueo' },
+    async () => {
+      await esperar(300);
+      return {
+        texto: `Veo que «${leccion.titulo}» se te está resistiendo. Te lo cuento de otra forma: ${leccion.resumen} ¿Lo repasamos juntos?`,
+      };
+    },
+  );
+  return texto;
 }
 
-/** Respuesta del tutor a una consulta del alumno (simulada). */
-export async function preguntarTutor(texto, cursoId) {
+/**
+ * Respuesta del tutor (agente Mentor) a una consulta del alumno.
+ * contexto: { cursoId, leccionId, alias, esMenor }. leccionId es la lección de la que se habla, si la hay.
+ * Devuelve { texto, derivado, origen }.
+ */
+export function preguntarTutor(texto, contexto = {}) {
+  return conRespaldo('/api/mentor/mensaje', { ...contexto, texto }, () => respuestaTutorSimulada(texto, contexto));
+}
+
+async function respuestaTutorSimulada(texto, { cursoId, leccionId }) {
   await esperar(700);
   const curso = obtenerCurso(cursoId) ?? cursos[0];
   const consulta = normalizar(texto);
-  const leccion = curso.lecciones.find(
-    (l) => consulta.includes(normalizar(l.concepto)) || consulta.includes(normalizar(l.id)),
-  );
+  const leccion =
+    curso.lecciones.find((l) => consulta.includes(normalizar(l.concepto)) || consulta.includes(normalizar(l.id))) ??
+    curso.lecciones.find((l) => l.id === leccionId);
   if (leccion) {
-    return `Sobre «${leccion.titulo}»: ${leccion.resumen} Si quieres, puedes repasarlo en la lección correspondiente.`;
+    return {
+      texto: `Sobre «${leccion.titulo}»: ${leccion.resumen} Si quieres, puedes repasarlo en la lección correspondiente.`,
+    };
   }
   if (consulta.includes('ejemplo')) {
-    return 'Un ejemplo sencillo: edad = 18 crea una variable, y print(edad) muestra su valor por pantalla.';
+    return { texto: 'Un ejemplo sencillo: edad = 18 crea una variable, y print(edad) muestra su valor por pantalla.' };
   }
-  return 'Buena pregunta. ¿Me dices de qué tema es? Por ejemplo: variables, condicionales, bucles, listas o funciones. Si prefieres, puedes pedir ayuda a un tutor.';
+  return {
+    texto:
+      'Buena pregunta. ¿Me dices de qué tema es? Por ejemplo: variables, condicionales, bucles, listas o funciones. Si prefieres, puedes pedir ayuda a un tutor.',
+  };
 }
 
-export async function solicitarTutorHumano() {
-  await esperar(400);
-  return 'He avisado a tu tutor. Te responderá lo antes posible.';
+/** Deriva la conversación a un tutor humano. Devuelve el texto de confirmación. */
+export async function solicitarTutorHumano(contexto = {}) {
+  const { texto } = await conRespaldo('/api/mentor/derivacion', contexto, async () => {
+    await esperar(400);
+    return { texto: 'He avisado a tu tutor. Te responderá lo antes posible.' };
+  });
+  return texto;
 }
 
 function normalizar(texto) {

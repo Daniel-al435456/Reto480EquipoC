@@ -60,12 +60,44 @@
   --alto-boton: 3.5rem;
   --ancho-contenido: 40rem;
   --alto-barra-inferior: 4.5rem;
+  --ancho-menu: 15rem; /* menú lateral en escritorio */
   --duracion: 180ms;
 }
 
-/* Modo oscuro: "Grafito 480" oscuro, fiel a la web de 480. */
+/*
+ * Modo oscuro: "Grafito 480" oscuro, fiel a la web de 480.
+ * Se aplica si el sistema está en oscuro (salvo que el alumno elija "claro" en sus ajustes)
+ * o si el alumno elige "oscuro" en sus ajustes.
+ */
+:root[data-tema='oscuro'] {
+  color-scheme: dark;
+  --color-fondo: #1f2222;
+  --color-superficie: #2a2d2d;
+  --color-superficie-suave: #3a3d3d;
+  --color-texto: #ffffff;
+  --color-texto-medio: #d5dada;
+  --color-texto-suave: #b4baba;
+  --color-borde: #3d4141;
+  --color-borde-fuerte: #5a5f5f;
+  --color-pendiente: #4d4d4d;
+  --color-acento-suave: #1c3b3c;
+  --color-acento-tinta: #1cf9fc;
+  --color-progreso: #39fe90;
+  --color-exito: #39fe90;
+  --color-exito-suave: #1f3a2b;
+  --color-error: #ff6b71;
+  --color-error-texto: #ffb3b6;
+  --color-error-suave: #3a2224;
+  --color-foco: #ff4950;
+  --color-grafito: #343838;
+}
+
+:root[data-tema='claro'] {
+  color-scheme: light;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-tema='claro']) {
     --color-fondo: #1f2222;
     --color-superficie: #2a2d2d;
     --color-superficie-suave: #3a3d3d;
@@ -86,4 +118,46 @@
     --color-foco: #ff4950;
     --color-grafito: #343838;
   }
+}
+
+/* Alto contraste (ajuste del alumno): textos más oscuros y bordes más marcados. */
+:root[data-contraste='alto'] {
+  --color-texto-medio: #1f2222;
+  --color-texto-suave: #2e3333;
+  --color-borde: #8a9090;
+  --color-borde-fuerte: #4d5252;
+  --color-pendiente: #9aa0a0;
+  --color-acento-tinta: #005a5c;
+  --color-progreso: #0b7a43;
+}
+
+:root[data-tema='oscuro'][data-contraste='alto'] {
+  --color-texto-medio: #f2f4f4;
+  --color-texto-suave: #e3e7e7;
+  --color-borde: #8a9090;
+  --color-borde-fuerte: #b4baba;
+  --color-pendiente: #8a9090;
+  --color-acento-tinta: #1cf9fc;
+  --color-progreso: #39fe90;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro'])[data-contraste='alto'] {
+    --color-texto-medio: #f2f4f4;
+    --color-texto-suave: #e3e7e7;
+    --color-borde: #8a9090;
+    --color-borde-fuerte: #b4baba;
+    --color-pendiente: #8a9090;
+    --color-acento-tinta: #1cf9fc;
+    --color-progreso: #39fe90;
+  }
+}
+
+/* Tamaño de letra (ajuste del alumno). Todo el diseño usa rem, así que escala por completo. */
+:root[data-texto='grande'] {
+  font-size: 112.5%;
+}
+
+:root[data-texto='muy-grande'] {
+  font-size: 125%;
 }

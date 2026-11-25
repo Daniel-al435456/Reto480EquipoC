@@ -8,7 +8,7 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 
 ## Sesión 2 · Martes 24/11/2026
 
-**Asistentes:**
+**Asistentes:** Daniel, Jeremy, Talia, Andrea
 
 ### Actividades
 

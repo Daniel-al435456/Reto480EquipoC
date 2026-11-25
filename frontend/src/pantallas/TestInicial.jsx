@@ -3,7 +3,7 @@ import { evaluarTestInicial, obtenerCurso, obtenerTestInicial } from '../api/cli
 import { leccionesPendientes } from '../api/planificador.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { useEstado } from '../hooks/useEstado.jsx';
+import { esMenor, useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './TestInicial.module.css';
 
@@ -21,6 +21,8 @@ export function TestInicial({ cursoId, modo, navegar }) {
   const [fase, setFase] = useState(estado.testHecho && modo !== 'repetir' ? 'resultado' : 'intro');
   const [indice, setIndice] = useState(0);
   const [respuestas, setRespuestas] = useState({});
+  /** Explicación del resultado redactada por la IA (solo con backend). */
+  const [explicacionIA, setExplicacionIA] = useState(null);
 
   useEffect(() => {
     obtenerTestInicial(cursoId).then(setPreguntas);
@@ -64,7 +66,8 @@ export function TestInicial({ cursoId, modo, navegar }) {
         return;
       }
       setFase('evaluando');
-      const resultado = await evaluarTestInicial(cursoId, respuestas);
+      const resultado = await evaluarTestInicial(cursoId, respuestas, { esMenor: esMenor(estado) });
+      setExplicacionIA(resultado.origen === 'api' ? resultado.mensaje : null);
       guardarTest(resultado.dominio);
       registrarEvento('test_completado', {
         cursoId,
@@ -170,19 +173,29 @@ export function TestInicial({ cursoId, modo, navegar }) {
           </span>
         </div>
         <p className={estilos.textoResumen}>
-          {dominadas === 0
-            ? 'Empezamos desde el principio. Iremos paso a paso, a tu ritmo.'
-            : !primera
-              ? 'Ya dominas todo el contenido del curso. Puedes repasar cualquier lección cuando quieras.'
-              : `Ya dominas ${dominadas} ${dominadas === 1 ? 'tema' : 'temas'}, así que no tendrás que verlos.`}
-          {primera && dominadas > 0 && (
+          {explicacionIA ?? (
             <>
-              {' '}
-              Empezarás por <strong>{primera.titulo}</strong>.
+              {dominadas === 0
+                ? 'Empezamos desde el principio. Iremos paso a paso, a tu ritmo.'
+                : !primera
+                  ? 'Ya dominas todo el contenido del curso. Puedes repasar cualquier lección cuando quieras.'
+                  : `Ya dominas ${dominadas} ${dominadas === 1 ? 'tema' : 'temas'}, así que no tendrás que verlos.`}
+              {primera && dominadas > 0 && (
+                <>
+                  {' '}
+                  Empezarás por <strong>{primera.titulo}</strong>.
+                </>
+              )}
             </>
           )}
         </p>
       </div>
+
+      {explicacionIA && (
+        <p className={comun.secundario}>
+          La puntuación se calcula a partir de tus respuestas. La explicación la ha redactado la IA.
+        </p>
+      )}
 
       <p className={comun.secundario}>
         Si prefieres estudiar un tema que ya dominas, puedes incluirlo. También podrás repasar cualquier lección desde

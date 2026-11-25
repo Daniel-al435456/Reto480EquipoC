@@ -37,7 +37,7 @@ El prototipo aborda estos problemas con tres componentes:
 |---|---|
 | Valor para el alumno | [Respuesta a los cuatro problemas](SPEC.md#3-respuesta-a-los-cuatro-problemas) · [Historias de usuario](SPEC.md#4-historias-de-usuario) |
 | Calidad técnica y claridad de la arquitectura | [Arquitectura](SPEC.md#5-arquitectura) · [Modelo de datos](SPEC.md#6-modelo-de-datos-y-flujo-hacia-la-ia) · [Decisiones](docs/decisiones.md) |
-| Uso responsable de la IA | Pendiente de aprobación: [agentes, modelo y coste](propuestas/README.md#p1-agentes-de-ia) · [datos y privacidad](propuestas/README.md#p3-arquitectura-detallada-modelo-de-datos-y-privacidad) |
+| Uso responsable de la IA | [Agentes de IA](SPEC.md#7-agentes-de-ia) · [Datos y privacidad](SPEC.md#6-modelo-de-datos-y-flujo-hacia-la-ia) · [Coste](SPEC.md#9-coste-de-ia-por-alumno-y-mes) · [Cómo usamos la IA para programar](docs/registro-harness.md) |
 | Originalidad y creatividad | [Idea original](SPEC.md#10-idea-original) |
 | Demo y proceso | [Bitácora](BITACORA.md) · [Guía de contribución](CONTRIBUTING.md) |
 | Reacción ante los cambios | [Bitácora: problemas y soluciones](BITACORA.md#problemas-y-soluciones) |
@@ -48,13 +48,14 @@ El prototipo aborda estos problemas con tres componentes:
 
 | Documento | Contenido |
 |---|---|
-| [SPEC.md](SPEC.md) | Especificación del paquete de diseño (algunos apartados pendientes de aprobación) |
+| [SPEC.md](SPEC.md) | Especificación del paquete de diseño |
 | [docs/decisiones.md](docs/decisiones.md) | Decisiones de stack, modelo de IA y producto |
-| [propuestas/](propuestas/README.md) | Propuestas del equipo, aprobadas el 24/11 (pendientes de pasar a la especificación) |
+| [propuestas/](propuestas/README.md) | Propuestas del equipo y su estado, con el detalle de lo aprobado |
 | [BITACORA.md](BITACORA.md) | Registro de sesiones, tareas y problemas |
 | [Tablero de tareas](https://github.com/users/andreaperibaz/projects/1) | Backlog del proyecto en GitHub Projects: qué falta, quién se encarga y en qué estado está |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Roles, ramas, pull requests y definición de terminado |
-| [AGENTS.md](AGENTS.md) | Convenciones de código y commits para el equipo y sus asistentes de IA |
+| [AGENTS.md](AGENTS.md) | Instrucciones para los asistentes de IA de desarrollo: comandos, reglas, convenciones y límites |
+| [docs/registro-harness.md](docs/registro-harness.md) | Fallos de los asistentes de IA y qué cambiamos en el proyecto para que no se repitan |
 | [frontend/](frontend/README.md) | Aplicación del alumno (React PWA): puesta en marcha, pantallas y estructura |
 | [docs/img/](docs/img/README.md) | Bocetos y diagramas de la sesión de diseño |
 

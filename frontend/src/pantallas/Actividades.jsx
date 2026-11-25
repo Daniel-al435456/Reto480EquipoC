@@ -2,8 +2,9 @@ import { useRef, useState } from 'react';
 import { corregirRespuestaEscrita, mensajeProactivoTutor } from '../api/cliente.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { IconoTutor } from '../componentes/Iconos.jsx';
+import { Pato } from '../componentes/Pato.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { useEstado } from '../hooks/useEstado.jsx';
+import { esMenor, useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './Actividades.module.css';
 
@@ -15,7 +16,7 @@ const FALLOS_PARA_AYUDA = 2;
  * Seguimiento continuo: cada respuesta se registra como evento de aprendizaje.
  */
 export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, alSiguiente, alSalir, navegar }) {
-  const { registrarEvento, anadirMensaje, completarLeccion } = useEstado();
+  const { estado, registrarEvento, anadirMensaje, completarLeccion, ponerContextoTutor } = useEstado();
   const [indice, setIndice] = useState(0);
   const [respuesta, setRespuesta] = useState(null);
   const [resultado, setResultado] = useState(null);
@@ -45,8 +46,8 @@ export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, a
       setAciertos((a) => a + 1);
     } else {
       fallos.current += 1;
-      if (fallos.current === FALLOS_PARA_AYUDA) {
-        const texto = await mensajeProactivoTutor(leccion);
+      if (fallos.current === FALLOS_PARA_AYUDA && estado.tutorIA) {
+        const texto = await mensajeProactivoTutor(leccion, { cursoId: estado.cursoId, esMenor: esMenor(estado) });
         anadirMensaje({ autor: 'tutor', texto, proactivo: true });
         registrarEvento('tutor_proactivo', { leccionId: leccion.id, senal: 'fallos_repetidos' });
         setPistaTutor(texto);
@@ -178,14 +179,25 @@ export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, a
 
       {pistaTutor && (
         <aside className={estilos.pista} aria-label="Ayuda del tutor">
-          <span className={estilos.iconoPista} aria-hidden="true">
-            <IconoTutor tamano={20} />
-          </span>
+          {estado.ajustes.tutor === 'ninguno' ? (
+            <span className={estilos.iconoPista} aria-hidden="true">
+              <IconoTutor tamano={20} />
+            </span>
+          ) : (
+            <Pato variante={estado.ajustes.tutor} reposo="animando_c" tamano={52} />
+          )}
           <div className={estilos.textoPista}>
             <strong>Tu tutor tiene una pista</strong>
             <span>{pistaTutor}</span>
             <div className={comun.acciones}>
-              <button type="button" className={estilos.botonPista} onClick={() => navegar('/tutor')}>
+              <button
+                type="button"
+                className={estilos.botonPista}
+                onClick={() => {
+                  ponerContextoTutor({ leccionId: leccion.id, titulo: leccion.titulo });
+                  navegar('/tutor');
+                }}
+              >
                 Hablar con el tutor
               </button>
               <button type="button" className={estilos.botonAhoraNo} onClick={() => setPistaTutor(null)}>

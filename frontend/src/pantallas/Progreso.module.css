@@ -61,7 +61,7 @@
 .etapa {
   position: absolute;
   left: calc(var(--lado) - var(--nodo) / 2);
-  height: 4.625rem;
+  height: 4.875rem;
   max-width: calc(100% - var(--lado) + var(--nodo) / 2);
 }
 

@@ -27,8 +27,34 @@
   }
 }
 
+/*
+ * --margen-inferior: espacio que ocupa la barra inferior. Lo usan la acción fija de cada pantalla
+ * y el botón del tutor para quedar siempre por encima de la barra.
+ */
+.app {
+  --margen-inferior: var(--alto-barra-inferior);
+}
+
 /* Pantallas sin barra inferior: la acción principal queda pegada al borde. */
 .sinBarra {
   --margen-inferior: 0px;
+}
+
+.sinBarra .principal {
   padding-bottom: calc(var(--espacio-5) + env(safe-area-inset-bottom));
+}
+
+/*
+ * Escritorio: la barra inferior pasa a ser un menú lateral fijo
+ * y el contenido se centra en el espacio que queda a su derecha.
+ */
+@media (min-width: 64rem) {
+  .app {
+    --margen-inferior: 0px;
+  }
+
+  .conBarra .principal {
+    margin-left: calc(var(--ancho-menu) + max(0px, (100% - var(--ancho-menu) - var(--ancho-contenido)) / 2));
+    padding-bottom: calc(var(--espacio-6) * 2);
+  }
 }

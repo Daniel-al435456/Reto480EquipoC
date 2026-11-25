@@ -1,38 +1,32 @@
-import { useState } from 'react';
 import { obtenerCurso } from '../api/cliente.js';
+import { nombreVisible } from '../api/cuenta.js';
 import { leccionesPendientes } from '../api/planificador.js';
 import { AvatarPixel } from '../componentes/AvatarPixel.jsx';
 import { Boton } from '../componentes/Boton.jsx';
-import { IconoFlecha, IconoMas } from '../componentes/Iconos.jsx';
+import { BotonInstalar } from '../componentes/BotonInstalar.jsx';
+import { FilaAjuste } from '../componentes/FilaAjuste.jsx';
+import { IconoMas } from '../componentes/Iconos.jsx';
 import { Interruptor } from '../componentes/Interruptor.jsx';
-import { useEstado } from '../hooks/useEstado.jsx';
+import { PieLegal } from '../componentes/PieLegal.jsx';
+import { esMenor, useEstado } from '../hooks/useEstado.jsx';
 import { useTituloPantalla } from '../hooks/useTituloPantalla.js';
 import comun from './comun.module.css';
 import estilos from './Perfil.module.css';
 
-/**
- * Perfil del alumno: alias, modo anónimo, cursos y control de sus datos.
- * Pantalla de los prototipos, aprobada en la propuesta P6.
- */
+const NOMBRE_TUTOR = { pato: 'Pato', pata: 'Pata', ninguno: 'Solo texto' };
+
+/** Perfil del alumno, organizado por secciones: cuenta, apariencia, seguridad, privacidad y cursos. */
 export function Perfil({ navegar }) {
-  const { estado, cambiarAnonimo, borrarHistorialTutor, reiniciar, registrarEvento } = useEstado();
+  const { estado, cambiarAnonimo, cerrarSesion, registrarEvento } = useEstado();
   const encabezado = useTituloPantalla('Perfil');
-  const [confirmarBorrado, setConfirmarBorrado] = useState(false);
-  const [aviso, setAviso] = useState('');
+  const { ajustes, cuenta } = estado;
 
   const curso = estado.cursoId && estado.testHecho ? obtenerCurso(estado.cursoId) : null;
   const pendientes = curso ? leccionesPendientes(curso, estado.dominio, estado.completadas) : [];
   const porcentaje = curso
     ? Math.round(((curso.lecciones.length - pendientes.length) / curso.lecciones.length) * 100)
     : 0;
-  const modo = `${estado.modo.minutos} min · ${estado.modo.audio ? 'con audio' : 'sin audio'}`;
-
-  const borrar = () => {
-    borrarHistorialTutor();
-    registrarEvento('historial_tutor_borrado');
-    setConfirmarBorrado(false);
-    setAviso('Historial con el tutor borrado.');
-  };
+  const tema = { auto: 'Tema automático', claro: 'Tema claro', oscuro: 'Tema oscuro' }[ajustes.tema];
 
   return (
     <div className={estilos.perfil}>
@@ -40,23 +34,31 @@ export function Perfil({ navegar }) {
         <AvatarPixel alias={estado.alias} tamano="mediano" />
         <div className={estilos.nombre}>
           <h1 ref={encabezado} tabIndex={-1}>
-            {estado.anonimo ? estado.alias || 'Sin alias' : 'Tu nombre'}
+            {nombreVisible(estado)}
           </h1>
-          <span className={comun.secundario}>
-            {estado.anonimo ? 'Alias anónimo · se muestra a los tutores' : 'Nombre real · visible para los tutores'}
-          </span>
+          <span className={comun.secundario}>{cuenta ? `${cuenta.email} · ${cuenta.empresa}` : ''}</span>
         </div>
       </header>
 
       <Interruptor
         titulo="Modo anónimo"
-        descripcion="Los tutores te ven con tu alias"
+        descripcion={estado.anonimo ? `Los tutores te ven como «${estado.alias}»` : 'Los tutores ven tu nombre real'}
         activo={estado.anonimo}
         alCambiar={(valor) => {
           cambiarAnonimo(valor);
           registrarEvento('modo_anonimo_cambiado', { anonimo: valor });
         }}
       />
+
+      {esMenor(estado) && (
+        <p className={estilos.menor}>
+          {estado.tramoEdad === 'menor14' && estado.consentimientoFamilia
+            ? `Cuenta de menor de 14 años · consentimiento de tu familia registrado el ${new Date(
+                estado.consentimientoFamilia,
+              ).toLocaleDateString('es-ES')}.`
+            : 'Cuenta de menor de edad · el tutor adapta su tono y te pasa con una persona si algo te preocupa.'}
+        </p>
+      )}
 
       <section className={estilos.seccion} aria-labelledby="titulo-cursos">
         <div className={estilos.tituloSeccion}>
@@ -72,7 +74,6 @@ export function Perfil({ navegar }) {
             Ver catálogo
           </a>
         </div>
-
         {curso && (
           <button type="button" className={`${comun.tarjetaGrafito} ${estilos.curso}`} onClick={() => navegar('/progreso')}>
             <span className={estilos.cursoFila}>
@@ -87,7 +88,6 @@ export function Perfil({ navegar }) {
             </span>
           </button>
         )}
-
         <button type="button" className={estilos.otroCurso} onClick={() => navegar('/cursos')}>
           <span className={estilos.iconoMas} aria-hidden="true">
             <IconoMas tamano={18} />
@@ -99,86 +99,38 @@ export function Perfil({ navegar }) {
         </button>
       </section>
 
-      <div className={estilos.ajustes}>
-        <button type="button" className={estilos.ajuste} onClick={() => navegar('/alias')}>
-          <span>Cambiar alias</span>
-          <IconoFlecha tamano={18} />
-        </button>
-
-        <details className={estilos.desplegable}>
-          <summary className={estilos.ajuste}>
-            <span>Qué datos usa la IA</span>
-            <IconoFlecha tamano={18} />
-          </summary>
-          <div className={estilos.detalle}>
-            <p>
-              <strong>Se usan:</strong> tu alias, tus respuestas al test y a las actividades, y las preguntas que haces
-              al tutor.
-            </p>
-            <p>
-              <strong>No se usan:</strong> tu nombre real, tu email ni otros datos de tu cuenta.
-            </p>
-            <p className={comun.secundario}>
-              En esta versión de demostración todo se guarda solo en este dispositivo. El tratamiento definitivo está
-              pendiente de aprobación (propuesta P3).
-            </p>
-          </div>
-        </details>
-
-        <button
-          type="button"
-          className={estilos.ajuste}
-          onClick={() => navegar(curso ? `/curso/${curso.id}/hoy` : '/cursos')}
-        >
-          <span>Modo de estudio habitual</span>
-          <span className={estilos.valor}>{modo}</span>
-        </button>
-
-        <details className={estilos.desplegable}>
-          <summary className={estilos.ajuste}>
-            <span>Tamaño del texto y tema</span>
-            <span className={estilos.valor}>Automático</span>
-          </summary>
-          <div className={estilos.detalle}>
-            <p>
-              La aplicación sigue los ajustes de tu dispositivo: el tamaño de letra, el modo claro u oscuro y la
-              reducción de animaciones.
-            </p>
-          </div>
-        </details>
-
-        {confirmarBorrado ? (
-          <div className={estilos.confirmar} role="group" aria-label="Confirmar borrado">
-            <p>¿Borrar toda la conversación con el tutor? No se puede deshacer.</p>
-            <div className={comun.acciones}>
-              <Boton variante="secundario" onClick={borrar}>
-                Sí, borrar
-              </Boton>
-              <Boton variante="texto" onClick={() => setConfirmarBorrado(false)}>
-                Cancelar
-              </Boton>
-            </div>
-          </div>
-        ) : (
-          <button type="button" className={estilos.ajustePeligro} onClick={() => setConfirmarBorrado(true)}>
-            Borrar mi historial con el tutor
-          </button>
-        )}
-      </div>
-
-      <p role="status" className={comun.secundario}>
-        {aviso}
-      </p>
+      <section className={estilos.seccion} aria-labelledby="titulo-ajustes">
+        <h2 id="titulo-ajustes">Ajustes</h2>
+        <div className={estilos.ajustes}>
+          <FilaAjuste texto="Mi cuenta" valor="Datos y alias" alPulsar={() => navegar('/perfil/cuenta')} />
+          <FilaAjuste texto="Apariencia" valor={`${NOMBRE_TUTOR[ajustes.tutor]} · ${tema}`} alPulsar={() => navegar('/perfil/apariencia')} />
+          <FilaAjuste
+            texto="Modo de estudio habitual"
+            valor={`${estado.modo.minutos} min · ${estado.modo.audio ? 'con audio' : 'sin audio'}`}
+            alPulsar={() => navegar(curso ? `/curso/${curso.id}/hoy` : '/cursos')}
+          />
+          <FilaAjuste texto="Seguridad" valor="Contraseña y sesión" alPulsar={() => navegar('/perfil/seguridad')} />
+          <FilaAjuste
+            texto="Privacidad y datos"
+            valor={estado.tutorIA ? 'Tutor con IA activado' : 'Tutor con IA desactivado'}
+            alPulsar={() => navegar('/perfil/privacidad')}
+          />
+          <BotonInstalar className={estilos.ajuste} claseValor={estilos.valor} />
+        </div>
+      </section>
 
       <Boton
-        variante="texto"
+        variante="secundario"
         onClick={() => {
-          reiniciar();
+          registrarEvento('sesion_cerrada');
+          cerrarSesion();
           navegar('/bienvenida');
         }}
       >
-        Reiniciar la demostración
+        Cerrar sesión
       </Boton>
+
+      <PieLegal navegar={navegar} />
     </div>
   );
 }

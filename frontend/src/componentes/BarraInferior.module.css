@@ -50,3 +50,53 @@
   background: var(--color-error);
   border: 2px solid var(--color-superficie);
 }
+
+/* Nombre de la academia: solo en el menú lateral del escritorio. */
+.marca {
+  display: none;
+}
+
+.coral {
+  color: var(--color-marca-coral);
+}
+
+@media (min-width: 64rem) {
+  .barra {
+    inset: 0 auto 0 0;
+    width: var(--ancho-menu);
+    padding: calc(var(--espacio-6) + env(safe-area-inset-top)) var(--espacio-4) var(--espacio-4);
+    border-top: 0;
+    border-right: 1px solid var(--color-borde);
+  }
+
+  .marca {
+    display: block;
+    margin: 0 var(--espacio-3) var(--espacio-6);
+    font-size: var(--texto-medio);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .lista {
+    grid-template-columns: 1fr;
+    gap: var(--espacio-1);
+  }
+
+  .enlace {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--espacio-3);
+    min-height: 3rem;
+    padding: 0 var(--espacio-3);
+    border-radius: var(--radio-pequeno);
+    font-size: 0.9375rem;
+  }
+
+  .enlace:hover {
+    background: var(--color-superficie-suave);
+  }
+
+  .enlace[aria-current='page'] {
+    background: var(--color-acento-suave);
+  }
+}

@@ -1,3 +1,4 @@
+import { nombreCorto } from '../api/cuenta.js';
 import { useMemo, useState } from 'react';
 import { obtenerCurso, planificarSesion } from '../api/cliente.js';
 import { Boton } from '../componentes/Boton.jsx';
@@ -60,7 +61,7 @@ export function PrevioSesion({ cursoId, navegar }) {
 
   return (
     <Pantalla
-      antetitulo={estado.alias ? `Hola, ${estado.alias}` : curso.titulo}
+      antetitulo={nombreCorto(estado) ? `Hola, ${nombreCorto(estado)}` : curso.titulo}
       titulo="¿Cómo quieres estudiar hoy?"
       pie={
         <Boton anchoCompleto onClick={empezar}>

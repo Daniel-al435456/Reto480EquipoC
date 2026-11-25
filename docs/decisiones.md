@@ -18,10 +18,18 @@ Registro de las tres decisiones que más condicionan la solución: opción elegi
 
 ## 2. Modelo y proveedor de IA
 
-Aprobado el 24/11/2026, pendiente de trasladar a este documento. Contenido en [P1. Agentes de IA](../propuestas/README.md#p1-agentes-de-ia).
+**Decisión.** Claude para el agente Preparador, que genera el contenido una vez por vídeo antes de la demo, y Groq (`gpt-oss-20b` para el Diagnóstico y `gpt-oss-120b` para el Mentor) para los agentes que responden en tiempo real. Ambos con respaldo sin IA: plantilla fija para el diagnóstico y derivación al tutor humano para el mentor.
+
+**Alternativas.** Claude Haiku para el tiempo real (propuesta inicial, de pago); Google Gemini gratuito; un modelo abierto en local con Ollama.
+
+**Justificación.** El Preparador no recibe datos de alumnos y se ejecuta una sola vez, así que se prioriza la calidad en español. Groq responde en menos de un segundo, tiene un plan gratuito suficiente para el prototipo y no entrena con los datos del cliente; solo recibe datos seudonimizados. Gemini gratuito se descartó porque exige usuarios mayores de 18 años y, en el Espacio Económico Europeo, solo permite los servicios de pago. Ollama en local no da la latencia necesaria sin GPU. El modelo de cada agente se configura en un único fichero, así que en producción puede pasarse a un proveedor de pago con procesamiento en la UE. Aprobada el 24/11/2026 ([propuesta P1](../propuestas/README.md#p1-agentes-de-ia)).
 
 ---
 
 ## 3. Decisión de producto
 
-Aprobado el 24/11/2026, pendiente de trasladar a este documento. Contenido en [P5. Decisión de producto](../propuestas/README.md#p5-decisión-de-producto).
+**Decisión.** Personalizar el aprendizaje según lo que el alumno ya sabe (test inicial y mapa de dominio) y según su contexto (tiempo disponible y si puede usar audio), y no según estilos de aprendizaje (visual, auditivo, etc.).
+
+**Alternativas.** Adaptar el material a preferencias visuales, auditivas o lectoras (planteamiento inicial del equipo); itinerarios fijos con gamificación (certificados, insignias).
+
+**Justificación.** El cliente estableció como prioridad que los alumnos aprendan. Adaptar el formato al estilo preferido no tiene respaldo empírico; sí lo tienen no repetir lo que ya se domina, practicar la recuperación tras cada bloque y repasar de forma espaciada. El formato se adapta solo por razones prácticas: sin auriculares no se puede seguir un vídeo con audio. Esta decisión condiciona el resto del producto: el test inicial, la división por conceptos, las comprobaciones y los modos de estudio. Aprobada el 24/11/2026 ([propuesta P5](../propuestas/README.md#p5-decisión-de-producto)), con un añadido: incorporar mapas conceptuales y tarjetas de repaso.

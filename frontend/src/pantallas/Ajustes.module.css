@@ -1,0 +1,7 @@
+.muestra {
+  gap: var(--espacio-2);
+}
+
+.muestra h2 {
+  font-size: var(--texto-medio);
+}

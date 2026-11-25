@@ -7,6 +7,17 @@
   list-style: none;
 }
 
+.filaTutor,
+.filaAlumno {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--espacio-2);
+}
+
+.filaAlumno {
+  justify-content: flex-end;
+}
+
 .tutor,
 .alumno {
   display: flex;
@@ -132,4 +143,29 @@
   .formulario {
     position: static;
   }
+}
+
+/* Lección de la que se habla (cuando el tutor se abre desde una lección). */
+.contexto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+  padding: var(--espacio-1) var(--espacio-1) var(--espacio-1) var(--espacio-4);
+  border-radius: 999px;
+  background: var(--color-acento-suave);
+  font-size: var(--texto-pequeno);
+}
+
+.quitarContexto {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--tactil-minimo);
+  height: var(--tactil-minimo);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-texto);
+  cursor: pointer;
 }

@@ -8,14 +8,15 @@ import { Pantalla } from '../componentes/Pantalla.jsx';
 import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './Alias.module.css';
+import { PASOS_ALTA } from './Registro.jsx';
 
 /**
- * Alias anónimo con avatar de píxeles. Se muestra la primera vez y desde el perfil.
+ * Alta, paso 3 de 4 (y desde el perfil): alias con avatar de píxeles y modo anónimo.
  * Pantalla de los prototipos, aprobada en la propuesta P6.
  */
 export function Alias({ navegar }) {
   const { estado, guardarPerfil, registrarEvento } = useEstado();
-  const desdePerfil = estado.bienvenidaVista;
+  const desdePerfil = estado.altaCompleta;
   const [alias, setAlias] = useState(() => estado.alias || generarAlias());
   const [anonimo, setAnonimo] = useState(estado.anonimo);
   const aliasLimpio = alias.trim();
@@ -23,14 +24,15 @@ export function Alias({ navegar }) {
   const continuar = () => {
     guardarPerfil({ alias: aliasLimpio, anonimo });
     registrarEvento('perfil_guardado', { anonimo });
-    navegar(desdePerfil ? '/perfil' : '/');
+    navegar(desdePerfil ? '/perfil/cuenta' : '/preferencias');
   };
 
   return (
     <Pantalla
       titulo="¿Cómo quieres que te llamemos?"
-      subtitulo="Puedes usar un alias. Tu nombre real no se muestra ni se envía a la IA."
-      alVolver={() => navegar(desdePerfil ? '/perfil' : '/bienvenida')}
+      subtitulo="Con el modo anónimo, los tutores te ven con tu alias. Tu nombre real nunca se envía a la IA."
+      alVolver={() => navegar(desdePerfil ? '/perfil/cuenta' : estado.tramoEdad === 'menor14' ? '/consentimiento' : '/edad')}
+      progreso={desdePerfil ? undefined : { valor: 3, maximo: PASOS_ALTA, etiqueta: `Paso 3 de ${PASOS_ALTA}` }}
       pie={
         <Boton anchoCompleto disabled={!aliasLimpio} onClick={continuar}>
           {desdePerfil ? 'Guardar' : 'Continuar'}

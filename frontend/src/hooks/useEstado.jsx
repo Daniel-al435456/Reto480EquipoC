@@ -1,13 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { cambiosPermitidos } from '../api/cuenta.js';
 
 /*
- * Estado del alumno en el dispositivo: perfil (alias y modo anónimo), curso elegido, resultado del test, progreso,
+ * Estado del alumno en el dispositivo: cuenta y sesión, ajustes de visualización, tramo de edad y consentimiento familiar,
+ * perfil (alias y modo anónimo), curso elegido, resultado del test, progreso,
  * modo de estudio, sesión en curso, conversación con el tutor y eventos de aprendizaje.
  * Se guarda en el almacenamiento local para no perder el progreso al cerrar la app.
- * Cuando exista backend, los eventos se enviarán también a la API.
+ * Cuando exista backend, la cuenta y la sesión se gestionarán en el servidor y los eventos se enviarán a la API.
  */
 
-const CLAVE = 'reto480-estado-v1';
+const CLAVE = 'reto480-estado-v2';
 
 const MENSAJE_INICIAL_TUTOR = {
   id: 'bienvenida',
@@ -15,8 +17,32 @@ const MENSAJE_INICIAL_TUTOR = {
   texto: 'Hola, soy tu tutor. Pregúntame cualquier duda sobre el curso.',
 };
 
+/** Ajustes de visualización. "auto" sigue la configuración del dispositivo. */
+export const AJUSTES_INICIALES = {
+  texto: 'normal', // normal | grande | muy-grande
+  tema: 'auto', // auto | claro | oscuro
+  contraste: 'normal', // normal | alto
+  movimiento: 'auto', // auto | reducido
+  tutor: 'pato', // pato | pata | ninguno: cómo aparece el tutor
+};
+
 const estadoInicial = {
-  bienvenidaVista: false,
+  /**
+   * Cuenta del alumno: { nombre, apellidos, email, empresa, puesto, hashContrasena, creada }.
+   * Prototipo: se guarda en este dispositivo y la contraseña solo como resumen SHA-256.
+   * Estos datos identifican al alumno y nunca se envían a la IA (propuesta P3).
+   */
+  cuenta: null,
+  sesionIniciada: false,
+  /** true cuando el alumno ha completado todos los pasos del alta. */
+  altaCompleta: false,
+  /** El alumno puede desactivar el tutor con IA (propuesta P3, "Base legal"). */
+  tutorIA: true,
+  ajustes: AJUSTES_INICIALES,
+  /** adulto | 14a17 | menor14. Solo el tramo, nunca la edad exacta (propuesta P3). */
+  tramoEdad: null,
+  /** Fecha en que se registró el consentimiento de la familia (menores de 14 años). */
+  consentimientoFamilia: null,
   alias: '',
   anonimo: true,
   cursoId: null,
@@ -29,13 +55,20 @@ const estadoInicial = {
   sesion: null,
   mensajesTutor: [MENSAJE_INICIAL_TUTOR],
   tutorNoLeido: false,
+  /** Lección de la que se habla al abrir el tutor desde una lección: { leccionId, titulo }. */
+  contextoTutor: null,
   eventos: [],
 };
+
+/** El alumno es menor de edad si su tramo no es adulto. */
+export const esMenor = (estado) => estado.tramoEdad === '14a17' || estado.tramoEdad === 'menor14';
 
 function cargar() {
   try {
     const guardado = JSON.parse(localStorage.getItem(CLAVE));
-    return guardado ? { ...estadoInicial, ...guardado } : estadoInicial;
+    return guardado
+      ? { ...estadoInicial, ...guardado, ajustes: { ...AJUSTES_INICIALES, ...guardado.ajustes } }
+      : estadoInicial;
   } catch {
     return estadoInicial;
   }
@@ -64,8 +97,30 @@ export function EstadoProvider({ children }) {
   const acciones = useMemo(
     () => ({
       registrarEvento,
-      guardarPerfil: ({ alias, anonimo }) =>
-        setEstado((e) => ({ ...e, alias, anonimo, bienvenidaVista: true })),
+      cambiarAjuste: (clave, valor) => setEstado((e) => ({ ...e, ajustes: { ...e.ajustes, [clave]: valor } })),
+      // El tramo de edad y el consentimiento solo se indican durante el alta; después solo puede cambiarlos la academia.
+      guardarEdad: (tramoEdad) =>
+        setEstado((e) =>
+          e.altaCompleta
+            ? e
+            : { ...e, tramoEdad, consentimientoFamilia: tramoEdad === 'menor14' ? e.consentimientoFamilia : null },
+        ),
+      registrarConsentimiento: () =>
+        setEstado((e) => (e.altaCompleta ? e : { ...e, consentimientoFamilia: new Date().toISOString() })),
+      ponerContextoTutor: (contexto) => setEstado((e) => ({ ...e, contextoTutor: contexto })),
+      crearCuenta: (cuenta) =>
+        setEstado((e) => ({ ...e, cuenta: { ...cuenta, creada: new Date().toISOString() }, sesionIniciada: true })),
+      // Desde el perfil solo se pueden cambiar algunos datos (CAMPOS_EDITABLES en api/cuenta.js); el resto solo la academia.
+      actualizarCuenta: (cambios) =>
+        setEstado((e) => {
+          return { ...e, cuenta: { ...e.cuenta, ...cambiosPermitidos(cambios) } };
+        }),
+      guardarContrasena: (hashContrasena) => setEstado((e) => ({ ...e, cuenta: { ...e.cuenta, hashContrasena } })),
+      iniciarSesion: () => setEstado((e) => ({ ...e, sesionIniciada: true })),
+      cerrarSesion: () => setEstado((e) => ({ ...e, sesionIniciada: false, sesion: null, contextoTutor: null })),
+      completarAlta: () => setEstado((e) => ({ ...e, altaCompleta: true })),
+      cambiarTutorIA: (tutorIA) => setEstado((e) => ({ ...e, tutorIA })),
+      guardarPerfil: ({ alias, anonimo }) => setEstado((e) => ({ ...e, alias, anonimo })),
       cambiarAnonimo: (anonimo) => setEstado((e) => ({ ...e, anonimo })),
       seleccionarCurso: (cursoId) =>
         setEstado((e) =>
@@ -73,7 +128,13 @@ export function EstadoProvider({ children }) {
             ? e
             : {
                 ...estadoInicial,
-                bienvenidaVista: e.bienvenidaVista,
+                cuenta: e.cuenta,
+                sesionIniciada: e.sesionIniciada,
+                altaCompleta: e.altaCompleta,
+                tutorIA: e.tutorIA,
+                ajustes: e.ajustes,
+                tramoEdad: e.tramoEdad,
+                consentimientoFamilia: e.consentimientoFamilia,
                 alias: e.alias,
                 anonimo: e.anonimo,
                 modo: e.modo,
@@ -106,7 +167,8 @@ export function EstadoProvider({ children }) {
       borrarHistorialTutor: () =>
         setEstado((e) => ({ ...e, mensajesTutor: [MENSAJE_INICIAL_TUTOR], tutorNoLeido: false })),
       marcarTutorLeido: () => setEstado((e) => (e.tutorNoLeido ? { ...e, tutorNoLeido: false } : e)),
-      reiniciar: () => setEstado(estadoInicial),
+      // Eliminar la cuenta borra todos los datos del alumno de este dispositivo. Se conservan los ajustes de visualización.
+      eliminarCuenta: () => setEstado((e) => ({ ...estadoInicial, ajustes: e.ajustes })),
     }),
     [registrarEvento],
   );

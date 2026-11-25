@@ -2,159 +2,92 @@
 
 # Instrucciones para asistentes de IA de desarrollo
 
-Cada miembro del equipo trabaja con su propio asistente de IA (Claude, Copilot, Cursor u otros). Este documento es la referencia común para que todos produzcan código, commits y configuración con el mismo estilo. Al empezar a trabajar, basta con indicar al asistente que lea este documento.
+Cada miembro del equipo programa con su propio asistente de IA (Claude, Copilot, Cursor u otros). Este archivo es lo que todos deben saber siempre sobre el proyecto; la mayoría de asistentes lo leen solos al empezar. Las personas siguen las mismas normas.
 
-Los agentes de IA del producto están pendientes de decisión ([propuesta P1](propuestas/README.md#p1-agentes-de-ia)). Este documento cubre únicamente los asistentes de desarrollo.
+Lo que se puede comprobar no se pide aquí: lo comprueban las pruebas (`npm run verificar`). Cada regla nueva nace de un fallo real, anotado en [docs/registro-harness.md](docs/registro-harness.md).
 
----
+## Comandos
 
-## 1. Antes de empezar cualquier tarea
+| Qué | Comando (desde `frontend/`) | Cuándo |
+|---|---|---|
+| Instalar | `npm install` y, la primera vez, `npx playwright install chromium` | Al clonar o al cambiar dependencias |
+| Desarrollo | `npm run dev` | Para ver la app en `http://localhost:5173` |
+| Comprobación rápida | `npm test` | Tras cada cambio (menos de un segundo) |
+| Comprobación completa | `npm run verificar` | Antes de dar algo por terminado y antes de cada pull request |
 
-El asistente debe revisar el repositorio antes de escribir código:
+`npm run verificar` ejecuta las pruebas unitarias y de arquitectura, compila y prueba la app en un navegador real con tamaño de móvil. GitHub Actions lo repite en cada pull request. El backend aún no existe; cuando exista, tendrá sus propios comandos aquí.
 
-1. Leer [SPEC.md](SPEC.md) y la issue asignada, incluidos sus criterios de aceptación.
-2. Leer [CONTRIBUTING.md](CONTRIBUTING.md): ramas, pull requests y definición de terminado.
-3. Revisar el historial reciente (`git log --oneline -20`) e imitar el formato de los commits existentes.
-4. Revisar la estructura de la carpeta en la que va a trabajar y seguir los patrones del código ya escrito: nombres, organización de ficheros, manejo de errores.
-5. Si una convención de este documento contradice el código existente, prevalece este documento y la discrepancia se comenta en la pull request.
+## Forma de trabajar
 
----
+1. **Explorar.** Leer la issue, sus criterios de aceptación en [SPEC §4](SPEC.md#4-historias-de-usuario) y el código de la carpeta afectada. Seguir los patrones que ya hay.
+2. **Planificar.** Para una funcionalidad nueva, proponer un plan (archivos y pruebas) y no editar hasta que la persona lo apruebe.
+3. **Pruebas primero.** Una prueba por criterio de aceptación o regla de negocio, incluidos los casos límite. Comprobar que falla.
+4. **Implementar** lo mínimo para que pase.
+5. **Verificar** con `npm run verificar`. No decir "hecho" sin haberlo ejecutado.
+6. **Registrar el fallo.** Si algo salió mal por falta de información o de comprobación, proponer el cambio en este archivo, una prueba nueva o una línea en `docs/registro-harness.md`.
 
-## 2. Convenciones generales
+## Reglas de negocio
+
+Detalle en [SPEC](SPEC.md) y [propuestas](propuestas/README.md). Las marcadas con ✓ ya tienen prueba.
+
+- El frontend nunca llama a un proveedor de IA ni contiene claves: todo pasa por el backend. ✓
+- Toda llamada a la IA pasa por `backend/app/privacidad.py`: seudónimo en lugar de identidad y texto libre sin datos personales ([SPEC §6](SPEC.md#6-modelo-de-datos-y-flujo-hacia-la-ia)).
+- A la IA solo llega si el alumno es menor o no, nunca su edad exacta. Se guarda el tramo de edad, no la fecha.
+- Con menos de 14 años, el alumno no continúa sin el consentimiento de su familia. ✓
+- La IA recomienda, pero no decide: el alumno puede abrir cualquier lección aunque el test diga que la domina. ✓
+- El planificador de sesión y el detector de señales funcionan con reglas, sin IA. La sesión cabe en el tiempo elegido (±1 min) y sin audio no hay vídeo. ✓
+- El mentor solo usa el contenido del curso, cita el fragmento, admite 30 mensajes al día por alumno y deriva a un tutor humano ante señales de malestar.
+- Los mensajes con el mentor se borran a los 90 días; el alumno puede borrarlos antes.
+
+## Convenciones
 
 | Aspecto | Convención |
 |---|---|
-| Idioma de la interfaz | Español |
-| Idioma de comentarios y documentación | Español |
-| Identificadores de dominio | Español, sin tildes ni ñ: `alumno`, `fragmento`, `sesion`, `dominio`, `anio` |
-| Identificadores técnicos | Inglés cuando son términos del framework: `router`, `hook`, `props`, `schema` |
-| Codificación y saltos de línea | UTF‑8, LF |
-| Indentación | 4 espacios en Python; 2 espacios en JavaScript, JSON, YAML, CSS y Markdown |
-| Longitud de línea | 100 caracteres |
-| Secretos | Solo en variables de entorno (`.env`, excluido del repositorio). |
+| Idioma | Español en interfaz, comentarios y documentación. Tuteo y sin tecnicismos en la interfaz. Se dice "alumno". |
+| Identificadores de dominio | Español sin tildes ni ñ (`alumno`, `sesion`, `anio`), iguales en base de datos, API y frontend |
+| Identificadores técnicos | Inglés cuando son términos del framework (`router`, `hook`, `props`) |
+| Formato | UTF-8 y LF. 2 espacios en JavaScript, CSS, JSON y Markdown; 4 en Python |
+| Secretos | Solo en variables de entorno (`.env`, `.env.local`), nunca en el repositorio |
+| Documentación | Diseño en tono impersonal; bitácora y acuerdos en primera persona del plural. Sobria y sin emojis |
 
-Los nombres del dominio coinciden con los del modelo de datos de [SPEC §6](SPEC.md#6-modelo-de-datos-y-flujo-hacia-la-ia), de modo que una misma entidad se llama igual en la base de datos, la API y el frontend.
+**Commits:** *Conventional Commits* en español e imperativo, `tipo(ámbito): descripción` con tipos `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore` y ámbitos `frontend`, `backend`, `bd`, `ia`, `docs`. Si el asistente ha generado una parte importante del cambio, el cuerpo incluye `Asistido por: <modelo>`; el cliente pide documentar los modelos usados. Ramas y pull requests: [CONTRIBUTING.md](CONTRIBUTING.md).
 
----
-
-## 3. Commits
-
-Se sigue el formato *Conventional Commits*, en español y en imperativo:
+## Frontend (React + Vite, PWA)
 
 ```
-<tipo>(<ámbito opcional>): <descripción en minúscula, sin punto final>
+frontend/
+├── src/
+│   ├── pantallas/    # una por pantalla; no llaman a fetch
+│   ├── componentes/  # piezas reutilizables
+│   ├── api/          # datos, cliente de API y reglas puras (sin React), probadas en pruebas/unitarias
+│   ├── hooks/        # estado del alumno, navegación, ajustes y PWA
+│   └── estilos/      # variables CSS: colores, tipografía, espaciado
+├── pruebas/          # unitarias/ (node:test) y e2e/ (Playwright)
+└── herramientas/     # script que genera los dibujos del pato
 ```
 
-| Tipo | Uso |
-|---|---|
-| `feat` | Funcionalidad nueva |
-| `fix` | Corrección de un error |
-| `docs` | Documentación |
-| `style` | Formato, sin cambios de lógica |
-| `refactor` | Reestructuración sin cambiar el comportamiento |
-| `test` | Pruebas |
-| `chore` | Configuración, dependencias, scripts |
+- Componentes funcionales con hooks; `PascalCase` en componentes, `camelCase` en funciones y hooks.
+- Estilos con CSS Modules y las variables de `src/estilos/variables.css`. Sin librerías de componentes ni de estilos.
+- Una regla de negocio nueva va como función pura en `src/api/`, con su prueba.
+- Mobile-first: se maqueta para 360 px, acciones principales al alcance del pulgar y áreas táctiles de 44 px o más.
+- `src/api/pato.js` no se edita a mano: se genera con `python3 herramientas/pato.py`.
+- Si cambia la forma del estado guardado, se sube la versión de la clave en `useEstado.jsx` y en `index.html`.
 
-Ámbitos habituales: `frontend`, `backend`, `bd`, `ia`, `docs`.
+## Backend y base de datos (acordado, aún sin código)
 
-Ejemplos:
-```
-feat(frontend): añade selector de tiempo en la pantalla de inicio
-fix(backend): corrige el cálculo de duración de la sesión
-chore(bd): crea la tabla de eventos
-docs: actualiza la bitácora del 30/11
-```
+- Python 3.12 y FastAPI. Formato y lint con Ruff; tipos en las funciones públicas. Pruebas con pytest, al menos una por endpoint.
+- Los routers validan y delegan; la lógica va en `servicios/`. Entrada y salida con esquemas Pydantic. Errores con el formato `{"error": "codigo", "mensaje": "..."}`.
+- PostgreSQL: tablas en plural y `snake_case`, clave `id`, foráneas `<entidad>_id`, fechas `creado_en` y `actualizado_en` con zona horaria. `identidades` separada del resto. Cambios de esquema solo con scripts en `backend/migraciones/`.
+- La API que espera el frontend está en [frontend/README.md](frontend/README.md#datos-y-conexión-con-el-backend).
 
-Normas:
-- Un commit agrupa un único cambio coherente.
-- Si el commit cierra una issue, el cuerpo incluye `Closes #número`.
-- Si el asistente de IA ha generado una parte significativa del cambio, se indica en el cuerpo, por ejemplo: `Asistido por: Claude Opus 5.5`. El cliente pide documentar qué modelos se han usado.
+## Límites
 
----
+- No hace `git push`, no confirma cambios en `main` ni fusiona pull requests.
+- No lee ni muestra `.env` ni claves.
+- No añade dependencias sin justificarlas en la pull request. El JavaScript inicial debe pesar menos de 200 KB comprimido. ✓
+- No modifica `propuestas/` ni decisiones del equipo salvo petición expresa.
+- No implementa lo que está fuera de alcance en [SPEC §11](SPEC.md#11-alcance-para-el-3011).
+- No inventa requisitos ni datos: si algo no está en la especificación o en la issue, lo pregunta.
+- No envía a ningún servicio de IA nombre, correo ni identificador interno de un alumno.
 
-## 4. Ramas y pull requests
-
-- Una rama por issue: `tipo/numero-descripcion-corta` (`feat/3-modo-sin-audio`).
-- Las ramas se crean desde `main` actualizada y se mantienen cortas: menos de un día de trabajo.
-- Antes de abrir la pull request: `git pull origin main`, resolver conflictos y comprobar que el formateador y las pruebas pasan.
-
----
-
-## 5. Backend (Python 3.12 + FastAPI)
-
-**Estilo**
-- Formato y lint con **Ruff** (`ruff format` y `ruff check`), longitud de línea 100.
-- Anotaciones de tipo en todas las funciones públicas.
-- `snake_case` para variables, funciones y módulos; `PascalCase` para clases.
-- Docstrings breves en español solo cuando el nombre no basta para entender la función.
-
-**Estructura**
-```
-backend/
-├── app/
-│   ├── main.py            # creación de la app y registro de routers
-│   ├── config.py          # lectura de variables de entorno
-│   ├── privacidad.py      # único módulo que llama al proveedor de IA
-│   ├── routers/           # un fichero por recurso: alumnos.py, sesiones.py, eventos.py, mentor.py
-│   ├── esquemas/          # modelos Pydantic de entrada y salida
-│   ├── modelos/           # modelos SQLAlchemy (tablas)
-│   ├── servicios/         # lógica: planificador.py, senales.py, diagnostico.py
-│   └── ia/                # integración con la IA, siempre a través de privacidad.py
-├── tests/
-└── requirements.txt
-```
-
-**Patrones**
-- Los routers solo validan y delegan; la lógica vive en `servicios/`.
-- Entrada y salida siempre con esquemas Pydantic, nunca diccionarios sueltos.
-- Errores con el formato común `{"error": "codigo", "mensaje": "..."}`.
-- Pruebas con `pytest` en `backend/tests/`, al menos una por endpoint.
-
----
-
-## 6. Base de datos (PostgreSQL)
-
-- Tablas en plural y `snake_case`: `alumnos`, `fragmentos`, `eventos`.
-- Clave primaria `id`; claves foráneas `<entidad>_id` (`alumno_id`).
-- Columnas de fecha `creado_en` y `actualizado_en`, con zona horaria (`timestamptz`).
-- La tabla `identidades` permanece separada del resto ([propuesta P3](propuestas/datos-y-privacidad.md)).
-- Los cambios de esquema se realizan mediante scripts versionados en `backend/migraciones/`, nunca a mano sobre la base de datos.
-
----
-
-## 7. Frontend (React + Vite, PWA)
-
-**Estilo**
-- Formato con **Prettier** (comillas simples, punto y coma, 100 caracteres) y lint con **ESLint** (configuración por defecto de Vite para React).
-- Solo componentes funcionales con hooks.
-- `PascalCase` para componentes y sus ficheros (`SelectorTiempo.jsx`); `camelCase` para funciones, variables y hooks (`useSesion`).
-- Una pieza por fichero; componentes de menos de unas 150 líneas.
-
-**Estructura**
-```
-frontend/src/
-├── pantallas/        # una por pantalla del flujo (SPEC §2)
-├── componentes/      # piezas reutilizables: Boton, Tarjeta, BarraInferior, MensajeMentor
-├── api/              # llamadas a la API, una función por endpoint; datos simulados mientras no exista
-├── hooks/            # lógica reutilizable: useSesion, useEventos
-├── estilos/          # variables CSS globales: colores, tipografía, espaciado
-└── main.jsx
-```
-
-**Patrones**
-- Las pantallas no llaman a `fetch` directamente: usan las funciones de `src/api/`.
-- Estilos con CSS Modules (`SelectorTiempo.module.css`) y variables CSS globales. No se añaden librerías de componentes ni de estilos sin acuerdo del equipo.
-- Diseño mobile‑first: se maqueta primero para 360 px de ancho, con las acciones principales en la zona del pulgar y áreas táctiles de al menos 44 px.
-- Textos de la interfaz en español, con tuteo y sin tecnicismos.
-- Pruebas con Vitest para la lógica de `hooks/` y `api/`.
-
----
-
-## 8. Límites del asistente
-
-- No confirma cambios en `main` ni fusiona pull requests.
-- No añade dependencias sin justificarlas en la pull request. Objetivo del frontend: interfaz inicial inferior a 200 KB comprimida.
-- No modifica `propuestas/` salvo petición expresa.
-- No implementa funcionalidades marcadas como fuera de alcance en SPEC §4.
-- No inventa requisitos: si algo no está en la especificación o en la issue, lo pregunta.
-- No envía a ningún servicio de IA nombre, email ni identificador interno de un alumno.
+Para quien usa Claude Code, `.claude/` aplica estas normas de forma automática: permisos, comprobaciones tras cada edición, un revisor y el comando `/nueva-funcionalidad`.

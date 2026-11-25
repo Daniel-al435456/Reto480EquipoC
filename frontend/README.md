@@ -6,7 +6,7 @@ Aplicación del alumno, diseñada primero para el móvil e instalable como PWA.
 
 ## Puesta en marcha
 
-Requisito: Node.js 20.19 o superior (`node -v`).
+Requisito: Node.js 22 o superior (`node -v`).
 
 ```bash
 cd frontend
@@ -16,6 +16,14 @@ npm run dev
 
 - **En el ordenador:** abre la dirección que muestra la terminal (normalmente `http://localhost:5173`).
 - **En el móvil:** conectado a la misma Wi-Fi, abre la dirección "Network" que muestra la terminal.
+
+Comprobaciones (detalle en "Pruebas"):
+
+```bash
+npx playwright install chromium   # solo la primera vez: navegador para las pruebas
+npm test                          # pruebas unitarias y de arquitectura (menos de un segundo)
+npm run verificar                 # todo: pruebas, compilación y pruebas en navegador
+```
 
 Compilación para producción:
 
@@ -28,11 +36,29 @@ npm run preview   # sirve dist/ para probar la versión final, con service worke
 
 Siguen el boceto de la sesión 1 ([SPEC §2](../SPEC.md#2-flujo-del-alumno)), más el previo de los modos de estudio ([SPEC §10](../SPEC.md#10-idea-original)). El aspecto visual sigue los prototipos de la paleta "Grafito 480" claro.
 
+**Sin sesión** (pantallas públicas):
+
+| Pantalla | Ruta | Fichero |
+|---|---|---|
+| Bienvenida: crear cuenta o iniciar sesión | `#/bienvenida` | `src/pantallas/Bienvenida.jsx` |
+| Crear cuenta (paso 1 de 4) | `#/registro` | `src/pantallas/Registro.jsx` |
+| Iniciar sesión | `#/entrar` | `src/pantallas/Entrar.jsx` |
+| Privacidad, cookies y aviso legal | `#/legal/privacidad`, `#/legal/cookies`, `#/legal/aviso-legal` | `src/pantallas/Legal.jsx` |
+
+**Alta** (después de crear la cuenta, sin barra inferior):
+
+| Pantalla | Ruta | Fichero |
+|---|---|---|
+| Tramo de edad (paso 2) | `#/edad` | `src/pantallas/Edad.jsx` |
+| Consentimiento de la familia (menores de 14 años) | `#/consentimiento` | `src/pantallas/Consentimiento.jsx` |
+| Alias anónimo con avatar de píxeles (paso 3) | `#/alias` | `src/pantallas/Alias.jsx` |
+| Preferencias: tutor, tema, tamaño del texto y tutor con IA (paso 4) | `#/preferencias` | `src/pantallas/Preferencias.jsx` |
+
+**Con sesión:**
+
 | Pantalla | Ruta | Fichero |
 |---|---|---|
 | Hoy: lleva al alumno al punto en el que se quedó | `#/` | `src/pantallas/Inicio.jsx` |
-| Bienvenida (primera vez) | `#/bienvenida` | `src/pantallas/Bienvenida.jsx` |
-| Alias anónimo con avatar de píxeles | `#/alias` | `src/pantallas/Alias.jsx` |
 | Selección de curso | `#/cursos` | `src/pantallas/SeleccionCurso.jsx` |
 | Test inicial (`/test/repetir` para hacerlo de nuevo) | `#/curso/:id/test` | `src/pantallas/TestInicial.jsx` |
 | Modos de estudio: "¿Cómo quieres estudiar hoy?" | `#/curso/:id/hoy` | `src/pantallas/PrevioSesion.jsx` |
@@ -41,11 +67,17 @@ Siguen el boceto de la sesión 1 ([SPEC §2](../SPEC.md#2-flujo-del-alumno)), m�
 | Actividades | `#/curso/:id/sesion/:paso` | `src/pantallas/Actividades.jsx` |
 | Tutor | `#/tutor` | `src/pantallas/Tutor.jsx` |
 | Progreso | `#/progreso` | `src/pantallas/Progreso.jsx` |
-| Perfil | `#/perfil` | `src/pantallas/Perfil.jsx` |
+| Perfil: resumen, cursos y acceso a los ajustes | `#/perfil` | `src/pantallas/Perfil.jsx` |
+| Mi cuenta: alias, datos personales y datos fijos de la cuenta | `#/perfil/cuenta` | `src/pantallas/PerfilCuenta.jsx` |
+| Apariencia: tutor, texto, tema, contraste y animaciones | `#/perfil/apariencia` | `src/pantallas/Ajustes.jsx` |
+| Seguridad: contraseña, cerrar sesión y eliminar cuenta | `#/perfil/seguridad` | `src/pantallas/PerfilSeguridad.jsx` |
+| Privacidad y datos: tutor con IA, descarga y borrado | `#/perfil/privacidad` | `src/pantallas/PerfilPrivacidad.jsx` |
 
-Las pantallas de bienvenida, alias y perfil proceden de los prototipos y se aprobaron en la [propuesta P6](../propuestas/README.md#p6-pantallas-de-bienvenida-alias-y-perfil).
+Sin sesión, cualquier ruta privada lleva a la bienvenida; con la alta a medias, al paso pendiente (`destinoInicio` y `rutaPermitida` en `src/api/acceso.js`).
 
-La barra inferior tiene cuatro pestañas (Hoy, Progreso, Tutor y Perfil) y se oculta en las pantallas de concentración: primera vez, test y sesión.
+Las pantallas de bienvenida, alias y perfil proceden de los prototipos y se aprobaron en la [propuesta P6](../propuestas/README.md#p6-pantallas-de-bienvenida-alias-y-perfil). La cuenta de usuario, las páginas legales, el perfil por secciones y el tutor con forma de pato están pendientes de aprobación en la [propuesta P7](../propuestas/README.md#p7-cuenta-de-usuario-páginas-legales-y-tutor-con-forma-de-pato).
+
+La barra inferior tiene cuatro pestañas (Hoy, Progreso, Tutor y Perfil) y se oculta en las pantallas públicas, en la alta y en las de concentración (test y sesión). En el escritorio se convierte en un menú lateral.
 
 ## Qué incluye
 
@@ -60,18 +92,69 @@ La barra inferior tiene cuatro pestañas (Hoy, Progreso, Tutor y Perfil) y se oc
 
 **Tutor proactivo.** Tras dos fallos en las actividades de una lección, el tutor interviene sin que el alumno lo pida. El alumno también puede preguntar o pedir un tutor de la academia.
 
+**Tutor desde cualquier pantalla** (historia H9). Un botón flotante con el símbolo de IA abre el tutor desde cualquier pantalla, salvo en la alta, en el test inicial (para no condicionar el resultado) y en los formularios del perfil. Si el alumno está en una lección, el chat muestra "Hablando de: [lección]" y envía esa lección al backend como contexto; la etiqueta se puede quitar para preguntar sobre cualquier tema. El chat y el resultado del test avisan cuando el texto lo ha generado la IA.
+
+**Cuenta de usuario.** El alta tiene cuatro pasos:
+1. Crear la cuenta: empresa, nombre, apellidos, correo, contraseña y, opcionalmente, puesto o área. Hay que aceptar la política de privacidad.
+2. Tramo de edad y, si es menor de 14 años, consentimiento de la familia.
+3. Alias y avatar.
+4. Preferencias: forma del tutor (pato, pata o solo texto), tema, tamaño del texto y si quiere usar el tutor con IA.
+
+**Qué datos se pueden cambiar después.** Desde Perfil → Mi cuenta el alumno puede cambiar su nombre, apellidos y puesto, y desde otras secciones su alias, el modo anónimo, la apariencia, el tutor con IA y la contraseña (pidiendo la actual). Estos datos se fijan en el alta y solo puede corregirlos la academia; el perfil los muestra con un candado:
+- Correo: es el usuario para iniciar sesión y cambiarlo exige verificar el nuevo, lo que necesita el backend.
+- Empresa: relaciona al alumno con la formación que contrata su empresa.
+- Tramo de edad y consentimiento de la familia: de ellos dependen las protecciones para menores, así que el alumno no puede cambiarlos para saltárselas.
+
+La regla está en `CAMPOS_EDITABLES` (`src/api/cuenta.js`), que también impide cambiarlos aunque se fuerce la acción, y en `src/api/acceso.js`, que no deja volver a las pantallas de edad, consentimiento y preferencias del alta ni a la bienvenida, el registro o el inicio de sesión con la sesión iniciada. El registro avisa en el campo de empresa y en el del correo de que no se podrán cambiar.
+
+Mientras no haya backend, la cuenta se guarda solo en el dispositivo. La contraseña nunca se guarda: se guarda su resumen SHA-256 (`src/api/cuenta.js`). Las contraseñas deben tener al menos 8 caracteres, con una letra y un número. "¿Has olvidado tu contraseña?" solo muestra un aviso hasta que el backend pueda enviar correos.
+
+**Perfil por secciones.** El perfil muestra el nombre (o el alias en modo anónimo), los cursos y las filas de ajustes:
+- Mi cuenta: alias, datos personales editables (nombre, apellidos y puesto) y datos fijos de la cuenta (correo, empresa, tramo de edad, consentimiento y fecha de alta).
+- Apariencia: forma del tutor, tamaño del texto, tema, contraste y animaciones.
+- Modo de estudio habitual.
+- Seguridad: cambiar la contraseña (pide la actual), cerrar sesión y eliminar la cuenta, con confirmación.
+- Privacidad y datos: activar o desactivar el tutor con IA, qué datos usa la IA, descargar mis datos en JSON (sin la contraseña) y borrar el historial del tutor.
+
+**Bienvenida.** El pato aparece en el círculo de marca y las ventajas de la app (vídeos cortos, sesiones de 5, 10 o 20 minutos, sin repetir lo que ya sabe, tutor, progreso y modo sin audio) giran a su alrededor en una órbita en perspectiva. Gira sola despacio y se puede girar arrastrando con el dedo o el ratón, con inercia; el elemento que pasa por delante muestra su texto. Con "reducir movimiento" no gira sola. Es decorativa: el lector de pantalla la ignora (`src/componentes/Orbita.jsx`).
+
+**Páginas legales.** Privacidad, cookies y aviso legal, enlazadas en el pie de la bienvenida, del perfil y de la privacidad. Son borradores basados en la [propuesta P3](../propuestas/datos-y-privacidad.md): los datos de 480 Academy (razón social, NIF, dirección y contacto) aparecen entre corchetes y resaltados hasta que los confirme la academia, y el texto final debe revisarlo la academia.
+
+**Tutor con forma de pato.** El alumno elige en el alta o en Apariencia si el tutor aparece como pato (con gafas cian), pata (con lazo coral) o solo texto. El pato respira, parpadea y de vez en cuando se mira la cola; mientras el tutor escribe, el texto aparece letra a letra y el pico se abre en las vocales y se cierra al terminar. Con "reducir movimiento" el pato queda quieto y el texto aparece completo. El lector de pantalla siempre recibe el texto completo.
+- `src/componentes/Pato.jsx`: dibuja el pato y sus animaciones de reposo.
+- `src/componentes/TextoTecleado.jsx`: texto letra a letra.
+- `src/componentes/ElegirTutor.jsx`: selector de forma del tutor.
+- `src/api/pato.js`: dibujos del pato en píxeles (32 × 32). No se edita a mano: se genera con `python3 herramientas/pato.py` (con `--hoja` guarda además una imagen de todas las caras para revisarlas; requiere Pillow).
+
+**Tutor con IA opcional.** Si el alumno desactiva el tutor con IA, desaparece el botón flotante, el tutor no interviene en las actividades y la pantalla del tutor ofrece hablar con un tutor de la academia o volver a activarlo.
+
+**Ajustes del alumno** (Perfil → Apariencia). Se aplican al momento y se guardan en el dispositivo:
+- Tamaño del texto: normal, grande o muy grande. Todo el diseño usa `rem`, así que escala por completo.
+- Tema: automático (el del dispositivo), claro u oscuro.
+- Contraste: normal o alto (textos secundarios más oscuros, bordes más marcados y foco más grueso).
+- Animaciones: automáticas (según "reducir movimiento" del dispositivo) o reducidas.
+
+Se aplican con atributos en `<html>` (`data-tema`, `data-texto`, `data-contraste`, `data-movimiento`) que leen las variables de `src/estilos/variables.css`. `index.html` los aplica antes de cargar la app para que no haya parpadeos. Al eliminar la cuenta se borra todo salvo estos ajustes.
+
+**Menores de edad** ([propuesta P3](../propuestas/datos-y-privacidad.md#3-menores-de-edad)). Durante el alta, el alumno indica su tramo de edad (18 o más, 14 a 17, menos de 14). Solo se guarda el tramo, nunca la edad exacta, y al backend solo llega si es menor o no, para que el mentor adapte el tono. Con menos de 14 años, la app pide el consentimiento de la madre, el padre o el tutor legal antes de continuar. En el prototipo no se envía ningún correo ni se guarda la dirección: solo se registra la fecha del consentimiento, que aparece en el perfil.
+
 **Diseño.** Paleta "Grafito 480" (grafito, cian, verde y coral de la marca), tipografías Plus Jakarta Sans y JetBrains Mono (desde Google Fonts; sin conexión se usa la fuente del sistema), botones de 56 px, tarjetas blancas, tarjetas destacadas en grafito y barras de progreso por segmentos. El cian de marca solo se usa como fondo con texto oscuro; para textos y enlaces se usa un cian oscurecido que cumple el contraste.
 
 **PWA:**
-- `public/manifest.webmanifest`: nombre, colores e iconos para instalar la aplicación.
+- `public/manifest.webmanifest`: nombre, colores, iconos y accesos directos (mantener pulsado el icono: Lección de hoy, Tutor y Mi progreso).
 - `public/sw.js`: service worker que guarda la aplicación en el dispositivo; carga al instante y funciona sin conexión.
 - `public/icons/`: iconos normales y "maskable" (Android), icono para iPhone y favicon.
-- Para instalarla desde el móvil hace falta HTTPS: usar la versión publicada (ver "Publicación").
+- **Instalar:** en Android y en el escritorio con Chrome o Edge, botón "Instalar" (aviso en la pantalla de inicio, una vez, y fila en el perfil). En iPhone, Safari no permite el botón, así que el perfil explica cómo añadirla a la pantalla de inicio. Si ya está instalada, no se muestra.
+- **Actualizar:** al publicar una versión nueva (subir `VERSION` en `sw.js`), la app avisa "Hay una versión nueva" y se actualiza al pulsar el botón, nunca a mitad de una lección.
+- **Sin conexión:** aviso visible cuando se pierde la conexión.
+- **Pantalla de carga** con el logotipo mientras se descarga la app (en `index.html`), y **pantalla de error** con opciones si algo falla (`LimiteErrores`), para que la app nunca se quede en blanco.
+- Para instalarla desde el móvil hace falta HTTPS: usar la versión publicada (ver "Publicación"). El código de PWA está en `src/pwa.js` y `src/hooks/usePwa.js`.
 
 **Todos los dispositivos:**
 - Diseño mobile-first: una columna en el móvil y una columna centrada en tableta y escritorio.
 - Acciones principales y navegación en la parte inferior, al alcance del pulgar.
-- Zonas seguras de pantallas con notch, modo horizontal y modo oscuro automático.
+- Escritorio (desde 1024 px): menú lateral en lugar de la barra inferior y contenido centrado.
+- Zonas seguras de pantallas con notch, modo horizontal y modo oscuro automático o elegido por el alumno.
 
 **Accesibilidad:**
 - HTML semántico, idioma `es`, un `h1` por pantalla y título de pestaña actualizado.
@@ -82,28 +165,62 @@ La barra inferior tiene cuatro pestañas (Hoy, Progreso, Tutor y Perfil) y se oc
 - El color nunca es la única pista: cada estado lleva también texto.
 
 **Rendimiento en 4G:**
-- Sin librerías de rutas ni de componentes: unos 75 KB de JavaScript comprimido en total.
+- Sin librerías de rutas ni de componentes: unos 80 KB de JavaScript comprimido en total.
 - El reproductor de YouTube solo se carga al pulsar "reproducir", desde el dominio sin cookies.
 
 ## Datos y conexión con el backend
 
-- `src/api/datos.js`: curso de ejemplo *Python desde cero* (pendiente de la [propuesta P4](../propuestas/README.md#p4-contenido-del-curso-de-muestra)). Los vídeos de YouTube están sin seleccionar.
-- `src/api/cliente.js`: única capa de acceso a datos. Hoy devuelve datos de ejemplo y **respuestas simuladas** para el test y el tutor, porque la IA está pendiente de la [propuesta P1](../propuestas/README.md#p1-agentes-de-ia). Para conectar el backend basta con cambiar el cuerpo de estas funciones; las pantallas no cambian.
-- El progreso, el alias y el modo anónimo se guardan en el navegador (`localStorage`). El botón "Reiniciar la demostración", en Perfil, lo borra todo y vuelve a la bienvenida.
+- `src/api/datos.js`: curso de ejemplo *Python desde cero* ([propuesta P4](../propuestas/README.md#p4-contenido-del-curso-de-muestra)). Los vídeos de YouTube están sin seleccionar.
+- `src/api/cliente.js`: única capa de acceso a datos. Las pantallas nunca llaman a `fetch` ni a la IA directamente.
+- La cuenta, el progreso, los ajustes, el alias y el modo anónimo se guardan en el navegador (`localStorage`, clave `reto480-estado-v2`). Si se cambia la forma de los datos guardados, hay que subir la versión de la clave en `src/hooks/useEstado.jsx` y en `index.html`.
+
+**Conectar el backend.** Definir la variable de entorno `VITE_API_URL` con la dirección del backend FastAPI:
+- En local: fichero `frontend/.env.local` con `VITE_API_URL=http://localhost:8000` (no se sube al repositorio).
+- En Netlify: *Site configuration → Environment variables*.
+
+Sin `VITE_API_URL`, o si el backend no responde en 8 segundos, la app usa los datos de ejemplo y las respuestas simuladas. Así la demo nunca se queda sin respuesta. El backend debe permitir por CORS la dirección donde esté publicado el frontend.
+
+**Contrato de la API** (propuesta del frontend, a acordar con backend). Todas las rutas devuelven JSON:
+
+| Función de `cliente.js` | Petición | Cuerpo | Respuesta |
+|---|---|---|---|
+| `obtenerCursos` | `GET /api/cursos` | | `{ cursos: [{ id, titulo, descripcion, nivel, numeroLecciones }] }` |
+| `obtenerTestInicial` | `GET /api/cursos/{id}/test` | | `{ preguntas: [{ id, leccionId, enunciado, opciones }] }` |
+| `evaluarTestInicial` | `POST /api/cursos/{id}/test/evaluacion` | `{ respuestas, esMenor }` | `{ dominio: { leccionId: true }, mensaje }` (mensaje redactado por la IA, agente Diagnóstico) |
+| `corregirRespuestaEscrita` | `POST /api/actividades/correccion` | `{ actividadId, texto }` | `{ correcta, solucion }` |
+| `mensajeProactivoTutor` | `POST /api/mentor/proactivo` | `{ cursoId, leccionId, senal, esMenor }` | `{ texto }` |
+| `preguntarTutor` | `POST /api/mentor/mensaje` | `{ cursoId, leccionId, texto, esMenor }` | `{ texto, derivado }` |
+| `solicitarTutorHumano` | `POST /api/mentor/derivacion` | `{ cursoId, leccionId }` | `{ texto }` |
+
+La IA está en el backend ([propuesta P1](../propuestas/README.md#p1-agentes-de-ia)): Claude prepara el contenido una vez por vídeo y Groq redacta el diagnóstico y responde como mentor. Las claves de la IA nunca llegan al frontend.
+
+## Pruebas
+
+Se usan el ejecutor de pruebas de Node (`node:test`) y Playwright, sin más dependencias.
+
+| Carpeta | Qué comprueba |
+|---|---|
+| `pruebas/unitarias/` | Reglas de negocio en funciones puras de `src/api/`: acceso y alta, menores, datos de la cuenta, contraseñas y planificador de sesión (historias H2 a H5). También reglas de arquitectura: solo `src/api/` usa la red, no hay claves ni llamadas a proveedores de IA, no hay dependencias nuevas y la clave del estado coincide con `index.html`. |
+| `pruebas/e2e/` | La app compilada en Chromium con tamaño de móvil: alta de un adulto y de un menor de 14 años, datos que no se pueden cambiar, cierre e inicio de sesión, funcionamiento sin conexión, accesibilidad básica de las pantallas públicas y peso del JavaScript (menos de 200 KB comprimido). |
+
+`npm run verificar` las ejecuta todas tras compilar, y GitHub Actions lo repite en cada pull request (`.github/workflows/frontend.yml`). Una regla de negocio nueva se escribe como función pura en `src/api/` y se prueba en `pruebas/unitarias/`.
 
 ## Estructura
 
 ```
 frontend/
 ├── index.html
+├── herramientas/        # script de diseño del pato (genera src/api/pato.js)
+├── pruebas/             # unitarias (node:test) y en navegador (Playwright)
 ├── public/              # manifest, service worker e iconos
 └── src/
-    ├── main.jsx         # arranque y registro del service worker
+    ├── main.jsx         # arranque
+    ├── pwa.js           # instalación, actualizaciones y service worker
     ├── App.jsx          # rutas y estructura general
     ├── pantallas/       # una por pantalla del flujo
     ├── componentes/     # piezas reutilizables
-    ├── api/             # datos de ejemplo, cliente de API y planificador
-    ├── hooks/           # navegación (useRuta) y estado del alumno (useEstado)
+    ├── api/             # datos de ejemplo, cliente de API, reglas de acceso y cuenta, planificador y dibujos del pato
+    ├── hooks/           # navegación, estado del alumno, ajustes y PWA
     └── estilos/         # variables de diseño (colores, tipografía, espaciado)
 ```
 
@@ -115,3 +232,4 @@ La navegación usa rutas con `#`, así que funciona en cualquier alojamiento est
 - Directorio base: `frontend`
 - Comando de compilación: `npm run build`
 - Carpeta publicada: `dist` (dentro del directorio base)
+- Variable de entorno (cuando haya backend publicado): `VITE_API_URL`

@@ -1,0 +1,40 @@
+/* Botón flotante del tutor: encima de la acción principal de cada pantalla, en la zona del pulgar. */
+.boton {
+  position: fixed;
+  z-index: 20;
+  right: calc(var(--espacio-4) + env(safe-area-inset-right));
+  bottom: calc(var(--margen-inferior, 0px) + env(safe-area-inset-bottom) + 5.25rem);
+  display: grid;
+  place-items: center;
+  width: var(--alto-boton);
+  height: var(--alto-boton);
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-grafito);
+  color: var(--color-acento);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  transition: transform var(--duracion);
+}
+
+.boton:active {
+  transform: scale(0.94);
+}
+
+.punto {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--color-marca-coral);
+  border: 2px solid var(--color-grafito);
+}
+
+/* Móvil en horizontal: más pegado al borde para no tapar contenido. */
+@media (max-height: 30rem) {
+  .boton {
+    bottom: calc(var(--margen-inferior, 0px) + env(safe-area-inset-bottom) + var(--espacio-3));
+  }
+}

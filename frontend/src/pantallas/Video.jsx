@@ -16,7 +16,7 @@ const FORMATO = {
  * En el modo sin audio muestra la versión en texto; en la sesión exprés, el resumen.
  */
 export function Video({ leccion, paso, numero, total, alSiguiente, alSalir, navegar }) {
-  const { registrarEvento } = useEstado();
+  const { registrarEvento, ponerContextoTutor } = useEstado();
 
   const terminar = () => {
     registrarEvento('contenido_completado', { leccionId: leccion.id, formato: paso.tipo });
@@ -54,6 +54,7 @@ export function Video({ leccion, paso, numero, total, alSiguiente, alSalir, nave
             className={comun.enlaceAccion}
             onClick={(e) => {
               e.preventDefault();
+              ponerContextoTutor({ leccionId: leccion.id, titulo: leccion.titulo });
               navegar('/tutor');
             }}
           >

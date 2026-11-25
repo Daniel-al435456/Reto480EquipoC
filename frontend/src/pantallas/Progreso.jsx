@@ -13,7 +13,11 @@ const ESTADOS = {
   pendiente: { texto: 'Pendiente', Icono: null },
 };
 
-/** Alto de cada etapa del recorrido y posición horizontal (en %) de los nodos a cada lado. */
+/**
+ * Alto de cada etapa del recorrido (en rem, para que crezca con el tamaño de letra elegido)
+ * y su equivalente en las unidades del dibujo del camino. Posición horizontal (en %) de los nodos.
+ */
+const ALTO_ETAPA_REM = 5;
 const ALTO_ETAPA = 76;
 const LADO = 24;
 
@@ -103,7 +107,7 @@ export function Progreso({ navegar }) {
       <ol
         className={estilos.recorrido}
         aria-label="Recorrido del curso"
-        style={{ height: etapas.length * ALTO_ETAPA }}
+        style={{ height: `${etapas.length * ALTO_ETAPA_REM}rem` }}
       >
         <svg
           className={estilos.camino}
@@ -120,7 +124,7 @@ export function Progreso({ navegar }) {
             <li
               key={etapa.id}
               className={`${estilos.etapa} ${estilos[etapa.clave]} ${derecha ? estilos.derecha : ''}`}
-              style={{ top: i * ALTO_ETAPA }}
+              style={{ top: `${i * ALTO_ETAPA_REM}rem` }}
             >
               {etapa.clave === 'meta' ? (
                 <span className={estilos.contenidoEtapa}>

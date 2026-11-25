@@ -25,9 +25,94 @@
     <meta name="apple-mobile-web-app-title" content="480 Academy" />
 
     <title>480 Academy</title>
+
+    <script>
+      // Aplica los ajustes de visualización del alumno antes de que cargue la app, para evitar parpadeos.
+      try {
+        var ajustes = (JSON.parse(localStorage.getItem('reto480-estado-v2')) || {}).ajustes || {};
+        ['tema', 'texto', 'contraste', 'movimiento'].forEach(function (clave) {
+          var valor = ajustes[clave];
+          if (valor && valor !== 'auto' && valor !== 'normal') document.documentElement.dataset[clave] = valor;
+        });
+      } catch (e) {}
+    </script>
+
+    <style>
+      /* Pantalla de carga: se ve mientras se descarga la app y React la sustituye al arrancar. */
+      .carga {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: #f4f6f6;
+        color: #1f2222;
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      }
+      .carga-logo {
+        display: grid;
+        place-items: center;
+        width: 4.5rem;
+        height: 4.5rem;
+        border-radius: 1.25rem;
+        background: #1cf9fc;
+        color: #1f2222;
+        font-weight: 800;
+        font-size: 1.5rem;
+        letter-spacing: -0.02em;
+      }
+      .carga-nombre {
+        font-weight: 800;
+        font-size: 1.25rem;
+        letter-spacing: -0.02em;
+      }
+      .carga-nombre span {
+        color: #ff4950;
+      }
+      .carga-puntos {
+        display: flex;
+        gap: 0.4rem;
+      }
+      .carga-puntos span {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: #007a7d;
+        animation: carga-latido 1s ease-in-out infinite;
+      }
+      .carga-puntos span:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .carga-puntos span:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      @keyframes carga-latido {
+        0%, 100% { opacity: 0.25; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1); }
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-tema='claro']) .carga { background: #1f2222; color: #ffffff; }
+        :root:not([data-tema='claro']) .carga-puntos span { background: #1cf9fc; }
+      }
+      :root[data-tema='oscuro'] .carga { background: #1f2222; color: #ffffff; }
+      :root[data-tema='oscuro'] .carga-puntos span { background: #1cf9fc; }
+      @media (prefers-reduced-motion: reduce) {
+        .carga-puntos span { animation: none; opacity: 1; }
+      }
+      :root[data-movimiento='reducido'] .carga-puntos span { animation: none; opacity: 1; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="carga" role="status">
+        <div class="carga-logo" aria-hidden="true">480</div>
+        <div class="carga-nombre">480<span aria-hidden="true">&gt;</span>Academy</div>
+        <div class="carga-puntos" aria-hidden="true"><span></span><span></span><span></span></div>
+        <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Cargando…</span>
+      </div>
+    </div>
     <noscript>Para usar esta aplicación necesitas activar JavaScript en tu navegador.</noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>

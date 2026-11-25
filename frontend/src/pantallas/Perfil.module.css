@@ -176,3 +176,94 @@
   padding-top: var(--espacio-4);
   background: var(--color-error-suave);
 }
+
+.menor {
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: var(--radio);
+  background: var(--color-acento-suave);
+  font-size: var(--texto-pequeno);
+  line-height: 1.45;
+}
+
+.valorFila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-width: 0;
+}
+
+.valorFila .valor {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seccion h2 {
+  font-size: var(--texto-base);
+}
+
+.filaAlias {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3) var(--espacio-4);
+}
+
+.confirmarBloque {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  border-radius: var(--radio);
+  background: var(--color-error-suave);
+  font-size: var(--texto-pequeno);
+  line-height: 1.5;
+}
+
+.datosIA {
+  gap: var(--espacio-2);
+  font-size: var(--texto-pequeno);
+  line-height: 1.5;
+}
+
+/* Dato de la cuenta de solo lectura (correo, empresa, edad). */
+.datoFijo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--espacio-1) var(--espacio-3);
+  min-height: 3.25rem;
+  margin: 0;
+  padding: var(--espacio-3) var(--espacio-4);
+  font-size: var(--texto-pequeno);
+}
+
+.datoFijo dt {
+  flex: 1 1 9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-weight: 600;
+}
+
+.datoFijo dt span {
+  font-weight: 400;
+  font-size: 0.8125rem;
+}
+
+.datoFijo dd {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-width: 0;
+  margin: 0 0 0 auto;
+  color: var(--color-texto-medio);
+  text-align: right;
+  overflow-wrap: break-word;
+}
+
+.datoFijo dd svg {
+  flex-shrink: 0;
+  color: var(--color-texto-suave);
+}

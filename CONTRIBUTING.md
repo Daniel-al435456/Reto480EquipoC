@@ -44,9 +44,12 @@ Consideramos terminada una issue cuando:
 
 - [ ] Cumple todos sus criterios de aceptación ([SPEC §4](SPEC.md#4-historias-de-usuario)).
 - [ ] Funciona en un móvil real, no solo en el emulador.
+- [ ] Pasa `npm run verificar` (GitHub Actions lo comprueba en la pull request).
 - [ ] Está fusionada en `main` mediante una pull request revisada.
 - [ ] Está registrada en la bitácora.
 
 ## Asistentes de IA para el desarrollo
 
 Cada miembro usa su propio asistente de IA. Todos siguen [AGENTS.md](AGENTS.md). En la bitácora anotamos la herramienta y el modelo utilizados en cada tarea relevante, ya que el cliente lo solicita en la presentación.
+
+Cuando un asistente se equivoca, no nos limitamos a corregir el código: añadimos la regla, la prueba o el límite que lo evita y lo anotamos en [docs/registro-harness.md](docs/registro-harness.md). Revisamos las pruebas que escribe un asistente antes que su implementación.

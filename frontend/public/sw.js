@@ -5,9 +5,12 @@
  * - Resto de ficheros propios: sirve la copia guardada y la actualiza en segundo plano.
  * - Nunca guarda contenido de otros dominios (vídeos de YouTube, API externas).
  *
- * Al cambiar la aplicación de forma importante, sube la versión para descartar la caché antigua.
+ * - Las versiones nuevas esperan a que el alumno pulse "Actualizar" (aviso dentro de la app),
+ *   para no cambiar la aplicación a mitad de una lección.
+ *
+ * Al publicar cambios, sube la versión: así los dispositivos detectan que hay una versión nueva.
  */
-const VERSION = 'v3';
+const VERSION = 'v5';
 const CACHE = `reto480-${VERSION}`;
 const ESENCIALES = [
   './',
@@ -20,7 +23,11 @@ const ESENCIALES = [
 
 self.addEventListener('install', (evento) => {
   evento.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ESENCIALES)));
-  self.skipWaiting();
+});
+
+// La app pide activar la versión nueva cuando el alumno pulsa "Actualizar".
+self.addEventListener('message', (evento) => {
+  if (evento.data === 'activar') self.skipWaiting();
 });
 
 self.addEventListener('activate', (evento) => {

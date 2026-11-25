@@ -108,6 +108,7 @@ h1:focus {
   transform: none;
 }
 
+/* Menos animaciones: por ajuste del sistema o por ajuste del alumno. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -117,4 +118,51 @@ h1:focus {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+:root[data-movimiento='reducido'] *,
+:root[data-movimiento='reducido'] *::before,
+:root[data-movimiento='reducido'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Alto contraste: foco más grueso. */
+:root[data-contraste='alto'] :focus-visible {
+  outline-width: 4px;
+}
+
+/* Pantalla de error (LimiteErrores): estilos globales porque debe funcionar aunque falle el resto. */
+.fallo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  max-width: var(--ancho-contenido);
+  margin: 0 auto;
+  padding: calc(var(--espacio-6) * 2) var(--espacio-5);
+}
+
+.fallo-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+}
+
+.fallo-acciones button {
+  min-height: var(--alto-boton);
+  padding: 0 var(--espacio-5);
+  border: 0;
+  border-radius: var(--radio);
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fallo-acciones .fallo-secundario {
+  background: var(--color-superficie);
+  border: 2px solid var(--color-borde-fuerte);
+  color: var(--color-texto);
 }

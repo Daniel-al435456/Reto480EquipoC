@@ -1,3 +1,4 @@
+import { nombreCorto } from '../api/cuenta.js';
 import { useEffect, useState } from 'react';
 import { obtenerCursos } from '../api/cliente.js';
 import { Pantalla } from '../componentes/Pantalla.jsx';
@@ -22,7 +23,7 @@ export function SeleccionCurso({ navegar }) {
 
   return (
     <Pantalla
-      antetitulo={estado.alias ? `Hola, ${estado.alias}` : undefined}
+      antetitulo={nombreCorto(estado) ? `Hola, ${nombreCorto(estado)}` : undefined}
       titulo="Elige un curso"
       subtitulo="Tu suscripción incluye todo el catálogo."
     >

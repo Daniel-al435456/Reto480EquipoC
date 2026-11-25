@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
+import { iniciarPwa } from './pwa.js';
 import './estilos/base.css';
 
 createRoot(document.getElementById('root')).render(
@@ -9,11 +10,5 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 );
 
-// Registro del service worker (solo en producción, para no interferir con el desarrollo).
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {
-      // Si el navegador no lo permite, la aplicación funciona igual, solo que sin modo sin conexión.
-    });
-  });
-}
+// Instalación, actualizaciones y service worker (este último solo en producción).
+iniciarPwa({ registrarServiceWorker: import.meta.env.PROD });

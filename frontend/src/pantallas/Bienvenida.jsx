@@ -1,14 +1,15 @@
 import { Boton } from '../componentes/Boton.jsx';
-import { IconoReloj, IconoReproducir } from '../componentes/Iconos.jsx';
+import { Orbita } from '../componentes/Orbita.jsx';
+import { PieLegal } from '../componentes/PieLegal.jsx';
+import { useEstado } from '../hooks/useEstado.jsx';
 import { useTituloPantalla } from '../hooks/useTituloPantalla.js';
 import estilos from './Bienvenida.module.css';
 
-/**
- * Bienvenida para quien abre la app por primera vez.
- * Pantalla de los prototipos, aprobada en la propuesta P6.
- */
+/** Pantalla de inicio: presentación, crear cuenta o iniciar sesión, y enlaces legales. */
 export function Bienvenida({ navegar }) {
   const encabezado = useTituloPantalla('Bienvenida');
+  const { estado } = useEstado();
+  const tieneCuenta = Boolean(estado.cuenta);
 
   return (
     <div className={estilos.bienvenida}>
@@ -21,17 +22,7 @@ export function Bienvenida({ navegar }) {
         </span>
       </div>
 
-      <div className={estilos.ilustracion} aria-hidden="true">
-        <span className={estilos.circuloGrande} />
-        <span className={estilos.circuloMedio} />
-        <span className={estilos.circuloAcento} />
-        <span className={estilos.baldosa}>
-          <IconoReproducir tamano={28} />
-        </span>
-        <span className={estilos.pildora}>
-          <IconoReloj tamano={16} /> 10 min
-        </span>
-      </div>
+      <Orbita />
 
       <div className={estilos.texto}>
         <h1 ref={encabezado} tabIndex={-1} className={estilos.titulo}>
@@ -44,9 +35,16 @@ export function Bienvenida({ navegar }) {
         </p>
       </div>
 
-      <Boton anchoCompleto onClick={() => navegar('/alias')}>
-        Empezar
-      </Boton>
+      <div className={estilos.acciones}>
+        <Boton anchoCompleto onClick={() => navegar(tieneCuenta ? '/entrar' : '/registro')}>
+          {tieneCuenta ? 'Iniciar sesión' : 'Crear cuenta'}
+        </Boton>
+        <Boton anchoCompleto variante="secundario" onClick={() => navegar(tieneCuenta ? '/registro' : '/entrar')}>
+          {tieneCuenta ? 'Crear otra cuenta' : 'Ya tengo cuenta'}
+        </Boton>
+      </div>
+
+      <PieLegal navegar={navegar} />
     </div>
   );
 }

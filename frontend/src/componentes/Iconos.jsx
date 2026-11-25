@@ -139,3 +139,24 @@ export const IconoFlecha = (p) => (
     <path d="m9 18 6-6-6-6" />
   </Icono>
 );
+
+/** Símbolo de IA: destellos. */
+export const IconoIA = (p) => (
+  <Icono {...p}>
+    <path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z" />
+    <path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" />
+  </Icono>
+);
+
+export const IconoDescargar = (p) => (
+  <Icono {...p}>
+    <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+  </Icono>
+);
+
+export const IconoSinConexion = (p) => (
+  <Icono {...p}>
+    <path d="M3 3l18 18M8.5 16.5a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 4.2-2.6M14.8 10.3A10 10 0 0 1 19 12.9M2 9a15 15 0 0 1 4.6-3M10.6 4.6A15 15 0 0 1 22 9" />
+    <circle cx="12" cy="20" r="0.6" />
+  </Icono>
+);

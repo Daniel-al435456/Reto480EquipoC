@@ -3,10 +3,17 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test --test-reporter=spec \"pruebas/unitarias/*.test.js\"",
+    "test:e2e": "node --test --test-reporter=spec --test-concurrency=1 \"pruebas/e2e/*.test.js\"",
+    "verificar:rapido": "npm test",
+    "verificar": "npm test && npm run build && npm run test:e2e"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -14,6 +21,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.1",
+    "playwright": "^1.63.0",
     "vite": "^8.1.0"
   }
 }

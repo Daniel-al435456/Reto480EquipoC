@@ -210,10 +210,13 @@
   display: grid;
   place-items: center;
   min-height: 3rem;
+  padding: var(--espacio-1) var(--espacio-2);
   border-radius: 0.875rem;
   color: var(--color-texto-suave);
   font-weight: 700;
   font-size: 0.9375rem;
+  line-height: 1.2;
+  text-align: center;
   cursor: pointer;
 }
 

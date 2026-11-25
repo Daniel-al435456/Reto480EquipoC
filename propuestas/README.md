@@ -2,7 +2,7 @@
 
 # Propuestas
 
-Propuestas del equipo y su estado. Mientras una propuesta no se apruebe, no forma parte de la especificación. P1 a P6 se aprobaron en la reunión del 24/11/2026 ([Bitácora, sesión 2](../BITACORA.md#sesión-2--martes-24112026)); su contenido está pendiente de trasladarse a SPEC.md y a docs/decisiones.md.
+Propuestas del equipo y su estado. Mientras una propuesta no se apruebe, no forma parte de la especificación. P1 a P6 se aprobaron en la reunión del 24/11/2026 ([Bitácora, sesión 2](../BITACORA.md#sesión-2--martes-24112026)); su contenido se ha trasladado a SPEC.md y a docs/decisiones.md.
 
 **Cómo votar:** cada miembro edita la tabla de votación de la propuesta (icono del lápiz en GitHub) con su voto (a favor, en contra o abstención) y, si quiere, un comentario. Una propuesta se aprueba con mayoría. Al aprobarse, su contenido se traslada a SPEC.md y a docs/decisiones.md.
 
@@ -14,6 +14,7 @@ Propuestas del equipo y su estado. Mientras una propuesta no se apruebe, no form
 | P4 | [Contenido del curso de muestra](#p4-contenido-del-curso-de-muestra) | Aprobada (24/11) |
 | P5 | [Decisión de producto](#p5-decisión-de-producto) | Aprobada con un añadido (24/11) |
 | P6 | [Pantallas de bienvenida, alias y perfil](#p6-pantallas-de-bienvenida-alias-y-perfil) | Aprobada (24/11) |
+| P7 | [Cuenta de usuario, páginas legales y tutor con forma de pato](#p7-cuenta-de-usuario-páginas-legales-y-tutor-con-forma-de-pato) | En votación |
 
 ---
 
@@ -184,6 +185,44 @@ Afecta a: SPEC §2 y frontend.
 - La barra inferior pasa a tener cuatro pestañas: Hoy, Progreso, Tutor y Perfil.
 
 **Resultado.** Aprobada en la reunión del 24/11/2026.
+
+---
+
+## P7. Cuenta de usuario, páginas legales y tutor con forma de pato
+
+Afecta a: SPEC §2, propuesta P3 (modelo de datos), frontend y backend.
+
+**Resumen.** Sustituir el inicio de demostración por una cuenta de usuario con registro e inicio de sesión, añadir las páginas legales, separar el perfil en secciones y dar al tutor la forma opcional de un pato. Está implementado en el frontend; la cuenta se guarda solo en el dispositivo hasta que exista el backend.
+
+**Detalle.**
+- **Bienvenida:** botones "Crear cuenta" e "Iniciar sesión", el pato en el círculo de marca con las ventajas de la app girando a su alrededor (se puede girar con el dedo o el ratón) y pie con privacidad, cookies y aviso legal.
+- **Registro en cuatro pasos:**
+  1. Cuenta: empresa, nombre, apellidos, correo, contraseña y puesto o área (opcional), con aceptación de la política de privacidad.
+  2. Tramo de edad y, si es menor de 14 años, consentimiento de la familia.
+  3. Alias y avatar.
+  4. Preferencias: forma del tutor, tema, tamaño del texto y tutor con IA.
+- **Datos que no se cambian desde la app:** correo (es el usuario para iniciar sesión), empresa, tramo de edad y consentimiento de la familia. Se fijan en el alta y solo puede corregirlos la academia. El alumno sí puede cambiar su nombre, apellidos, puesto, alias, modo anónimo, apariencia, tutor con IA y contraseña.
+- **Perfil por secciones:** Mi cuenta, Apariencia, Modo de estudio habitual, Seguridad (contraseña, cerrar sesión, eliminar cuenta) y Privacidad y datos (tutor con IA, descargar mis datos, borrar el historial del tutor).
+- **Tutor con IA opcional:** el alumno puede desactivarlo; entonces la app ofrece solo el tutor de la academia.
+- **Páginas legales:** borradores de privacidad, cookies y aviso legal basados en P3. Faltan los datos de 480 Academy (razón social, NIF, dirección y contacto) y la revisión del texto por la academia.
+- **Tutor con forma de pato:** pato (con gafas cian), pata (con lazo coral) o solo texto. Respira, parpadea, se mira la cola de vez en cuando y abre el pico mientras el texto aparece letra a letra. Se inspira en la técnica del "pato de goma" de la programación: explicar el problema en voz alta ayuda a resolverlo.
+
+**Puntos a decidir.**
+- Si la empresa es obligatoria (ahora lo es) y si debe elegirse de una lista de empresas clientes de 480 Academy en lugar de escribirse.
+- Si el nombre y los apellidos deben poder cambiarse (por ejemplo, si aparecen en certificados) y cómo se pide a la academia que corrija un dato fijo: un formulario en la app, un correo o desde su panel.
+- Cómo se actualiza el tramo de edad cuando el alumno cumple 14 o 18 años, ya que solo se guarda el tramo y no la fecha de nacimiento.
+- Si se mantienen las dos formas del pato o solo una.
+- Rutas del backend para la cuenta (registro, inicio de sesión, cambio y recuperación de contraseña, eliminación) y campos nuevos en la tabla de usuarios del modelo de datos de P3.
+- Quién solicita a la academia los datos para las páginas legales.
+
+### Votación
+
+| Nombre | Voto | Comentarios |
+|---|---|---|
+| Daniel | | |
+| Jeremy | | |
+| Talia | | |
+| Andrea | | |
 
 ---
 

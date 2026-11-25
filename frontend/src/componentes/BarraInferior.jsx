@@ -10,7 +10,10 @@ const SECCIONES = [
 
 const OTRAS = SECCIONES.slice(1).map((s) => s.ruta);
 
-/** Navegación principal, en la parte inferior para usarla con una mano. */
+/**
+ * Navegación principal: en el móvil, abajo para usarla con una mano;
+ * en el escritorio, un menú lateral con el nombre de la academia.
+ */
 export function BarraInferior({ ruta, navegar, avisoTutor }) {
   // La ficha de una lección se abre desde Progreso, así que esa pestaña queda marcada.
   const enProgreso = ruta.startsWith('/progreso') || ruta.includes('/leccion/');
@@ -22,6 +25,9 @@ export function BarraInferior({ ruta, navegar, avisoTutor }) {
 
   return (
     <nav className={estilos.barra} aria-label="Navegación principal">
+      <span className={estilos.marca} aria-hidden="true">
+        480<span className={estilos.coral}>&gt;</span>Academy
+      </span>
       <ul className={estilos.lista}>
         {SECCIONES.map(({ ruta: destino, texto, Icono }) => (
           <li key={destino}>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { preguntarMentor, solicitarTutorHumano, usaBackend } from '../api/cliente.js';
+import { estadoServidor, preguntarMentor, solicitarTutorHumano } from '../api/cliente.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { IconoCerrar, IconoEnviar, IconoMentor } from '../componentes/Iconos.jsx';
 import { Pato } from '../componentes/Pato.jsx';
@@ -39,6 +39,10 @@ export function Mentor({ navegar }) {
   }, []);
   const ultimoMentor = [...estado.mensajesMentor].reverse().find((m) => m.autor === 'mentor');
   const datosConsulta = { cursoId: estado.cursoId, leccionId: contexto?.leccionId, ...contextoIA(estado) };
+  const [conectado, setConectado] = useState(null);
+  useEffect(() => {
+    estadoServidor().then(setConectado);
+  }, []);
   const [texto, setTexto] = useState('');
   const [esperando, setEsperando] = useState(false);
   const finConversacion = useRef(null);
@@ -127,8 +131,8 @@ export function Mentor({ navegar }) {
       )}
 
       <p className={comun.secundario}>
-        Respuestas generadas con IA a partir del contenido del curso. Si lo necesitas, puedes hablar con un tutor de la
-        academia.{!usaBackend && ' Sin conexión con el servidor, las respuestas son de ejemplo.'}
+        Respuestas basadas en el contenido del curso. Si lo necesitas, puedes hablar con un tutor de la
+        academia.{conectado === false && ' Sin conexión con el servidor, las respuestas son de ejemplo.'}
       </p>
 
       <ol className={estilos.conversacion} role="log" aria-label="Conversación con el mentor" aria-live="polite">

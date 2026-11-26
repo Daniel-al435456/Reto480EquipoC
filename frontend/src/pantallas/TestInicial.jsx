@@ -68,7 +68,8 @@ export function TestInicial({ cursoId, modo, navegar }) {
       }
       setFase('evaluando');
       const resultado = await evaluarTestInicial(cursoId, respuestas, contextoIA(estado));
-      setExplicacionIA(resultado.origen === 'api' ? resultado.mensaje : null);
+      // Solo se dice que lo ha redactado la IA cuando el backend lo confirma, no por venir del servidor.
+      setExplicacionIA(resultado.origen === 'api' && resultado.redactadoPorIa ? resultado.mensaje : null);
       guardarTest(resultado.dominio);
       registrarEvento('test_completado', {
         cursoId,

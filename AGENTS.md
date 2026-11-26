@@ -44,7 +44,7 @@ Detalle en [SPEC](SPEC.md) y [propuestas](propuestas/README.md). Las marcadas co
 - Toda llamada a la IA pasa por `backend/app/privacidad.py`: seudónimo en lugar de identidad y texto libre sin datos personales ([SPEC §6](SPEC.md#6-modelo-de-datos-y-flujo-hacia-la-ia)).
 - A la IA solo llega si el alumno es menor o no, nunca su fecha de nacimiento ni su edad. La fecha se guarda para que el tramo cambie solo al cumplir 14 o 18 años. ✓
 - Con menos de 14 años, el alumno no continúa sin el consentimiento de su familia. ✓
-- A la IA, junto a la consulta, solo llegan además la personalidad elegida para el tutor y cómo quiere que se dirija al alumno (femenino, masculino o neutro). ✓
+- A la IA, junto a la consulta, solo llegan además la personalidad elegida para el mentor y cómo quiere que se dirija al alumno (femenino, masculino o neutro). ✓
 - La IA recomienda, pero no decide: el alumno puede abrir cualquier lección aunque el test diga que la domina. ✓
 - El planificador de sesión y el detector de señales funcionan con reglas, sin IA. La sesión cabe en el tiempo elegido (±1 min) y sin audio no hay vídeo. ✓
 - El mentor solo usa el contenido del curso, cita el fragmento, admite 30 mensajes al día por alumno y deriva a un tutor humano ante señales de malestar.
@@ -54,7 +54,7 @@ Detalle en [SPEC](SPEC.md) y [propuestas](propuestas/README.md). Las marcadas co
 
 | Aspecto | Convención |
 |---|---|
-| Idioma | Español en interfaz, comentarios y documentación. Tuteo y sin tecnicismos en la interfaz. Se dice "alumno". |
+| Idioma | Español en interfaz, comentarios y documentación. Tuteo y sin tecnicismos en la interfaz. Se dice "alumno". "Mentor" es siempre la IA y "tutor", la persona de la academia, también en el código (`mentorIA`, `Mentor.jsx`, `solicitarTutorHumano`). |
 | Identificadores de dominio | Español sin tildes ni ñ (`alumno`, `sesion`, `anio`), iguales en base de datos, API y frontend |
 | Identificadores técnicos | Inglés cuando son términos del framework (`router`, `hook`, `props`) |
 | Formato | UTF-8 y LF. 2 espacios en JavaScript, CSS, JSON y Markdown; 4 en Python |

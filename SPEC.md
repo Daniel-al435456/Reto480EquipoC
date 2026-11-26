@@ -24,7 +24,7 @@ Adulto o adolescente, con perfiles y experiencia muy diversos, que estudia princ
 | 2 | Test inicial | Preguntas tipo test para conocer el nivel del alumno. |
 | 3 | Vídeo | Reproductor del vídeo con su descripción. |
 | 4 | Actividades | Ejercicios de verdadero o falso y de respuesta escrita. |
-| 5 | Tutor | Chat con el tutor virtual ("¿Dudas?"). |
+| 5 | Mentor | Chat con el mentor, el tutor virtual con IA ("¿Dudas?"). En el boceto se llamaba "Tutor". |
 | 6 | Progreso | Recorrido del curso con las etapas completadas y la meta. |
 
 Pantallas añadidas en la [propuesta P6](propuestas/README.md#p6-pantallas-de-bienvenida-alias-y-perfil), procedentes de los prototipos:
@@ -35,7 +35,9 @@ Pantallas añadidas en la [propuesta P6](propuestas/README.md#p6-pantallas-de-bi
 | 8 | Alias anónimo | El alumno elige un alias con un avatar; en modo anónimo, los tutores le ven con ese alias. |
 | 9 | Perfil | Alias y modo anónimo, cursos, datos que usa la IA, modo de estudio habitual, tamaño del texto y tema. |
 
-La barra inferior tiene cuatro pestañas: Hoy, Progreso, Tutor y Perfil.
+La barra inferior tiene cuatro pestañas: Hoy, Progreso, Mentor y Perfil.
+
+**Nomenclatura** (acordada el 25/11/2026): "mentor" es siempre la IA y "tutor", la persona de la academia.
 
 ---
 
@@ -46,7 +48,7 @@ La barra inferior tiene cuatro pestañas: Hoy, Progreso, Tutor y Perfil.
 | **Los alumnos se saltan los vídeos** | Vídeos más cortos, gamificados y adaptados al nivel del alumno. |
 | **Los itinerarios son iguales para todos** | Itinerarios personalizados según el nivel y el tipo de estudiante. |
 | **No se sabe si el alumno aprende** | Seguimiento continuo mediante actividades durante el módulo, no solo con el examen final. |
-| **El acompañamiento no llega a todos** | Un tutor virtual que pregunta al alumno y al que el alumno puede preguntar, con un papel proactivo. |
+| **El acompañamiento no llega a todos** | Un mentor con IA que pregunta al alumno y al que el alumno puede preguntar, con un papel proactivo, y que deriva a un tutor de la academia cuando hace falta. |
 
 ![Respuesta a los problemas, hoja de la sesión 1](docs/img/respuesta-problemas.jpg)
 
@@ -66,7 +68,7 @@ Aprobadas el 24/11/2026 ([propuesta P2](propuestas/README.md#p2-historias-de-usu
 | H6 | alumno bloqueado | recibir ayuda sin tener que pedirla | no abandonar | Imprescindible | Tras 2 fallos en el mismo concepto, o al abandonar un fragmento antes de la mitad, el mentor ofrece una explicación alternativa en ≤ 3 s, basada exclusivamente en el contenido del curso. |
 | H7 | alumno | consultar dudas al mentor y solicitar un tutor | sentirme acompañado | Deseable | El mentor responde con contenido del curso y cita el fragmento. La opción "Hablar con un tutor" registra la derivación. |
 | H8 | alumno, o su familia si es menor | conocer y borrar los datos que usa la IA | confiar en la plataforma | Deseable | La pantalla de privacidad muestra los datos enviados a la IA. La opción de borrado elimina el historial del mentor. |
-| H9 | alumno | acceder al tutor desde cualquier pantalla mediante un símbolo de IA | resolver dudas sin perder el punto en el que estoy | Deseable | Botón visible en todas las pantallas salvo el test inicial y la bienvenida. Abre el chat con la lección actual como contexto. |
+| H9 | alumno | acceder al mentor desde cualquier pantalla mediante un símbolo de IA | resolver dudas sin perder el punto en el que estoy | Deseable | Botón visible en todas las pantallas salvo el test inicial y la bienvenida. Abre el chat con la lección actual como contexto. |
 | — | tutor | consultar un panel de alumnos en riesgo | priorizar mi dedicación | Fuera de alcance | El cliente ha solicitado centrar el prototipo en el alumno. Se plantea como evolución. |
 
 ---
@@ -212,7 +214,7 @@ Según las prioridades aprobadas en [§4](#4-historias-de-usuario):
 | Entra | Historias |
 |---|---|
 | Sí, imprescindible | H1 test inicial, H2 itinerario sin lo que ya domina, H3 modo sin audio, H4 sesión de 5, 10 o 20 minutos, H5 comprobaciones, H6 mentor proactivo |
-| Si da tiempo (deseable) | H7 dudas al mentor y tutor humano, H8 datos que usa la IA y borrado, H9 tutor desde cualquier pantalla |
+| Si da tiempo (deseable) | H7 dudas al mentor y tutor humano, H8 datos que usa la IA y borrado, H9 mentor desde cualquier pantalla |
 | No | Panel de tutores: el cliente pidió centrar el prototipo en el alumno |
 
 Del mentor proactivo se implementan las señales de bloqueo (2 fallos seguidos) y abandono; inactividad y racha quedan para después. Sin ellas el mentor sigue respondiendo cuando el alumno pregunta.

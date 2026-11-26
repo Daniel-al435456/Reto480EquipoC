@@ -196,7 +196,7 @@ Al arrancar, la app comprueba una vez si el backend responde en `/salud` (3 segu
 | Función de `cliente.js` | Petición | Cuerpo | Respuesta |
 |---|---|---|---|
 | `obtenerCursos` | `GET /api/cursos` | | `{ cursos: [{ id, titulo, descripcion, nivel, numeroLecciones }] }` |
-| `obtenerCursoCompleto` | `GET /api/cursos/{id}/lecciones` | | `{ id, titulo, descripcion, nivel, lecciones: [...] }` (lecturas, vídeos, duraciones y actividades; sin preguntas del test inicial) |
+| `obtenerCursoCompleto` | `GET /api/cursos/{id}/lecciones` | | `{ id, titulo, descripcion, nivel, lecciones: [...] }` (lecturas, vídeos, duraciones y actividades; sin preguntas del test inicial). Cada lección lleva su trozo de vídeo: `inicioS` y, si no llega al final, `finS`, en segundos |
 | `obtenerTestInicial` | `GET /api/cursos/{id}/test` | | `{ preguntas: [{ id, leccionId, enunciado, opciones }] }` (sin la respuesta correcta) |
 | `evaluarTestInicial` | `POST /api/cursos/{id}/test/evaluacion` | `{ respuestas, esMenor, personalidad, tratamiento }` | `{ dominio: { leccionId: true }, mensaje, redactadoPorIa }` (con la #16, el mensaje lo redacta el agente Diagnóstico; mientras, es una plantilla y `redactadoPorIa` es `false`) |
 | `corregirRespuestaEscrita` | `POST /api/actividades/correccion` | `{ actividadId, texto }` | `{ correcta, solucion }` |

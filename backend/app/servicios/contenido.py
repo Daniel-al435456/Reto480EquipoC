@@ -1,9 +1,15 @@
 """Contenido del curso: catálogo, test inicial y corrección de actividades.
 
-Mientras el curso no esté cargado en PostgreSQL (issue #15), el contenido se lee
-de `app/datos/cursos-ejemplo.json`, la misma copia que usa el frontend
-(se genera con `frontend/herramientas/exportar-curso.mjs`). Cuando esté la base
-de datos, solo cambia `_cursos()`: las rutas y el contrato siguen igual.
+El curso sale de una de dos fuentes, siempre con la misma forma (issue #40):
+
+  - Con `DATABASE_URL`, de PostgreSQL (`app/servicios/cursos_bd.py`), cargado antes con
+    `migraciones/cargar_curso.sh`.
+  - Sin `DATABASE_URL`, de `app/datos/cursos-ejemplo.json`, la misma copia que usa el frontend
+    (se genera con `frontend/herramientas/exportar-curso.mjs`). Así se puede arrancar el backend
+    sin instalar PostgreSQL.
+
+Si `DATABASE_URL` está definida, el curso sale solo de PostgreSQL: si falla, no se recurre al JSON
+a escondidas, para que un error de la base de datos no pase desapercibido.
 """
 
 from __future__ import annotations
@@ -24,13 +30,36 @@ from app.esquemas import (
     SalidaEvaluacion,
     SalidaTest,
 )
+from app.persistencia import hay_base_de_datos
+from app.servicios import cursos_bd
 
 ARCHIVO_CURSOS = Path(__file__).resolve().parent.parent / "datos" / "cursos-ejemplo.json"
 
 
-@lru_cache(maxsize=1)
 def _cursos() -> list[dict[str, Any]]:
-    """Cursos disponibles. Se leen una sola vez por proceso."""
+    """Cursos disponibles, de PostgreSQL o del JSON de ejemplo.
+
+    De PostgreSQL se leen en cada petición, sin guardarlos en memoria: así, tras volver a cargar el
+    curso con `cargar_curso.sh`, el backend sirve lo nuevo sin reiniciarlo. Son pocas filas.
+    """
+    if hay_base_de_datos():
+        return cursos_bd.leer_cursos()
+    return _cursos_del_json()
+
+
+def origen_del_curso() -> str:
+    """Frase para la terminal al arrancar: de dónde sale el curso y cómo cambiarlo."""
+    if hay_base_de_datos():
+        return "Curso: PostgreSQL (DATABASE_URL)."
+    return (
+        "Curso: JSON de ejemplo, porque no hay DATABASE_URL. Para leerlo de PostgreSQL, "
+        "ver 'Conectar la base de datos' en backend/README.md."
+    )
+
+
+@lru_cache(maxsize=1)
+def _cursos_del_json() -> list[dict[str, Any]]:
+    """Cursos del JSON de ejemplo. Se leen una sola vez por proceso."""
     return json.loads(ARCHIVO_CURSOS.read_text(encoding="utf-8"))["cursos"]
 
 

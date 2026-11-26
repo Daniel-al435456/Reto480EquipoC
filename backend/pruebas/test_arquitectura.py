@@ -97,6 +97,21 @@ def test_los_routers_no_acceden_a_la_base_de_datos() -> None:
     assert not culpables, f"Los routers tocan la base de datos: {', '.join(culpables)}"
 
 
+def test_solo_persistencia_abre_conexiones_con_la_base_de_datos() -> None:
+    """Issue #40: un único módulo habla con PostgreSQL, como privacidad.py con la IA.
+
+    Así la conexión, su configuración y sus errores se controlan en un solo sitio.
+    """
+    privilegiado = CARPETA_APP / "persistencia.py"
+    culpables = [
+        str(ruta.relative_to(RAIZ))
+        for ruta in _ficheros_python()
+        if ruta != privilegiado
+        and re.search(r"\b(?:import|from)\s+(?:psycopg|sqlalchemy)\b", _fuente(ruta))
+    ]
+    assert not culpables, f"Conexiones con la base de datos fuera de persistencia.py: {culpables}"
+
+
 def test_el_esquema_de_la_base_de_datos_solo_vive_en_migraciones() -> None:
     """AGENTS.md: los cambios de esquema solo con scripts en backend/migraciones/."""
     culpables = []

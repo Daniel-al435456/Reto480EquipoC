@@ -1,13 +1,17 @@
 -- Pruebas de la carga del curso de ejemplo en la base de datos (issue #15).
--- Las ejecuta probar.sh sobre una base de datos temporal, en tres fases, después de cada carga:
+-- Las ejecuta probar.sh sobre una base de datos temporal, en cuatro fases, después de cada carga:
 --   primera: tras cargar el fichero por primera vez. Además crea los datos de un alumno.
 --   segunda: tras volver a cargar el mismo fichero: no se duplica nada ni se borran datos de alumnos.
 --   cambios: tras cargar el fichero con un vídeo ya elegido y una actividad menos.
--- Variables: datos (el JSON que se acaba de cargar) y fase.
--- Lo esperado se calcula a partir del JSON, así que las pruebas siguen valiendo si cambia el contenido del curso.
+--   grande:  tras cargar el fichero con más de 128 KB (como cuando lleve las transcripciones).
+-- Recibe la variable de psql fase y, en la variable de entorno ARCHIVO_CURSO, la ruta del JSON que se
+-- acaba de cargar. Lo esperado se calcula a partir de ese JSON, así que las pruebas siguen valiendo
+-- si cambia el contenido del curso.
 
 \set ON_ERROR_STOP 1
 \set QUIET 1
+-- psql lee el fichero él mismo: pasarlo como argumento falla a partir de 128 KB.
+\set datos `cat -- "$ARCHIVO_CURSO"`
 
 CREATE FUNCTION pg_temp.comprobar(condicion boolean, descripcion text) RETURNS void
 LANGUAGE plpgsql AS $$

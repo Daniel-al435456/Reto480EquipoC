@@ -98,7 +98,9 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 - Las actividades son preguntas de comprobación de su lección. Las de verdadero o falso se guardan con dos opciones, "Verdadero" y "Falso".
 - Las preguntas del test inicial son de diagnóstico: van unidas al concepto de su lección, no a la lección.
 
-`probar.sh` crea dos bases de datos temporales y las borra al terminar; no toca la base de datos de trabajo. En la primera aplica las migraciones y ejecuta `pruebas.sql`. En la segunda carga el curso tres veces y, tras cada carga, ejecuta `pruebas_carga.sql`: la primera vez, la segunda (no duplica nada ni borra los datos de un alumno) y una tercera con un vídeo ya elegido y una actividad menos.
+`probar.sh` crea dos bases de datos temporales y las borra al terminar; no toca la base de datos de trabajo. En la primera aplica las migraciones y ejecuta `pruebas.sql`. En la segunda carga el curso cuatro veces y, tras cada carga, ejecuta `pruebas_carga.sql`: la primera vez, la segunda (no duplica nada ni borra los datos de un alumno), una tercera con un vídeo ya elegido y una actividad menos, y una cuarta con un fichero de más de 128 KB.
+
+`cargar_curso.sh` no pasa el JSON a `psql` como argumento: le da la ruta en la variable de entorno `ARCHIVO_CURSO` y `cargar_curso.sql` lo lee él mismo. Linux no admite un argumento de más de 128 KB, y el curso con las transcripciones de los vídeos lo supera.
 
 ### Añadir un cambio de esquema
 

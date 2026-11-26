@@ -29,6 +29,10 @@ version = {attr = "app.VERSION"}
 [tool.setuptools.packages.find]
 include = ["app*"]
 
+# El curso de ejemplo (app/datos/) viaja con el paquete hasta que esté en la base de datos.
+[tool.setuptools.package-data]
+app = ["datos/*.json"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"

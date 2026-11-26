@@ -6,10 +6,30 @@ API que usa la PWA. El frontend nunca habla con la IA: toda llamada a los modelo
 pasa por este servidor y por el filtro de privacidad (`app/privacidad.py`, previsto
 en la Fase 2).
 
-Estado: la **base de datos ya está creada** (issue #14) y el **servidor está en fase 1**
-(esqueleto y harness de comprobación, issue #12). Pendiente en la Fase 2: la conexión
-real entre el servidor y PostgreSQL, `app/privacidad.py`; los endpoints de negocio
-siguen en la issue #13.
+Estado: la **base de datos ya está creada** (issue #14) y el servidor tiene las
+**rutas que usa el frontend** (issue #13), con el curso de ejemplo y el mentor sin IA.
+Pendiente: la conexión entre el servidor y PostgreSQL (el curso se lee de momento de
+`app/datos/cursos-ejemplo.json`), `app/privacidad.py` y el agente Mentor (issue #16).
+
+## Rutas
+
+Todas bajo `/api`, salvo la de salud. Entrada y salida en JSON con los campos en
+camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas en
+`http://localhost:8000/docs`.
+
+| Ruta | Qué hace | De momento |
+|---|---|---|
+| `GET /salud` | Comprueba que el servidor responde | |
+| `GET /api/cursos` | Catálogo de cursos | Curso de ejemplo en JSON |
+| `GET /api/cursos/{curso_id}/test` | Preguntas del test inicial, sin la respuesta correcta | Curso de ejemplo en JSON |
+| `POST /api/cursos/{curso_id}/test/evaluacion` | Corrige el test con reglas y explica el itinerario | Mensaje de plantilla; con la #16, el agente Diagnóstico |
+| `POST /api/actividades/correccion` | Corrige una respuesta escrita por palabras clave | |
+| `POST /api/mentor/mensaje` | Responde a una consulta con la personalidad y el trato elegidos | Respuesta de respaldo sin IA; con la #16, el agente Mentor |
+| `POST /api/mentor/proactivo` | Mensaje del mentor cuando el alumno se bloquea | Respuesta de respaldo sin IA |
+| `POST /api/mentor/derivacion` | Pasa la consulta a un tutor de la academia | Solo confirma; guardarla necesita la base de datos |
+
+El curso de ejemplo es una copia del del frontend. Si cambia `frontend/src/api/datos.js`,
+se regenera con `node herramientas/exportar-curso.mjs` desde `frontend/`.
 
 ## Requisitos
 
@@ -101,6 +121,7 @@ Las mismas comprobaciones se ejecutan solas en cada pull request
 | `app/esquemas.py` | Contratos de entrada y salida (Pydantic) |
 | `app/errores.py` | Formato único de error: `{"error", "mensaje"}` |
 | `app/config.py` | Variables de entorno. Aquí no se escribe ningún valor secreto |
+| `app/datos/` | Curso de ejemplo en JSON, hasta que esté cargado en la base de datos (#15) |
 | `app/privacidad.py` | Previsto (Fase 2): único módulo que hablará con la IA (SPEC §5) |
 | `migraciones/` | Único origen del esquema de la base de datos |
 | `pruebas/` | Pruebas por endpoint y pruebas de arquitectura |

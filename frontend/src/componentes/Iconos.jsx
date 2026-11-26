@@ -36,7 +36,7 @@ export const IconoProgreso = (p) => (
   </Icono>
 );
 
-export const IconoTutor = (p) => (
+export const IconoMentor = (p) => (
   <Icono {...p}>
     <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z" />
   </Icono>

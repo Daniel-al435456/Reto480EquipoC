@@ -48,7 +48,7 @@ const MIRAR_COLA = [
 ];
 
 /**
- * Pato tutor en pixel art. Es decorativo: el texto del tutor es lo importante.
+ * Pato mentor en pixel art. Es decorativo: el texto del mentor es lo importante.
  *
  * - variante: "pato" (con gafas) o "pata" (con lazo).
  * - cara: cara que se muestra (por ejemplo, "abierto" mientras habla). Si no se indica, el pato está en reposo.

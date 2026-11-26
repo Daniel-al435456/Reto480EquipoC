@@ -14,6 +14,7 @@
  */
 import { cursos } from './datos.js';
 import { planificarSesion as planificar } from './planificador.js';
+import { frasesMentor } from './mentor.js';
 
 const esperar = (ms) => new Promise((resolver) => setTimeout(resolver, ms));
 
@@ -135,50 +136,54 @@ export function corregirRespuestaEscrita(actividad, texto) {
 }
 
 /**
- * Mensaje proactivo del tutor ante una señal de bloqueo.
- * contexto: { cursoId, alias, esMenor }. Devuelve el texto.
+ * Mensaje proactivo del mentor ante una señal de bloqueo.
+ * contexto: { cursoId, esMenor, personalidad, tratamiento }. Devuelve el texto.
  */
-export async function mensajeProactivoTutor(leccion, contexto = {}) {
+export async function mensajeProactivoMentor(leccion, contexto = {}) {
   const { texto } = await conRespaldo(
     '/api/mentor/proactivo',
     { ...contexto, leccionId: leccion.id, senal: 'bloqueo' },
     async () => {
       await esperar(300);
-      return {
-        texto: `Veo que «${leccion.titulo}» se te está resistiendo. Te lo cuento de otra forma: ${leccion.resumen} ¿Lo repasamos juntos?`,
-      };
+      const frases = frasesMentor(contexto.personalidad, contexto.tratamiento);
+      return { texto: `«${leccion.titulo}». ${frases.atasco} ${leccion.resumen} ${frases.reintento}` };
     },
   );
   return texto;
 }
 
 /**
- * Respuesta del tutor (agente Mentor) a una consulta del alumno.
- * contexto: { cursoId, leccionId, alias, esMenor }. leccionId es la lección de la que se habla, si la hay.
+ * Respuesta del mentor (agente Mentor) a una consulta del alumno.
+ * contexto: { cursoId, leccionId, esMenor, personalidad, tratamiento }. leccionId es la lección de la que se habla, si la hay.
  * Devuelve { texto, derivado, origen }.
  */
-export function preguntarTutor(texto, contexto = {}) {
-  return conRespaldo('/api/mentor/mensaje', { ...contexto, texto }, () => respuestaTutorSimulada(texto, contexto));
+export function preguntarMentor(texto, contexto = {}) {
+  return conRespaldo('/api/mentor/mensaje', { ...contexto, texto }, () => respuestaMentorSimulada(texto, contexto));
 }
 
-async function respuestaTutorSimulada(texto, { cursoId, leccionId }) {
+async function respuestaMentorSimulada(texto, { cursoId, leccionId, personalidad, tratamiento }) {
+  const frases = frasesMentor(personalidad, tratamiento);
   await esperar(700);
   const curso = obtenerCurso(cursoId) ?? cursos[0];
   const consulta = normalizar(texto);
   const leccion =
-    curso.lecciones.find((l) => consulta.includes(normalizar(l.concepto)) || consulta.includes(normalizar(l.id))) ??
+    curso.lecciones.find((l) => {
+      // "variable" también encuentra la lección de "variables".
+      const raiz = normalizar(l.concepto).replace(/e?s$/, '');
+      return consulta.includes(raiz) || consulta.includes(normalizar(l.id));
+    }) ??
     curso.lecciones.find((l) => l.id === leccionId);
   if (leccion) {
     return {
-      texto: `Sobre «${leccion.titulo}»: ${leccion.resumen} Si quieres, puedes repasarlo en la lección correspondiente.`,
+      texto: `${frases.respuesta} «${leccion.titulo}»: ${leccion.resumen} ${frases.cierre}`,
     };
   }
   if (consulta.includes('ejemplo')) {
-    return { texto: 'Un ejemplo sencillo: edad = 18 crea una variable, y print(edad) muestra su valor por pantalla.' };
+    return { texto: `${frases.respuesta} edad = 18 crea una variable, y print(edad) muestra su valor por pantalla.` };
   }
   return {
     texto:
-      'Buena pregunta. ¿Me dices de qué tema es? Por ejemplo: variables, condicionales, bucles, listas o funciones. Si prefieres, puedes pedir ayuda a un tutor.',
+      `${frases.aclarar} Por ejemplo: variables, condicionales, bucles, listas o funciones. Si prefieres, puedes pedir ayuda a un tutor.`,
   };
 }
 

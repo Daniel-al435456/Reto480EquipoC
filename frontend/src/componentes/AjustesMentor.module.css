@@ -1,0 +1,13 @@
+.texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--espacio-1) 0;
+}
+
+.ejemplo {
+  margin-top: var(--espacio-1);
+  font-size: var(--texto-pequeno);
+  font-style: italic;
+  color: var(--color-texto-medio);
+}

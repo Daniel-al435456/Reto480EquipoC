@@ -20,13 +20,16 @@ Las tablas se nombran según `AGENTS.md` y el modelo aprobado en `SPEC.md` §6
 
 ## Cómo se aplican
 
-Todavía no hay ningún script: el primero lo creará la **issue #14** (diseño de
-las tablas) con el modelo de la `SPEC.md` §6. Cuando exista, se aplica así:
+Las migraciones se aplican con los scripts de esta carpeta (issue #14), siempre
+desde `backend/`:
 
 ```bash
-psql "$DATABASE_URL" -f migraciones/0001_esquema_inicial.sql
+./migraciones/aplicar.sh     # crea las tablas pendientes
+./migraciones/probar.sh      # las prueba en una base de datos temporal
 ```
 
-Los ficheros se nombran con cuatro dígitos y no se editan una vez aplicados: si algo
-cambia, se añade un fichero nuevo. Así todas las máquinas del equipo terminan con el
-mismo esquema sin tener que sincronizar nada a mano.
+Los ficheros se nombran con tres dígitos y un guion bajo (`001_esquema_inicial.sql`,
+`002_...`) y no se editan una vez fusionados en `main`: si algo cambia, se añade un
+fichero nuevo. Así todas las máquinas del equipo terminan con el mismo esquema sin
+tener que sincronizar nada a mano. El proceso completo —con `pruebas.sql` y las
+reglas de cada tabla— está en [Añadir un cambio de esquema](../README.md#añadir-un-cambio-de-esquema).

@@ -41,7 +41,7 @@ export function Consentimiento({ navegar }) {
         <h2>Qué datos usamos</h2>
         <ul className={comun.medio} style={{ margin: 0, paddingLeft: '1.25rem' }}>
           <li>Tu alias, tus respuestas y tu progreso, para adaptar el curso a lo que ya sabes.</li>
-          <li>Tus preguntas al tutor, sin tu nombre ni otros datos personales.</li>
+          <li>Tus preguntas al mentor, sin tu nombre ni otros datos personales.</li>
           <li>Tu familia puede pedir ver o borrar estos datos cuando quiera.</li>
         </ul>
       </div>

@@ -1,10 +1,10 @@
-import { IconoInicio, IconoPerfil, IconoProgreso, IconoTutor } from './Iconos.jsx';
+import { IconoInicio, IconoPerfil, IconoProgreso, IconoMentor } from './Iconos.jsx';
 import estilos from './BarraInferior.module.css';
 
 const SECCIONES = [
   { ruta: '/', texto: 'Hoy', Icono: IconoInicio },
   { ruta: '/progreso', texto: 'Progreso', Icono: IconoProgreso },
-  { ruta: '/tutor', texto: 'Tutor', Icono: IconoTutor },
+  { ruta: '/mentor', texto: 'Mentor', Icono: IconoMentor },
   { ruta: '/perfil', texto: 'Perfil', Icono: IconoPerfil },
 ];
 
@@ -14,7 +14,7 @@ const OTRAS = SECCIONES.slice(1).map((s) => s.ruta);
  * Navegación principal: en el móvil, abajo para usarla con una mano;
  * en el escritorio, un menú lateral con el nombre de la academia.
  */
-export function BarraInferior({ ruta, navegar, avisoTutor }) {
+export function BarraInferior({ ruta, navegar, avisoMentor }) {
   // La ficha de una lección se abre desde Progreso, así que esa pestaña queda marcada.
   const enProgreso = ruta.startsWith('/progreso') || ruta.includes('/leccion/');
   const activa = (r) => {
@@ -42,10 +42,10 @@ export function BarraInferior({ ruta, navegar, avisoTutor }) {
             >
               <span className={estilos.icono}>
                 <Icono tamano={22} />
-                {destino === '/tutor' && avisoTutor && <span className={estilos.punto} />}
+                {destino === '/mentor' && avisoMentor && <span className={estilos.punto} />}
               </span>
               <span>{texto}</span>
-              {destino === '/tutor' && avisoTutor && <span className="visualmente-oculto">(mensaje nuevo)</span>}
+              {destino === '/mentor' && avisoMentor && <span className="visualmente-oculto">(mensaje nuevo)</span>}
             </a>
           </li>
         ))}

@@ -1,5 +1,5 @@
 import { Boton } from '../componentes/Boton.jsx';
-import { IconoTutor } from '../componentes/Iconos.jsx';
+import { IconoMentor } from '../componentes/Iconos.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
 import { ReproductorVideo } from '../componentes/ReproductorVideo.jsx';
 import { useEstado } from '../hooks/useEstado.jsx';
@@ -16,7 +16,7 @@ const FORMATO = {
  * En el modo sin audio muestra la versión en texto; en la sesión exprés, el resumen.
  */
 export function Video({ leccion, paso, numero, total, alSiguiente, alSalir, navegar }) {
-  const { registrarEvento, ponerContextoTutor } = useEstado();
+  const { registrarEvento, ponerContextoMentor } = useEstado();
 
   const terminar = () => {
     registrarEvento('contenido_completado', { leccionId: leccion.id, formato: paso.tipo });
@@ -50,15 +50,15 @@ export function Video({ leccion, paso, numero, total, alSiguiente, alSalir, nave
       pie={
         <>
           <a
-            href="#/tutor"
+            href="#/mentor"
             className={comun.enlaceAccion}
             onClick={(e) => {
               e.preventDefault();
-              ponerContextoTutor({ leccionId: leccion.id, titulo: leccion.titulo });
-              navegar('/tutor');
+              ponerContextoMentor({ leccionId: leccion.id, titulo: leccion.titulo });
+              navegar('/mentor');
             }}
           >
-            <IconoTutor tamano={18} /> ¿Dudas? Pregunta al tutor
+            <IconoMentor tamano={18} /> ¿Dudas? Pregunta al mentor
           </a>
           <Boton anchoCompleto onClick={terminar}>
             Continuar con las actividades

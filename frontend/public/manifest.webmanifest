@@ -47,9 +47,9 @@
       ]
     },
     {
-      "name": "Preguntar al tutor",
-      "short_name": "Tutor",
-      "url": "./#/tutor",
+      "name": "Preguntar al mentor",
+      "short_name": "Mentor",
+      "url": "./#/mentor",
       "icons": [
         {
           "src": "icons/icon-192.png",

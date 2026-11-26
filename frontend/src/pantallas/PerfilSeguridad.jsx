@@ -79,7 +79,7 @@ export function PerfilSeguridad({ navegar }) {
         {confirmarEliminar ? (
           <div className={estilos.confirmarBloque} role="group" aria-labelledby="titulo-eliminar">
             <p>
-              Se borrarán tu cuenta, tu progreso y tu historial con el tutor. <strong>No se puede deshacer.</strong>
+              Se borrarán tu cuenta, tu progreso y tu historial con el mentor. <strong>No se puede deshacer.</strong>
             </p>
             <div className={comun.acciones}>
               <Boton

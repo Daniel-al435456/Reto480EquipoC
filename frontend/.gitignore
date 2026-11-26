@@ -1,0 +1,2 @@
+# Configuración local del frontend (VITE_API_URL): no se sube al repositorio.
+.env.local

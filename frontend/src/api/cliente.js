@@ -18,34 +18,56 @@ import { frasesMentor } from './mentor.js';
 
 const esperar = (ms) => new Promise((resolver) => setTimeout(resolver, ms));
 
-const API = ((import.meta.env && import.meta.env.VITE_API_URL) || '').replace(/\/$/, '');
+/*
+ * VITE_API_URL admite una dirección completa (https://api.ejemplo.com) o "/" para usar la misma dirección
+ * que la app: en desarrollo, el servidor de Vite reenvía /api y /salud al backend (vite.config.js).
+ */
+const DIRECCION = (import.meta.env && import.meta.env.VITE_API_URL) || '';
+const API = DIRECCION.replace(/\/$/, '');
 const TIEMPO_MAXIMO_MS = 8000;
+const TIEMPO_SALUD_MS = 3000;
 
-/** true si la aplicación está conectada a un backend (y, por tanto, a la IA real). */
-export const usaBackend = Boolean(API);
+/** true si la aplicación está configurada para usar un backend (y, por tanto, la IA real). */
+export const usaBackend = Boolean(DIRECCION);
+
+let servidorDisponible = null;
+
+/**
+ * Comprueba una sola vez si el backend responde en /salud. Si no responde, la app pasa a las respuestas
+ * de ejemplo sin hacer esperar al alumno 8 segundos en cada pantalla. Devuelve true o false.
+ */
+export function estadoServidor() {
+  if (!usaBackend) return Promise.resolve(false);
+  servidorDisponible ??= fetch(`${API}/salud`, { signal: AbortSignal.timeout(TIEMPO_SALUD_MS) })
+    .then((respuesta) => respuesta.ok)
+    .catch(() => false);
+  return servidorDisponible;
+}
 
 /**
  * Llama a la API y, si no hay backend o falla, ejecuta la versión simulada.
  * La respuesta indica de dónde viene, para que la interfaz pueda avisar de que la ha generado la IA.
+ * Los errores del backend llegan como { error, mensaje } (backend/app/errores.py) y se anotan en la consola.
  */
 async function conRespaldo(ruta, cuerpo, simulado) {
-  if (!API) return { ...(await simulado()), origen: 'simulado' };
-  const control = new AbortController();
-  const temporizador = setTimeout(() => control.abort(), TIEMPO_MAXIMO_MS);
+  if (!(await estadoServidor())) return { ...(await simulado()), origen: 'simulado' };
   try {
     const respuesta = await fetch(`${API}${ruta}`, {
       method: cuerpo ? 'POST' : 'GET',
       headers: cuerpo ? { 'Content-Type': 'application/json' } : undefined,
       body: cuerpo ? JSON.stringify(cuerpo) : undefined,
-      signal: control.signal,
+      signal: AbortSignal.timeout(TIEMPO_MAXIMO_MS),
     });
-    if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+    if (!respuesta.ok) {
+      const error = await respuesta.json().catch(() => ({}));
+      throw new Error(`${respuesta.status} ${error.error ?? ''}: ${error.mensaje ?? ''}`);
+    }
     return { ...(await respuesta.json()), origen: 'api' };
   } catch (error) {
+    // Si el servidor no responde, se deja de usar hasta recargar la app; si responde con un error, solo esta vez.
+    if (error.name === 'TimeoutError' || error.name === 'TypeError') servidorDisponible = Promise.resolve(false);
     console.warn(`Backend no disponible en ${ruta}; se usa el modo simulado.`, error);
     return { ...(await simulado()), origen: 'simulado' };
-  } finally {
-    clearTimeout(temporizador);
   }
 }
 

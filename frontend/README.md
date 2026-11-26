@@ -174,23 +174,27 @@ Se aplican con atributos en `<html>` (`data-tema`, `data-texto`, `data-contraste
 
 ## Datos y conexión con el backend
 
-- `src/api/datos.js`: curso de ejemplo *Python desde cero* ([propuesta P4](../propuestas/README.md#p4-contenido-del-curso-de-muestra)). Los vídeos de YouTube están sin seleccionar.
+- `src/api/datos.js`: curso de ejemplo *Python desde cero* ([propuesta P4](../propuestas/README.md#p4-contenido-del-curso-de-muestra)). Los vídeos de YouTube están sin seleccionar. El backend sirve una copia en JSON: si cambia este fichero, se regenera con `node herramientas/exportar-curso.mjs`.
 - `src/api/cliente.js`: única capa de acceso a datos. Las pantallas nunca llaman a `fetch` ni a la IA directamente.
 - La cuenta, el progreso, los ajustes, el alias y el modo anónimo se guardan en el navegador (`localStorage`, clave `reto480-estado-v3`). Si se cambia la forma de los datos guardados, hay que subir la versión de la clave en `src/hooks/useEstado.jsx` y en `index.html`.
 
-**Conectar el backend.** Definir la variable de entorno `VITE_API_URL` con la dirección del backend FastAPI:
-- En local: fichero `frontend/.env.local` con `VITE_API_URL=http://localhost:8000` (no se sube al repositorio).
-- En Netlify: *Site configuration → Environment variables*.
+**Conectar el backend.** Con el backend en marcha (`backend/README.md`), crear el fichero `frontend/.env.local`, que no se sube al repositorio, con:
 
-Sin `VITE_API_URL`, o si el backend no responde en 8 segundos, la app usa los datos de ejemplo y las respuestas simuladas. Así la demo nunca se queda sin respuesta. El backend debe permitir por CORS la dirección donde esté publicado el frontend.
+```
+VITE_API_URL=/
+```
 
-**Contrato de la API** (propuesta del frontend, a acordar con backend). Todas las rutas devuelven JSON:
+y arrancar el frontend con `npm run dev`. Con `/`, el servidor de desarrollo de Vite reenvía `/api` y `/salud` al backend en `http://localhost:8000` (`vite.config.js`; otra dirección, con la variable `BACKEND_URL`). Así no hay problemas de CORS y funciona también desde el móvil en la misma Wi-Fi. En una versión publicada (Netlify), `VITE_API_URL` es la dirección completa del backend, que debe permitir por CORS la del frontend (`FRONTEND_URL` en el backend).
+
+Al arrancar, la app comprueba una vez si el backend responde en `/salud` (3 segundos como máximo). Si no responde, o si no hay `VITE_API_URL`, usa los datos de ejemplo y las respuestas simuladas, y la pantalla del mentor avisa de que no hay conexión. Así la demo nunca se queda sin respuesta. Si una petición falla, se usa la respuesta simulada y el error del backend (`{ error, mensaje }`) se anota en la consola del navegador.
+
+**Contrato de la API.** Todas las rutas devuelven JSON y están implementadas en el backend (`backend/README.md`, "Rutas"):
 
 | Función de `cliente.js` | Petición | Cuerpo | Respuesta |
 |---|---|---|---|
 | `obtenerCursos` | `GET /api/cursos` | | `{ cursos: [{ id, titulo, descripcion, nivel, numeroLecciones }] }` |
-| `obtenerTestInicial` | `GET /api/cursos/{id}/test` | | `{ preguntas: [{ id, leccionId, enunciado, opciones }] }` |
-| `evaluarTestInicial` | `POST /api/cursos/{id}/test/evaluacion` | `{ respuestas, esMenor, personalidad, tratamiento }` | `{ dominio: { leccionId: true }, mensaje }` (mensaje redactado por la IA, agente Diagnóstico) |
+| `obtenerTestInicial` | `GET /api/cursos/{id}/test` | | `{ preguntas: [{ id, leccionId, enunciado, opciones }] }` (sin la respuesta correcta) |
+| `evaluarTestInicial` | `POST /api/cursos/{id}/test/evaluacion` | `{ respuestas, esMenor, personalidad, tratamiento }` | `{ dominio: { leccionId: true }, mensaje, redactadoPorIa }` (con la #16, el mensaje lo redacta el agente Diagnóstico; mientras, es una plantilla y `redactadoPorIa` es `false`) |
 | `corregirRespuestaEscrita` | `POST /api/actividades/correccion` | `{ actividadId, texto }` | `{ correcta, solucion }` |
 | `mensajeProactivoMentor` | `POST /api/mentor/proactivo` | `{ cursoId, leccionId, senal, esMenor, personalidad, tratamiento }` | `{ texto }` |
 | `preguntarMentor` | `POST /api/mentor/mensaje` | `{ cursoId, leccionId, texto, esMenor, personalidad, tratamiento }` | `{ texto, derivado }` |
@@ -236,4 +240,4 @@ La navegación usa rutas con `#`, así que funciona en cualquier alojamiento est
 - Directorio base: `frontend`
 - Comando de compilación: `npm run build`
 - Carpeta publicada: `dist` (dentro del directorio base)
-- Variable de entorno (cuando haya backend publicado): `VITE_API_URL`
+- Variable de entorno (cuando haya backend publicado): `VITE_API_URL`, con la dirección completa del backend

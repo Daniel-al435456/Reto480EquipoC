@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { evaluarTestInicial, obtenerCurso, obtenerTestInicial } from '../api/cliente.js';
+import { evaluarTestInicial, obtenerTestInicial } from '../api/cliente.js';
 import { leccionesPendientes } from '../api/planificador.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
 import { contextoIA } from '../api/mentor.js';
 import { useEstado } from '../hooks/useEstado.jsx';
+import { useCurso } from '../hooks/useCurso.js';
 import comun from './comun.module.css';
 import estilos from './TestInicial.module.css';
 
@@ -16,7 +17,7 @@ const CIRCUNFERENCIA = 2 * Math.PI * 52;
  * Con la ruta /test/repetir se empieza de nuevo aunque ya esté hecho.
  */
 export function TestInicial({ cursoId, modo, navegar }) {
-  const curso = obtenerCurso(cursoId);
+  const curso = useCurso(cursoId);
   const { estado, guardarTest, estudiarIgualmente, registrarEvento } = useEstado();
   const [preguntas, setPreguntas] = useState(null);
   const [fase, setFase] = useState(estado.testHecho && modo !== 'repetir' ? 'resultado' : 'intro');
@@ -47,8 +48,10 @@ export function TestInicial({ cursoId, modo, navegar }) {
       >
         <div className={comun.tarjeta}>
           <p>
-            Son {curso.testInicial.length} preguntas cortas y se tarda unos 2 minutos. Lo que ya domines no tendrás
-            que volver a estudiarlo, salvo que tú lo prefieras.
+            {preguntas
+              ? `Son ${preguntas.length} preguntas cortas y se tarda unos 2 minutos.`
+              : 'Cargando las preguntas…'}{' '}
+            Lo que ya domines no tendrás que volver a estudiarlo, salvo que tú lo prefieras.
           </p>
           <p className={comun.secundario}>Si no sabes una respuesta, elige «No lo sé». No pasa nada.</p>
         </div>

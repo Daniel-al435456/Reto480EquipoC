@@ -176,6 +176,9 @@ Se aplican con atributos en `<html>` (`data-tema`, `data-texto`, `data-contraste
 
 - `src/api/datos.js`: curso de ejemplo *Python desde cero* ([propuesta P4](../propuestas/README.md#p4-contenido-del-curso-de-muestra)). Los vídeos de YouTube están sin seleccionar. El backend sirve una copia en JSON: si cambia este fichero, se regenera con `node herramientas/exportar-curso.mjs`.
 - `src/api/cliente.js`: única capa de acceso a datos. Las pantallas nunca llaman a `fetch` ni a la IA directamente.
+- `obtenerCursoCompleto` carga el curso y sus lecciones desde la API. Si no hay backend, se conserva `datos.js` como respaldo para la demo.
+
+Esta conexión es un paso intermedio: el backend todavía lee el curso del JSON de ejemplo. La conexión del servicio a PostgreSQL queda para una fase posterior y no forma parte de este contrato.
 - La cuenta, el progreso, los ajustes, el alias y el modo anónimo se guardan en el navegador (`localStorage`, clave `reto480-estado-v3`). Si se cambia la forma de los datos guardados, hay que subir la versión de la clave en `src/hooks/useEstado.jsx` y en `index.html`.
 
 **Conectar el backend.** Con el backend en marcha (`backend/README.md`), crear el fichero `frontend/.env.local`, que no se sube al repositorio, con:
@@ -193,6 +196,7 @@ Al arrancar, la app comprueba una vez si el backend responde en `/salud` (3 segu
 | Función de `cliente.js` | Petición | Cuerpo | Respuesta |
 |---|---|---|---|
 | `obtenerCursos` | `GET /api/cursos` | | `{ cursos: [{ id, titulo, descripcion, nivel, numeroLecciones }] }` |
+| `obtenerCursoCompleto` | `GET /api/cursos/{id}/lecciones` | | `{ id, titulo, descripcion, nivel, lecciones: [...] }` (lecturas, vídeos, duraciones y actividades; sin preguntas del test inicial) |
 | `obtenerTestInicial` | `GET /api/cursos/{id}/test` | | `{ preguntas: [{ id, leccionId, enunciado, opciones }] }` (sin la respuesta correcta) |
 | `evaluarTestInicial` | `POST /api/cursos/{id}/test/evaluacion` | `{ respuestas, esMenor, personalidad, tratamiento }` | `{ dominio: { leccionId: true }, mensaje, redactadoPorIa }` (con la #16, el mensaje lo redacta el agente Diagnóstico; mientras, es una plantilla y `redactadoPorIa` es `false`) |
 | `corregirRespuestaEscrita` | `POST /api/actividades/correccion` | `{ actividadId, texto }` | `{ correcta, solucion }` |

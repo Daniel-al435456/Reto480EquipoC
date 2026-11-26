@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
-import { obtenerCurso } from '../api/cliente.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
 import { useEstado } from '../hooks/useEstado.jsx';
+import { useCurso } from '../hooks/useCurso.js';
 import { Actividades } from './Actividades.jsx';
 import { Video } from './Video.jsx';
 import comun from './comun.module.css';
 
 /** Recorre los pasos de la sesión de hoy: vídeo o lectura, y después las actividades. */
 export function Sesion({ cursoId, paso: pasoTexto, navegar }) {
-  const curso = obtenerCurso(cursoId);
+  const curso = useCurso(cursoId);
   const { estado, irAPaso, terminarSesion, registrarEvento } = useEstado();
   const sesion = estado.sesion;
   const indice = Number(pasoTexto);

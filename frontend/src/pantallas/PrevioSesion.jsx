@@ -1,10 +1,11 @@
 import { nombreCorto } from '../api/cuenta.js';
 import { useMemo, useState } from 'react';
-import { obtenerCurso, planificarSesion } from '../api/cliente.js';
+import { planificarSesion } from '../api/cliente.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { IconoAudio, IconoSinAudio } from '../componentes/Iconos.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
 import { useEstado } from '../hooks/useEstado.jsx';
+import { useCurso } from '../hooks/useCurso.js';
 import comun from './comun.module.css';
 import estilos from './PrevioSesion.module.css';
 
@@ -26,17 +27,17 @@ const NOMBRE_PASO = {
  * El alumno indica cuánto tiempo tiene y si puede escuchar audio, y la sesión se adapta.
  */
 export function PrevioSesion({ cursoId, navegar }) {
-  const curso = obtenerCurso(cursoId);
+  const curso = useCurso(cursoId);
   const { estado, empezarSesion, registrarEvento } = useEstado();
   const [minutos, setMinutos] = useState(estado.modo.minutos);
   const [audio, setAudio] = useState(estado.modo.audio);
 
   const plan = useMemo(
-    () => planificarSesion(cursoId, { minutos, audio }, estado.dominio, estado.completadas),
-    [cursoId, minutos, audio, estado.dominio, estado.completadas],
+    () => (curso ? planificarSesion(curso, { minutos, audio }, estado.dominio, estado.completadas) : null),
+    [curso, minutos, audio, estado.dominio, estado.completadas],
   );
 
-  if (!curso) return null;
+  if (!curso || !plan) return null;
   const tituloLeccion = (id) => curso.lecciones.find((l) => l.id === id)?.titulo;
 
   const empezar = () => {

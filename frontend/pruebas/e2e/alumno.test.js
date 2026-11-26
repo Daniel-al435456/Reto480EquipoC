@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { after, before, describe, it } from 'node:test';
 import { gzipSync } from 'node:zlib';
 import { chromium, devices } from 'playwright';
+import { cursos } from '../../src/api/datos.js';
 import { arrancarServidor, DIST } from './servidor.js';
 
 let servidor;
@@ -94,6 +95,83 @@ describe('alta del alumno', () => {
     await pagina.goto(servidor.url + '#/progreso');
     await pagina.waitForTimeout(300);
     assert.equal(await ruta(pagina), '/consentimiento');
+    await contexto.close();
+  });
+});
+
+describe('contenido del curso', () => {
+  it('muestra en la lección el contenido recibido desde la API', async () => {
+    const { contexto, pagina, errores } = await abrir();
+    const curso = structuredClone(cursos[0]);
+    curso.lecciones[0].titulo = 'Lección enviada por API';
+    curso.lecciones[0].duracionVideo = 9;
+    curso.lecciones[0].resumen = 'Resumen enviado por API';
+    curso.lecciones[0].actividades[0].enunciado = 'Actividad enviada por API';
+    delete curso.testInicial;
+    let detalleSolicitado = false;
+
+    await pagina.route('**/salud', (route) =>
+      route.fulfill({ json: { estado: 'ok', servicio: 'prueba', version: 'test' } }),
+    );
+    await pagina.route('**/api/cursos', (route) =>
+      route.fulfill({
+        json: {
+          cursos: [
+            {
+              id: curso.id,
+              titulo: curso.titulo,
+              descripcion: curso.descripcion,
+              nivel: curso.nivel,
+              numeroLecciones: curso.lecciones.length,
+            },
+          ],
+        },
+      }),
+    );
+    await pagina.route('**/api/cursos/python-desde-cero/test', (route) =>
+      route.fulfill({
+        json: {
+          preguntas: cursos[0].testInicial.map(({ id, leccionId, enunciado, opciones }) => ({
+            id,
+            leccionId,
+            enunciado,
+            opciones,
+          })),
+        },
+      }),
+    );
+    await pagina.route('**/api/cursos/python-desde-cero/test/evaluacion', (route) =>
+      route.fulfill({ json: { dominio: {}, mensaje: 'Empezamos por el principio.', redactadoPorIa: false } }),
+    );
+    await pagina.route('**/api/cursos/python-desde-cero/lecciones', (route) => {
+      detalleSolicitado = true;
+      return route.fulfill({ json: curso });
+    });
+
+    await completarAlta(pagina);
+    await pagina.getByRole('button', { name: /Python desde cero/ }).click();
+    await boton(pagina, 'Empezar el test').click();
+    for (let indice = 0; indice < cursos[0].testInicial.length; indice++) {
+      await pagina.getByLabel('No lo sé').check();
+      await boton(pagina, indice === cursos[0].testInicial.length - 1 ? 'Ver resultado' : 'Siguiente').click();
+    }
+    await pagina.getByRole('heading', { name: 'Tu punto de partida' }).waitFor();
+    await pagina.getByText('Lección enviada por API', { exact: true }).waitFor();
+
+    await pagina.evaluate(() => {
+      location.hash = '#/progreso';
+    });
+    await pagina.getByRole('heading', { name: 'Tu recorrido' }).waitFor();
+    await pagina.getByText('Lección enviada por API', { exact: true }).waitFor();
+    await boton(pagina, 'Continuar con Lección enviada por API').click();
+    await pagina.getByText('Resumen rápido', { exact: true }).waitFor();
+    await boton(pagina, 'Empezar · 3 min').click();
+    await pagina.getByText('Resumen enviado por API', { exact: true }).waitFor();
+    await boton(pagina, 'Continuar con las actividades').click();
+    await pagina.getByText('Actividad enviada por API', { exact: true }).waitFor();
+
+    assert.equal(detalleSolicitado, true);
+    assert.deepEqual(errores, []);
     await contexto.close();
   });
 });

@@ -8,8 +8,9 @@ en la Fase 2).
 
 Estado: la **base de datos ya está creada** (issue #14) y el servidor tiene las
 **rutas que usa el frontend** (issue #13), con el curso de ejemplo y el mentor sin IA.
-Pendiente: la conexión entre el servidor y PostgreSQL (el curso se lee de momento de
-`app/datos/cursos-ejemplo.json`), `app/privacidad.py` y el agente Mentor (issue #16).
+El catálogo, las lecciones y el test se sirven de momento desde
+`app/datos/cursos-ejemplo.json`; conectar este servicio a PostgreSQL es un paso posterior
+(issue #15). También quedan pendientes `app/privacidad.py` y el agente Mentor (issue #16).
 
 ## Rutas
 
@@ -21,6 +22,7 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 |---|---|---|
 | `GET /salud` | Comprueba que el servidor responde | |
 | `GET /api/cursos` | Catálogo de cursos | Curso de ejemplo en JSON |
+| `GET /api/cursos/{curso_id}/lecciones` | Datos del curso y contenido completo de sus lecciones | Curso de ejemplo en JSON; no incluye el test inicial |
 | `GET /api/cursos/{curso_id}/test` | Preguntas del test inicial, sin la respuesta correcta | Curso de ejemplo en JSON |
 | `POST /api/cursos/{curso_id}/test/evaluacion` | Corrige el test con reglas y explica el itinerario | Mensaje de plantilla; con la #16, el agente Diagnóstico |
 | `POST /api/actividades/correccion` | Corrige una respuesta escrita por palabras clave | |
@@ -33,11 +35,13 @@ se regenera con `node herramientas/exportar-curso.mjs` desde `frontend/`.
 
 ## Requisitos
 
-- Python 3.12 o superior (`python3 --version`)
-- PostgreSQL 13 o posterior (se ha probado con la versión 18). En macOS, por ejemplo
-  con [Postgres.app](https://postgres.app); en Ubuntu/Debian, con `sudo apt install
-  postgresql`; en el resto de sistemas, con el instalador oficial o un contenedor
-  de Docker.
+- Python 3.12 o superior para ejecutar la API (`python3 --version`).
+- PostgreSQL 13 o posterior solo para las migraciones y la futura conexión del servicio
+  (se ha probado con la versión 18). En macOS, por ejemplo, con
+  [Postgres.app](https://postgres.app); en Ubuntu/Debian, con `sudo apt install postgresql`;
+  en el resto de sistemas, con el instalador oficial o un contenedor de Docker.
+- La clave `GROQ_API_KEY` no es necesaria para las rutas actuales; se usará al integrar
+  los agentes de IA.
 
 ## Puesta en marcha del servidor
 
@@ -50,12 +54,13 @@ python3 -m venv .venv
 # 2. Dependencias
 .venv/bin/python -m pip install -e ".[dev]"
 
-# 3. Configuración local (solo la primera vez)
-cp .env.example .env     # y completar DATABASE_URL y GROQ_API_KEY
-
-# 4. Arrancar
+# 3. Arrancar
 .venv/bin/uvicorn app.main:app --reload
 ```
+
+Las rutas actuales leen el curso del JSON de ejemplo, así que no hace falta configurar
+PostgreSQL ni crear un fichero `.env` para arrancar la API. Cuando el servicio se conecte
+a la base de datos, la configuración se documentará junto con ese cambio.
 
 La API queda en `http://localhost:8000` y la documentación interactiva en
 `http://localhost:8000/docs`.

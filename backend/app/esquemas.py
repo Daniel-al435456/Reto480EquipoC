@@ -58,6 +58,43 @@ class SalidaCursos(EsquemaApi):
     cursos: list[CursoResumen]
 
 
+class ActividadContenido(EsquemaApi):
+    """Actividad incluida en el contenido de una lección."""
+
+    id: str
+    tipo: Literal["vf", "escrita"]
+    enunciado: str
+    correcta: bool | None = None
+    explicacion: str | None = None
+    palabras_clave: list[str] | None = None
+    solucion: str | None = None
+
+
+class LeccionContenido(EsquemaApi):
+    """Contenido completo de una lección, sin datos del test inicial."""
+
+    id: str
+    titulo: str
+    concepto: str
+    youtube_id: str
+    duracion_video: int
+    duracion_lectura: int
+    descripcion: str
+    lectura: list[str]
+    resumen: str
+    actividades: list[ActividadContenido]
+
+
+class SalidaCursoLecciones(EsquemaApi):
+    """Respuesta de `GET /api/cursos/{curso_id}/lecciones`."""
+
+    id: str
+    titulo: str
+    descripcion: str
+    nivel: str
+    lecciones: list[LeccionContenido]
+
+
 class PreguntaTest(EsquemaApi):
     """Pregunta del test inicial, sin la respuesta correcta: la corrige el servidor."""
 

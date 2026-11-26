@@ -1,0 +1,5 @@
+# Restos de herramientas del backend. La raíz del repositorio ya ignora
+# `.env`, `.venv/`, `__pycache__/` y `*.pyc`.
+.pytest_cache/
+.ruff_cache/
+*.egg-info/

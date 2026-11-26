@@ -24,9 +24,14 @@ Las migraciones se aplican con los scripts de esta carpeta (issue #14), siempre
 desde `backend/`:
 
 ```bash
-./migraciones/aplicar.sh     # crea las tablas pendientes
-./migraciones/probar.sh      # las prueba en una base de datos temporal
+./migraciones/aplicar.sh       # crea las tablas pendientes
+./migraciones/cargar_curso.sh  # carga o actualiza el curso de ejemplo (issue #15)
+./migraciones/probar.sh        # prueba el esquema y la carga en bases de datos temporales
 ```
+
+`cargar_curso.sh` no es una migración: no cambia el esquema, solo llena las tablas
+de contenido con `app/datos/cursos-ejemplo.json`. Por eso no lleva número y
+`aplicar.sh` no lo ejecuta.
 
 Los ficheros se nombran con tres dígitos y un guion bajo (`001_esquema_inicial.sql`,
 `002_...`) y no se editan una vez fusionados en `main`: si algo cambia, se añade un

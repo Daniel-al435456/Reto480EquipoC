@@ -83,6 +83,8 @@ Justificación en [docs/decisiones.md](docs/decisiones.md).
 | Talia | Base de datos (PostgreSQL) |
 | Andrea | Frontend (React PWA) |
 
+El 24/11 nos repartimos las tareas de otra forma: Daniel, IA y material del curso; Jeremy, base de datos; Talia, backend; Andrea, frontend. Es un reparto orientativo y en la práctica participamos todos en todo ([Bitácora, sesión 2](BITACORA.md#sesión-2--martes-24112026)).
+
 ## Calendario
 
 | Fecha | Hito |

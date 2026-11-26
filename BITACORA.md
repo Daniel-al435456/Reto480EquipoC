@@ -6,6 +6,47 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 
 ---
 
+## Trabajo entre sesiones · Miércoles 25/11/2026
+
+**Participan:** Talia, Jeremy, Andrea
+
+### Actividades
+
+| Nombre | Actividad |
+|---|---|
+| Talia | Estructura base del backend en `backend/`: aplicación FastAPI con la ruta de salud, formato común de errores y configuración leída del entorno, pruebas por endpoint y de arquitectura, y comprobación automática de formato, estilo y pruebas en cada pull request. Fusionada en [#34](https://github.com/Daniel-al435456/Reto480EquipoC/pull/34). |
+| Jeremy | Esquema inicial de la base de datos en `backend/migraciones/`: las 18 tablas del modelo de P3 adaptadas a la cuenta de usuario, la fecha de nacimiento y el mentor; scripts para aplicar las migraciones y probarlas, con 33 pruebas; y documentación del modelo actualizada. Fusionada en [#35](https://github.com/Daniel-al435456/Reto480EquipoC/pull/35). |
+| Andrea | Mejoras del frontend: cuenta de usuario con alta en cuatro pasos, páginas legales (borradores), perfil por secciones, mentor con forma de pato o pata (opcional), personalidad y trato del mentor a elegir, y nueva pantalla de bienvenida. |
+| Andrea | Traslado a SPEC.md y docs/decisiones.md de las propuestas aprobadas el 24/11, con lo que el paquete de diseño queda completo. |
+| Andrea | Harness de desarrollo con IA: instrucciones comunes para los asistentes (AGENTS.md), pruebas automáticas del frontend, comprobación en cada pull request y [registro de fallos](docs/registro-harness.md). |
+
+### Acuerdos
+
+- **Nomenclatura:** llamamos "mentor" a la IA y "tutor" a la persona de la academia. Lo aplicamos en la interfaz, en el código y en la documentación.
+
+### Cambios
+
+| Cambio | Motivo |
+|---|---|
+| **Fecha de nacimiento en lugar del tramo de edad.** El alumno indica su fecha de nacimiento y la app calcula el tramo cada vez. | Con solo el tramo, un alumno de 17 años seguiría como menor después de cumplir 18. Con la fecha, el tramo cambia solo al cumplir 14 o 18 años. El modelo de datos aprobado ya guardaba la fecha en `Identidad`, y a la IA sigue llegando solo si el alumno es menor o no. |
+| **Datos de la cuenta que no se cambian desde la app.** El correo, la empresa, la fecha de nacimiento y el consentimiento de la familia se fijan en el alta y solo puede corregirlos la academia. | El correo es el usuario para iniciar sesión y la empresa relaciona al alumno con la formación que paga. Si la edad pudiera cambiarse, un menor podría saltarse las protecciones. |
+| **Personalidad y trato del mentor.** El alumno elige si el mentor es amable, motivador, gracioso o estricto, y si se dirige a él en femenino, en masculino o de forma neutra. | Para que el alumno se sienta cómodo con el mentor. Solo llegan a la IA la personalidad y el trato, sin datos personales. |
+
+### Problemas y soluciones
+
+| Problema | Solución |
+|---|---|
+| Desde el perfil se podían cambiar la empresa y la edad, con lo que un menor de 14 años podía saltarse el consentimiento. | Los fijamos en el alta y añadimos pruebas automáticas que lo comprueban. |
+| Si el alumno escribe a mano el nombre de su empresa, puede no coincidir con el de la base de datos (erratas, mayúsculas). Una lista de empresas no sirve, porque mostraría qué otras empresas son clientes. | Pendiente de decidir. Se plantea que cada empresa reciba un código o enlace de invitación que asigne la empresa al registrarse, con una solicitud a la academia como alternativa para quien no lo tenga. |
+
+### Herramientas de IA utilizadas
+
+| Herramienta | Modelo | Uso |
+|---|---|---|
+| Claude (claude.ai) | Claude Opus 5.5 | Andrea: desarrollo del frontend, traslado de las propuestas a la especificación, harness de desarrollo con IA y redacción de esta entrada |
+
+---
+
 ## Sesión 2 · Martes 24/11/2026
 
 **Asistentes:** Daniel, Jeremy, Talia, Andrea
@@ -15,7 +56,7 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 - Estructura base del frontend en `frontend/`: aplicación React instalable como PWA, con las pantallas del boceto, el estilo de los prototipos y respuestas simuladas mientras se decide la IA. Pendiente de revisión en una pull request.
 - Propuesta P6 para votar las pantallas nuevas de los prototipos: bienvenida, alias anónimo y perfil.
 - Tablero de tareas en GitHub Projects ([Reto 480 · Equipo C](https://github.com/users/andreaperibaz/projects/1)) con el backlog del proyecto: 15 tareas creadas como issues en el repositorio, cada una con su etiqueta y sus dependencias.
-- Reunión del equipo para tratar las propuestas P1 a P6.
+- Reunión del equipo, en la que participamos los cuatro, para tratar las propuestas P1 a P6 y repartirnos las tareas.
 
 ### Acuerdos de la reunión
 
@@ -34,7 +75,12 @@ Las propuestas quedan aprobadas tal como están escritas, por lo que se retiran 
 
 | Nombre | Tareas |
 |---|---|
-| Andrea | Estructura base del frontend, tablero de tareas y backlog, bitácora |
+| Daniel | IA y material del curso |
+| Jeremy | Base de datos |
+| Talia | Backend |
+| Andrea | Frontend, tablero de tareas y backlog, bitácora |
+
+Es un reparto orientativo, para tener un esquema general de quién se ocupa de cada área; en la práctica participamos todos en todo. Sustituye a las áreas técnicas acordadas en la sesión 1.
 
 ### Problemas y soluciones
 

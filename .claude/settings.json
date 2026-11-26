@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run verificar:*)",
+      "Bash(npm --prefix frontend test:*)",
+      "Bash(npm --prefix frontend run:*)",
+      "Bash(python3 herramientas/pato.py:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(npm install:*)",
+      "Edit(./propuestas/**)",
+      "Write(./propuestas/**)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Read(./**/.env)",
+      "Read(./**/.env.*)",
+      "Edit(./frontend/src/api/pato.js)",
+      "Write(./frontend/src/api/pato.js)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/comprobar.mjs rapido" }]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/comprobar.mjs final" }]
+      }
+    ]
+  }
+}

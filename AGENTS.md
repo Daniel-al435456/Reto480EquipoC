@@ -23,7 +23,8 @@ El backend (Python) tiene sus propios comandos, desde `backend/`:
 | Desarrollo | `.venv/bin/uvicorn app.main:app --reload` | Para ver la API en `http://localhost:8000` y su documentación en `/docs` |
 | Comprobación | `.venv/bin/ruff format --check .`, `.venv/bin/ruff check .` y `.venv/bin/python -m pytest` | Tras cada cambio y antes de cada pull request |
 | Crear las tablas | `./migraciones/aplicar.sh` | Al clonar y al añadir una migración |
-| Probar el esquema | `./migraciones/probar.sh` | Antes de cada pull request que cambie la base de datos |
+| Cargar el curso de ejemplo | `./migraciones/cargar_curso.sh` | Al clonar y cuando cambie `app/datos/cursos-ejemplo.json` |
+| Probar el esquema y la carga | `./migraciones/probar.sh` | Antes de cada pull request que cambie la base de datos |
 
 `npm run verificar` ejecuta las pruebas unitarias y de arquitectura, compila y prueba la app en un navegador real con tamaño de móvil. GitHub Actions lo repite en cada pull request, y el workflow `.github/workflows/backend.yml` hace lo propio con las comprobaciones del backend.
 

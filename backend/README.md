@@ -9,8 +9,8 @@ en la Fase 2).
 Estado: la **base de datos ya está creada** (issue #14) y el servidor tiene las
 **rutas que usa el frontend** (issue #13), con el curso de ejemplo y el mentor sin IA.
 El catálogo, las lecciones y el test se sirven de momento desde
-`app/datos/cursos-ejemplo.json`; conectar este servicio a PostgreSQL es un paso posterior
-(issue #15). También quedan pendientes `app/privacidad.py` y el agente Mentor (issue #16).
+`app/datos/cursos-ejemplo.json`. El curso ya se puede cargar en PostgreSQL
+(`migraciones/cargar_curso.sh`, issue #15); que el servicio lo lea de allí es la issue #40. También quedan pendientes `app/privacidad.py` y el agente Mentor (issue #16).
 
 ## Rutas
 
@@ -76,6 +76,7 @@ sudo apt install postgresql                      # Ubuntu/Debian
 sudo -u postgres createuser --superuser $USER    # tu usuario de PostgreSQL
 createdb reto480                                 # base de datos de trabajo
 ./migraciones/aplicar.sh                         # crea las tablas
+./migraciones/cargar_curso.sh                    # carga el curso de ejemplo
 ```
 
 La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`). Sin ellas, se conecta a la base de datos local `reto480` con tu usuario. Las credenciales nunca se escriben en el repositorio.
@@ -85,11 +86,19 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 | Qué | Comando (desde `backend/`) |
 |---|---|
 | Aplicar las migraciones pendientes | `./migraciones/aplicar.sh [base_de_datos]` |
-| Probar el esquema en una base de datos temporal | `./migraciones/probar.sh` |
+| Cargar o actualizar el curso de ejemplo | `./migraciones/cargar_curso.sh [base_de_datos] [fichero_json]` |
+| Probar el esquema y la carga en bases de datos temporales | `./migraciones/probar.sh` |
 
 `aplicar.sh` anota cada migración en la tabla `migraciones_aplicadas`, así que puede ejecutarse varias veces: solo aplica las nuevas. Cada migración se aplica entera o no se aplica.
 
-`probar.sh` crea una base de datos temporal, aplica todas las migraciones, ejecuta `pruebas.sql` y la borra. No toca la base de datos de trabajo.
+`cargar_curso.sh` lleva a las tablas el curso de `app/datos/cursos-ejemplo.json` (issue #15). Se vuelve a ejecutar cada vez que cambia el curso: actualiza lo que ha cambiado, borra lo que ya no está en el fichero y no duplica nada. Tampoco borra los datos de los alumnos (matrículas, dominios, sesiones y eventos). Todo va en una transacción: si algo falla, la base de datos se queda como estaba. Cómo pasa cada campo del JSON a su tabla está explicado al principio de `cargar_curso.sql`; lo más importante:
+
+- Cada lección tiene su propio vídeo entero, con el mismo identificador que la lección. Un vídeo sin elegir (`youtubeId` vacío) se guarda sin `youtube_id`.
+- Cada lección cubre un concepto, también con su mismo identificador.
+- Las actividades son preguntas de comprobación de su lección. Las de verdadero o falso se guardan con dos opciones, "Verdadero" y "Falso".
+- Las preguntas del test inicial son de diagnóstico: van unidas al concepto de su lección, no a la lección.
+
+`probar.sh` crea dos bases de datos temporales y las borra al terminar; no toca la base de datos de trabajo. En la primera aplica las migraciones y ejecuta `pruebas.sql`. En la segunda carga el curso tres veces y, tras cada carga, ejecuta `pruebas_carga.sql`: la primera vez, la segunda (no duplica nada ni borra los datos de un alumno) y una tercera con un vídeo ya elegido y una actividad menos.
 
 ### Añadir un cambio de esquema
 

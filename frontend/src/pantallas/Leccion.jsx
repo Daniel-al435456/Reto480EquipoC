@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { obtenerCurso } from '../api/cliente.js';
 import { DURACION_ACTIVIDADES } from '../api/datos.js';
 import { leccionesPendientes, planificarLeccion } from '../api/planificador.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
 import { useEstado } from '../hooks/useEstado.jsx';
+import { useCurso } from '../hooks/useCurso.js';
 import comun from './comun.module.css';
 
 /**
@@ -12,7 +12,7 @@ import comun from './comun.module.css';
  * aunque el test diga que ya la domina o aunque ya la haya completado.
  */
 export function Leccion({ cursoId, leccionId, navegar }) {
-  const curso = obtenerCurso(cursoId);
+  const curso = useCurso(cursoId);
   const leccion = curso?.lecciones.find((l) => l.id === leccionId);
   const { estado, empezarSesion, estudiarIgualmente, registrarEvento } = useEstado();
   const [audio, setAudio] = useState(estado.modo.audio);

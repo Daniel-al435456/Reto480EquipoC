@@ -9,11 +9,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:test": "vite build --mode test",
     "preview": "vite preview",
     "test": "node --test --test-reporter=spec \"pruebas/unitarias/*.test.js\"",
     "test:e2e": "node --test --test-reporter=spec --test-concurrency=1 \"pruebas/e2e/*.test.js\"",
     "verificar:rapido": "npm test",
-    "verificar": "npm test && npm run build && npm run test:e2e"
+    "verificar": "npm test && npm run build && npm run build:test && npm run test:e2e"
   },
   "dependencies": {
     "react": "^19.2.0",

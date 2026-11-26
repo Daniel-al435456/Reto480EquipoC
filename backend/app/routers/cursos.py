@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.esquemas import EntradaEvaluacion, SalidaCursos, SalidaEvaluacion, SalidaTest
+from app.esquemas import (
+    EntradaEvaluacion,
+    SalidaCursoLecciones,
+    SalidaCursos,
+    SalidaEvaluacion,
+    SalidaTest,
+)
 from app.servicios import contenido
 
 router = APIRouter(prefix="/api/cursos", tags=["cursos"])
@@ -13,6 +19,16 @@ router = APIRouter(prefix="/api/cursos", tags=["cursos"])
 @router.get("", response_model=SalidaCursos, summary="Catálogo de cursos")
 def listar_cursos() -> SalidaCursos:
     return contenido.listar_cursos()
+
+
+@router.get(
+    "/{curso_id}/lecciones",
+    response_model=SalidaCursoLecciones,
+    response_model_exclude_none=True,
+    summary="Contenido completo de las lecciones",
+)
+def curso_con_lecciones(curso_id: str) -> SalidaCursoLecciones:
+    return contenido.obtener_curso_con_lecciones(curso_id)
 
 
 @router.get("/{curso_id}/test", response_model=SalidaTest, summary="Preguntas del test inicial")

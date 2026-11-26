@@ -1,6 +1,6 @@
 import { coincide } from '../hooks/useRuta.js';
 import { useEstado } from '../hooks/useEstado.jsx';
-import { obtenerLeccion } from '../api/cliente.js';
+import { useCurso } from '../hooks/useCurso.js';
 import { IconoIA } from './Iconos.jsx';
 import estilos from './BotonMentor.module.css';
 
@@ -27,13 +27,20 @@ const OCULTO_EN = [
 ];
 
 /** Lección que el alumno tiene delante, para que el mentor sepa de qué se habla. */
-function leccionActual(ruta, estado) {
+function cursoActual(ruta) {
+  return (
+    coincide('/curso/:cursoId/leccion/:leccionId', ruta)?.cursoId ??
+    coincide('/curso/:cursoId/sesion/:paso', ruta)?.cursoId
+  );
+}
+
+function leccionActual(ruta, estado, curso) {
   const enLeccion = coincide('/curso/:cursoId/leccion/:leccionId', ruta);
-  if (enLeccion) return obtenerLeccion(enLeccion.cursoId, enLeccion.leccionId);
+  if (enLeccion) return curso?.lecciones.find((leccion) => leccion.id === enLeccion.leccionId) ?? null;
   const enSesion = coincide('/curso/:cursoId/sesion/:paso', ruta);
   if (enSesion && estado.sesion) {
     const paso = estado.sesion.pasos[Number(enSesion.paso)];
-    if (paso) return obtenerLeccion(enSesion.cursoId, paso.leccionId);
+    if (paso) return curso?.lecciones.find((leccion) => leccion.id === paso.leccionId) ?? null;
   }
   return null;
 }
@@ -44,9 +51,10 @@ function leccionActual(ruta, estado) {
  */
 export function BotonMentor({ ruta, navegar }) {
   const { estado, ponerContextoMentor } = useEstado();
+  const curso = useCurso(cursoActual(ruta));
   if (OCULTO_EN.some((patron) => coincide(patron, ruta))) return null;
 
-  const leccion = leccionActual(ruta, estado);
+  const leccion = leccionActual(ruta, estado, curso);
   const abrir = () => {
     ponerContextoMentor(leccion ? { leccionId: leccion.id, titulo: leccion.titulo } : null);
     navegar('/mentor');

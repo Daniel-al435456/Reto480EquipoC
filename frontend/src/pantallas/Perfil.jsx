@@ -1,4 +1,3 @@
-import { obtenerCurso } from '../api/cliente.js';
 import { nombreVisible } from '../api/cuenta.js';
 import { leccionesPendientes } from '../api/planificador.js';
 import { AvatarPixel } from '../componentes/AvatarPixel.jsx';
@@ -11,6 +10,7 @@ import { PieLegal } from '../componentes/PieLegal.jsx';
 import { tramoDe } from '../api/edad.js';
 import { PERSONALIDADES } from '../api/mentor.js';
 import { esMenor, useEstado } from '../hooks/useEstado.jsx';
+import { useCurso } from '../hooks/useCurso.js';
 import { useTituloPantalla } from '../hooks/useTituloPantalla.js';
 import comun from './comun.module.css';
 import estilos from './Perfil.module.css';
@@ -23,7 +23,7 @@ export function Perfil({ navegar }) {
   const encabezado = useTituloPantalla('Perfil');
   const { ajustes, cuenta } = estado;
 
-  const curso = estado.cursoId && estado.testHecho ? obtenerCurso(estado.cursoId) : null;
+  const curso = useCurso(estado.cursoId && estado.testHecho ? estado.cursoId : null);
   const pendientes = curso ? leccionesPendientes(curso, estado.dominio, estado.completadas) : [];
   const porcentaje = curso
     ? Math.round(((curso.lecciones.length - pendientes.length) / curso.lecciones.length) * 100)

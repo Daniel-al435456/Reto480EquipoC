@@ -19,6 +19,7 @@ from app.esquemas import (
     CursoResumen,
     PreguntaTest,
     SalidaCorreccion,
+    SalidaCursoLecciones,
     SalidaCursos,
     SalidaEvaluacion,
     SalidaTest,
@@ -63,6 +64,11 @@ def listar_cursos() -> SalidaCursos:
             for curso in _cursos()
         ]
     )
+
+
+def obtener_curso_con_lecciones(curso_id: str) -> SalidaCursoLecciones:
+    """Devuelve los datos del curso y sus lecciones, sin incluir las respuestas del test."""
+    return SalidaCursoLecciones.model_validate(obtener_curso(curso_id))
 
 
 def preguntas_test(curso_id: str) -> SalidaTest:

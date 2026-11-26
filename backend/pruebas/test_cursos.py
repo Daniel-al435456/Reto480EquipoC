@@ -15,6 +15,34 @@ def test_el_catalogo_lista_los_cursos_con_su_numero_de_lecciones(cliente: TestCl
     assert curso["numeroLecciones"] == 6
 
 
+def test_el_contenido_de_las_lecciones_devuelve_el_curso_completo_sin_test(
+    cliente: TestClient,
+) -> None:
+    respuesta = cliente.get(f"/api/cursos/{CURSO}/lecciones")
+    assert respuesta.status_code == 200
+    curso = respuesta.json()
+    assert curso["id"] == CURSO
+    assert curso["titulo"] == "Python desde cero"
+    assert len(curso["lecciones"]) == 6
+    leccion = curso["lecciones"][0]
+    assert {
+        "id",
+        "titulo",
+        "concepto",
+        "youtubeId",
+        "duracionVideo",
+        "duracionLectura",
+        "descripcion",
+        "lectura",
+        "resumen",
+        "actividades",
+    } <= set(leccion)
+    assert leccion["duracionVideo"] == 5
+    assert leccion["lectura"]
+    assert leccion["actividades"][0]["id"] == "introduccion-1"
+    assert "testInicial" not in curso
+
+
 def test_el_test_inicial_no_envia_las_respuestas_correctas(cliente: TestClient) -> None:
     respuesta = cliente.get(f"/api/cursos/{CURSO}/test")
     assert respuesta.status_code == 200
@@ -25,6 +53,12 @@ def test_el_test_inicial_no_envia_las_respuestas_correctas(cliente: TestClient) 
 
 def test_un_curso_que_no_existe_devuelve_404_con_el_formato_de_error(cliente: TestClient) -> None:
     respuesta = cliente.get("/api/cursos/no-existe/test")
+    assert respuesta.status_code == 404
+    assert respuesta.json()["error"] == "curso_no_encontrado"
+
+
+def test_el_contenido_de_un_curso_que_no_existe_devuelve_404(cliente: TestClient) -> None:
+    respuesta = cliente.get("/api/cursos/no-existe/lecciones")
     assert respuesta.status_code == 404
     assert respuesta.json()["error"] == "curso_no_encontrado"
 

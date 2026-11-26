@@ -1,9 +1,9 @@
-import { obtenerCurso } from '../api/cliente.js';
 import { leccionesPendientes } from '../api/planificador.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { IconoCheck, IconoMeta, IconoReproducir, IconoSaltar } from '../componentes/Iconos.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
 import { useEstado } from '../hooks/useEstado.jsx';
+import { useCurso } from '../hooks/useCurso.js';
 import estilos from './Progreso.module.css';
 
 const ESTADOS = {
@@ -40,7 +40,7 @@ function caminoZigzag(etapas) {
 /** Pantalla 6 del boceto: recorrido del curso hasta la meta. */
 export function Progreso({ navegar }) {
   const { estado } = useEstado();
-  const curso = estado.cursoId ? obtenerCurso(estado.cursoId) : null;
+  const curso = useCurso(estado.cursoId);
 
   if (!curso || !estado.testHecho) {
     return (

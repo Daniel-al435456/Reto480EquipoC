@@ -88,16 +88,31 @@ export async function obtenerCursos() {
 }
 
 /*
- * En el prototipo, la estructura del curso (lecciones, actividades) se lee de datos.js de forma síncrona.
- * Con el backend, se cargará al elegir el curso y se guardará en el estado.
+ * El curso local se conserva para el modo demo y como respaldo si la API no está disponible.
+ * La interfaz carga el contenido completo mediante obtenerCursoCompleto.
  */
+
+const cursosCompletos = new Map();
+
+export function obtenerCursoCompleto(id) {
+  if (!id) return Promise.resolve(null);
+  if (!cursosCompletos.has(id)) {
+    cursosCompletos.set(
+      id,
+      conRespaldo(`/api/cursos/${encodeURIComponent(id)}/lecciones`, null, async () => {
+        await esperar(150);
+        const curso = obtenerCurso(id);
+        if (!curso) return {};
+        const { testInicial, ...contenido } = curso;
+        return contenido;
+      }).then((curso) => (curso.id ? curso : null)),
+    );
+  }
+  return cursosCompletos.get(id);
+}
 
 export function obtenerCurso(id) {
   return cursos.find((c) => c.id === id) ?? null;
-}
-
-export function obtenerLeccion(cursoId, leccionId) {
-  return obtenerCurso(cursoId)?.lecciones.find((l) => l.id === leccionId) ?? null;
 }
 
 export async function obtenerTestInicial(cursoId) {
@@ -140,8 +155,8 @@ async function evaluarTestSimulado(cursoId, respuestas) {
   return { dominio, mensaje };
 }
 
-export function planificarSesion(cursoId, modo, dominio, completadas) {
-  return planificar(obtenerCurso(cursoId), modo, dominio, completadas);
+export function planificarSesion(curso, modo, dominio, completadas) {
+  return planificar(curso, modo, dominio, completadas);
 }
 
 /**

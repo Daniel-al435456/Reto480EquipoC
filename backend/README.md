@@ -7,7 +7,7 @@ pasa por este servidor y por el filtro de privacidad (`app/privacidad.py`, previ
 en la Fase 2).
 
 Estado: la **base de datos ya está creada** (issue #14) y el servidor tiene las
-**rutas que usa el frontend** (issue #13), con el curso de ejemplo y el mentor sin IA.
+**rutas que usa el frontend** (issue #13), con el curso de ejemplo. Con `GROQ_API_KEY`, el diagnóstico y el mentor responden con IA (issue #16); sin ella, con sus respuestas de respaldo.
 El curso (catálogo, lecciones, actividades y test) se lee de PostgreSQL si está configurada
 `DATABASE_URL` (issue #40), y si no, de `app/datos/cursos-ejemplo.json`
 ([Conectar la base de datos](#conectar-la-base-de-datos)). Quedan pendientes `app/privacidad.py`
@@ -25,10 +25,10 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 | `GET /api/cursos` | Catálogo de cursos | |
 | `GET /api/cursos/{curso_id}/lecciones` | Datos del curso y contenido completo de sus lecciones, con el trozo de vídeo de cada una (`inicioS`, `finS`) | No incluye el test inicial |
 | `GET /api/cursos/{curso_id}/test` | Preguntas del test inicial, sin la respuesta correcta | |
-| `POST /api/cursos/{curso_id}/test/evaluacion` | Corrige el test con reglas y explica el itinerario | Mensaje de plantilla; con la #16, el agente Diagnóstico |
-| `POST /api/actividades/correccion` | Corrige una respuesta escrita por palabras clave | |
-| `POST /api/mentor/mensaje` | Responde a una consulta con la personalidad y el trato elegidos | Respuesta de respaldo sin IA; con la #16, el agente Mentor |
-| `POST /api/mentor/proactivo` | Mensaje del mentor cuando el alumno se bloquea | Respuesta de respaldo sin IA |
+| `POST /api/cursos/{curso_id}/test/evaluacion` | Corrige el test con reglas y explica el itinerario | Con clave, el agente Diagnóstico redacta el mensaje; sin ella o si falla, plantilla |
+| `POST /api/actividades/correccion` | Corrige una respuesta escrita | Por palabras clave; si faltan y hay clave, decide el agente de corrección y explica el motivo |
+| `POST /api/mentor/mensaje` | Responde a una consulta con la personalidad y el trato elegidos | Con clave, el agente Mentor, con hasta 3 lecciones relacionadas, el índice del curso, el progreso y la conversación; puede proponer abrir una lección. Sin clave o si falla, respuesta de respaldo |
+| `POST /api/mentor/proactivo` | Mensaje del mentor cuando el alumno se bloquea | Con clave, el agente Mentor; sin ella o si falla, respuesta de respaldo |
 | `POST /api/mentor/derivacion` | Pasa la consulta a un tutor de la academia | Solo confirma; guardarla necesita la base de datos |
 
 El curso de ejemplo es una copia del del frontend. Si cambia `frontend/src/api/datos.js`,
@@ -52,8 +52,11 @@ la contraseña):
   datos; sin él, la API funciona con el JSON de ejemplo (se ha probado con la versión 18). En macOS, por ejemplo, con
   [Postgres.app](https://postgres.app); en Ubuntu/Debian, con `sudo apt install postgresql`;
   en el resto de sistemas, con el instalador oficial o un contenedor de Docker.
-- La clave `GROQ_API_KEY` no es necesaria para las rutas actuales; se usará al integrar
-  los agentes de IA.
+- La clave `GROQ_API_KEY` es opcional: sin ella, el diagnóstico, el mentor y la corrección usan
+  sus respuestas de respaldo. Cada persona crea la suya, gratis, en la consola de Groq y la pone en `backend/.env`
+  (o en las variables de Render). Al arrancar, la terminal dice si hay IA o no. Los modelos se
+  pueden cambiar con `MODELO_DIAGNOSTICO`, `MODELO_MENTOR` y `MODELO_CORRECCION`. Cómo funciona todo, en
+  [docs/ia.md](../docs/ia.md).
 
 ## Puesta en marcha del servidor
 
@@ -172,14 +175,14 @@ Las mismas comprobaciones se ejecutan solas en cada pull request
 | `app/config.py` | Variables de entorno. Aquí no se escribe ningún valor secreto |
 | `app/datos/` | Curso de ejemplo en JSON: lo que carga `cargar_curso.sh` y lo que se usa sin base de datos |
 | `app/persistencia.py` | Único módulo que abre conexiones con PostgreSQL (#40) |
-| `app/privacidad.py` | Previsto (Fase 2): único módulo que hablará con la IA (SPEC §5) |
+| `app/privacidad.py` | Único módulo que habla con la IA: quita datos personales y, si la IA falla, devuelve `None` para usar el respaldo (SPEC §5) |
 | `migraciones/` | Único origen del esquema de la base de datos |
 | `pruebas/` | Pruebas por endpoint y pruebas de arquitectura |
 
 ## Convenciones que comprueban las pruebas
 
 - Los routers no acceden a la base de datos: delegan en `servicios/`.
-- Solo `app/privacidad.py` podrá llamar a un proveedor de IA (SPEC §5).
+- Solo `app/privacidad.py` puede llamar a un proveedor de IA (SPEC §5). Los agentes están en `app/servicios/agentes.py`.
 - El esquema de las tablas solo se define en `migraciones/`.
 - Ninguna clave o contraseña aparece en el código fuente.
 - Cada endpoint tiene al menos una prueba.

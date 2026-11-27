@@ -45,6 +45,20 @@ class Configuracion(BaseSettings):
         default="",
         validation_alias=AliasChoices("GROQ_API_KEY", "clave_groq"),
     )
+    # Modelos de cada agente (SPEC §7, propuesta P1). Están aquí, en un solo sitio, para poder
+    # cambiar de modelo o de proveedor sin tocar el resto del código.
+    modelo_diagnostico: str = Field(
+        default="openai/gpt-oss-20b",
+        validation_alias=AliasChoices("MODELO_DIAGNOSTICO", "modelo_diagnostico"),
+    )
+    modelo_correccion: str = Field(
+        default="openai/gpt-oss-20b",
+        validation_alias=AliasChoices("MODELO_CORRECCION", "modelo_correccion"),
+    )
+    modelo_mentor: str = Field(
+        default="openai/gpt-oss-120b",
+        validation_alias=AliasChoices("MODELO_MENTOR", "modelo_mentor"),
+    )
     url_frontend: str = Field(
         default="http://localhost:5173",
         validation_alias=AliasChoices("FRONTEND_URL", "url_frontend"),

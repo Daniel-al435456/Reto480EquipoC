@@ -43,4 +43,10 @@ def preguntas_test(curso_id: str) -> SalidaTest:
     summary="Corrige el test inicial y explica el itinerario",
 )
 def evaluar_test(curso_id: str, entrada: EntradaEvaluacion) -> SalidaEvaluacion:
-    return contenido.evaluar_test(curso_id, entrada.respuestas)
+    return contenido.evaluar_test(
+        curso_id,
+        entrada.respuestas,
+        es_menor=entrada.es_menor,
+        personalidad=entrada.personalidad,
+        tratamiento=entrada.tratamiento,
+    )

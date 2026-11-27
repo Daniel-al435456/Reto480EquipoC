@@ -199,9 +199,9 @@ Al arrancar, la app comprueba una vez si el backend responde en `/salud` (3 segu
 | `obtenerCursoCompleto` | `GET /api/cursos/{id}/lecciones` | | `{ id, titulo, descripcion, nivel, lecciones: [...] }` (lecturas, vídeos, duraciones y actividades; sin preguntas del test inicial). Cada lección lleva su trozo de vídeo: `inicioS` y, si no llega al final, `finS`, en segundos |
 | `obtenerTestInicial` | `GET /api/cursos/{id}/test` | | `{ preguntas: [{ id, leccionId, enunciado, opciones }] }` (sin la respuesta correcta) |
 | `evaluarTestInicial` | `POST /api/cursos/{id}/test/evaluacion` | `{ respuestas, esMenor, personalidad, tratamiento }` | `{ dominio: { leccionId: true }, mensaje, redactadoPorIa }` (con la #16, el mensaje lo redacta el agente Diagnóstico; mientras, es una plantilla y `redactadoPorIa` es `false`) |
-| `corregirRespuestaEscrita` | `POST /api/actividades/correccion` | `{ actividadId, texto }` | `{ correcta, solucion }` |
-| `mensajeProactivoMentor` | `POST /api/mentor/proactivo` | `{ cursoId, leccionId, senal, esMenor, personalidad, tratamiento }` | `{ texto }` |
-| `preguntarMentor` | `POST /api/mentor/mensaje` | `{ cursoId, leccionId, texto, esMenor, personalidad, tratamiento }` | `{ texto, derivado }` |
+| `corregirRespuestaEscrita` | `POST /api/actividades/correccion` | `{ actividadId, texto, esMenor, personalidad, tratamiento }` | `{ correcta, solucion, comentario?, redactadoPorIa? }`. Con IA, `comentario` explica la corrección |
+| `mensajeProactivoMentor` | `POST /api/mentor/proactivo` | `{ cursoId, leccionId, senal, esMenor, personalidad, tratamiento, progreso }` | `{ texto }` |
+| `preguntarMentor` | `POST /api/mentor/mensaje` | `{ cursoId, leccionId, texto, esMenor, personalidad, tratamiento, historial, progreso }`. `historial`: últimos mensajes `{ autor, texto }`; `progreso`: `{ dominadas, completadas }` (identificadores de lecciones) | `{ texto, derivado, leccionId?, leccionTitulo? }`. Si llega `leccionId`, el mentor propone abrir esa lección y se muestra un botón |
 | `solicitarTutorHumano` | `POST /api/mentor/derivacion` | `{ cursoId, leccionId }` | `{ texto }` |
 
 La IA está en el backend ([propuesta P1](../propuestas/README.md#p1-agentes-de-ia)): Claude prepara el contenido una vez por vídeo y Groq redacta el diagnóstico y responde como mentor. Las claves de la IA nunca llegan al frontend.

@@ -11,7 +11,16 @@ router = APIRouter(prefix="/api/actividades", tags=["actividades"])
 
 
 @router.post(
-    "/correccion", response_model=SalidaCorreccion, summary="Corrige una respuesta escrita"
+    "/correccion",
+    response_model=SalidaCorreccion,
+    response_model_exclude_none=True,
+    summary="Corrige una respuesta escrita",
 )
 def corregir(entrada: EntradaCorreccion) -> SalidaCorreccion:
-    return contenido.corregir_respuesta(entrada.actividad_id, entrada.texto)
+    return contenido.corregir_respuesta(
+        entrada.actividad_id,
+        entrada.texto,
+        es_menor=entrada.es_menor,
+        personalidad=entrada.personalidad,
+        tratamiento=entrada.tratamiento,
+    )

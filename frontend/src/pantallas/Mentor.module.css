@@ -169,3 +169,18 @@
   color: var(--color-texto);
   cursor: pointer;
 }
+
+/* Botón para abrir la lección que propone el mentor, debajo de su mensaje. */
+.irLeccion {
+  display: block;
+  margin-top: var(--espacio-3);
+  font-weight: 600;
+}
+
+/* Aviso discreto de que la respuesta la ha redactado la IA (uso responsable de la IA). */
+.marcaIA {
+  display: block;
+  margin-top: var(--espacio-2);
+  font-size: 0.75rem;
+  color: var(--color-texto-suave);
+}

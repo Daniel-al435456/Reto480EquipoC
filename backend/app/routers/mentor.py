@@ -1,4 +1,4 @@
-"""Rutas del mentor (SPEC §7). De momento responden sin IA; la issue #16 añade el agente."""
+"""Rutas del mentor (SPEC §7). Con GROQ_API_KEY responde el agente Mentor; sin ella, el respaldo."""
 
 from __future__ import annotations
 
@@ -19,11 +19,22 @@ router = APIRouter(prefix="/api/mentor", tags=["mentor"])
 @router.post("/proactivo", response_model=SalidaTexto, summary="Mensaje del mentor ante un bloqueo")
 def proactivo(entrada: EntradaProactivo) -> SalidaTexto:
     return mentor.mensaje_proactivo(
-        entrada.curso_id, entrada.leccion_id, entrada.personalidad, entrada.tratamiento
+        entrada.curso_id,
+        entrada.leccion_id,
+        entrada.personalidad,
+        entrada.tratamiento,
+        es_menor=entrada.es_menor,
+        senal=entrada.senal,
+        progreso=entrada.progreso,
     )
 
 
-@router.post("/mensaje", response_model=SalidaMensaje, summary="Responde a una consulta")
+@router.post(
+    "/mensaje",
+    response_model=SalidaMensaje,
+    response_model_exclude_none=True,
+    summary="Responde a una consulta",
+)
 def mensaje(entrada: EntradaMensaje) -> SalidaMensaje:
     return mentor.responder(
         entrada.texto,
@@ -31,6 +42,9 @@ def mensaje(entrada: EntradaMensaje) -> SalidaMensaje:
         entrada.leccion_id,
         entrada.personalidad,
         entrada.tratamiento,
+        es_menor=entrada.es_menor,
+        historial=entrada.historial,
+        progreso=entrada.progreso,
     )
 
 

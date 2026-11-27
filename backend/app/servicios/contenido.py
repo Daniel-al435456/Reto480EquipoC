@@ -23,15 +23,17 @@ from typing import Any
 from app.errores import ErrorDeNegocio
 from app.esquemas import (
     CursoResumen,
+    Personalidad,
     PreguntaTest,
     SalidaCorreccion,
     SalidaCursoLecciones,
     SalidaCursos,
     SalidaEvaluacion,
     SalidaTest,
+    Tratamiento,
 )
 from app.persistencia import hay_base_de_datos
-from app.servicios import cursos_bd
+from app.servicios import agentes, cursos_bd
 
 ARCHIVO_CURSOS = Path(__file__).resolve().parent.parent / "datos" / "cursos-ejemplo.json"
 
@@ -115,13 +117,19 @@ def preguntas_test(curso_id: str) -> SalidaTest:
     )
 
 
-def evaluar_test(curso_id: str, respuestas: dict[str, int]) -> SalidaEvaluacion:
+def evaluar_test(
+    curso_id: str,
+    respuestas: dict[str, int],
+    es_menor: bool = False,
+    personalidad: Personalidad = "amable",
+    tratamiento: Tratamiento = "neutro",
+) -> SalidaEvaluacion:
     """Corrige el test inicial con reglas, sin IA.
 
     Cada acierto marca como dominadas todas las lecciones del vídeo de la lección de la pregunta.
 
-    El mensaje es una plantilla. Con la issue #16, el agente Diagnóstico lo redactará
-    a partir de este resultado y la plantilla quedará como respaldo (SPEC §7).
+    La nota no la decide la IA. Con `GROQ_API_KEY`, el agente Diagnóstico redacta el mensaje a
+    partir de este resultado; sin clave, o si la IA falla, se usa la plantilla (SPEC §7).
     """
     curso = obtener_curso(curso_id)
     lecciones = curso["lecciones"]
@@ -148,6 +156,24 @@ def evaluar_test(curso_id: str, respuestas: dict[str, int]) -> SalidaEvaluacion:
             f"Ya dominas {len(dominadas)} de {len(lecciones)} lecciones, así que no tendrás que "
             f"verlas. Empezarás por «{siguiente['titulo']}»."
         )
+    titulo_de_video = {video["id"]: video["titulo"] for video in curso.get("videos", [])}
+    # Lo que recibe el agente Diagnóstico: cada vídeo del test y si se domina. Nada del alumno.
+    conceptos: dict[str, bool] = {}
+    for pregunta in curso["testInicial"]:
+        video = video_de[pregunta["leccionId"]]
+        conceptos[titulo_de_video.get(video, video)] = video in videos_acertados
+    redactado = agentes.redactar_diagnostico(
+        conceptos=conceptos,
+        dominadas=len(dominadas),
+        total=len(lecciones),
+        siguiente=siguiente["titulo"] if siguiente else None,
+        titulo_curso=curso.get("titulo", ""),
+        es_menor=es_menor,
+        personalidad=personalidad,
+        tratamiento=tratamiento,
+    )
+    if redactado:
+        return SalidaEvaluacion(dominio=dominio, mensaje=redactado, redactado_por_ia=True)
     return SalidaEvaluacion(dominio=dominio, mensaje=mensaje)
 
 
@@ -162,24 +188,56 @@ def normalizar(texto: str) -> str:
     return " ".join(sin_comillas.split())
 
 
-def _actividad(actividad_id: str) -> dict[str, Any]:
+def _actividad(actividad_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    """La actividad y la lección a la que pertenece."""
     for curso in _cursos():
         for leccion in curso["lecciones"]:
             for actividad in leccion["actividades"]:
                 if actividad["id"] == actividad_id:
-                    return actividad
+                    return actividad, leccion
     raise ErrorDeNegocio(
         "actividad_no_encontrada", f"No existe la actividad «{actividad_id}».", 404
     )
 
 
-def corregir_respuesta(actividad_id: str, texto: str) -> SalidaCorreccion:
-    """Corrige una respuesta escrita: es correcta si contiene todas las palabras clave."""
-    actividad = _actividad(actividad_id)
+def corregir_respuesta(
+    actividad_id: str,
+    texto: str,
+    es_menor: bool = False,
+    personalidad: Personalidad = "amable",
+    tratamiento: Tratamiento = "neutro",
+) -> SalidaCorreccion:
+    """Corrige una respuesta escrita.
+
+    Si contiene todas las palabras clave, es correcta sin preguntar a nadie. Si no, con
+    `GROQ_API_KEY` decide el agente de corrección, que entiende respuestas equivalentes escritas
+    con otras palabras y explica el motivo. Sin clave, o si la IA falla, cuentan solo las
+    palabras clave.
+    """
+    actividad, leccion = _actividad(actividad_id)
     if actividad.get("tipo") != "escrita":
         raise ErrorDeNegocio(
             "actividad_no_escrita", "Esa actividad no se responde por escrito.", 400
         )
     respuesta = normalizar(texto)
-    correcta = all(normalizar(clave) in respuesta for clave in actividad["palabrasClave"])
-    return SalidaCorreccion(correcta=correcta, solucion=actividad["solucion"])
+    if all(normalizar(clave) in respuesta for clave in actividad["palabrasClave"]):
+        return SalidaCorreccion(correcta=True, solucion=actividad["solucion"])
+    if texto.strip():
+        corregida = agentes.corregir_respuesta(
+            enunciado=actividad["enunciado"],
+            solucion=actividad["solucion"],
+            palabras_clave=actividad["palabrasClave"],
+            leccion=leccion,
+            respuesta=texto,
+            es_menor=es_menor,
+            personalidad=personalidad,
+            tratamiento=tratamiento,
+        )
+        if corregida:
+            return SalidaCorreccion(
+                correcta=corregida["correcta"],
+                solucion=actividad["solucion"],
+                comentario=corregida["comentario"],
+                redactado_por_ia=True,
+            )
+    return SalidaCorreccion(correcta=False, solucion=actividad["solucion"])

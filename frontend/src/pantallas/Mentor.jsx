@@ -5,7 +5,7 @@ import { IconoCerrar, IconoEnviar, IconoMentor } from '../componentes/Iconos.jsx
 import { Pato } from '../componentes/Pato.jsx';
 import { TextoTecleado } from '../componentes/TextoTecleado.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { contextoIA } from '../api/mentor.js';
+import { contextoIA, historialIA, progresoIA } from '../api/mentor.js';
 import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './Mentor.module.css';
@@ -38,7 +38,12 @@ export function Mentor({ navegar }) {
     setCaraPato(null);
   }, []);
   const ultimoMentor = [...estado.mensajesMentor].reverse().find((m) => m.autor === 'mentor');
-  const datosConsulta = { cursoId: estado.cursoId, leccionId: contexto?.leccionId, ...contextoIA(estado) };
+  const datosConsulta = {
+    cursoId: estado.cursoId,
+    leccionId: contexto?.leccionId,
+    ...contextoIA(estado),
+    progreso: progresoIA(estado),
+  };
   const [conectado, setConectado] = useState(null);
   useEffect(() => {
     estadoServidor().then(setConectado);
@@ -58,12 +63,24 @@ export function Mentor({ navegar }) {
   const enviar = async (pregunta) => {
     const limpia = pregunta.trim();
     if (!limpia || esperando) return;
+    // La conversación anterior se toma antes de añadir la pregunta nueva, que va aparte.
+    const historial = historialIA(estado.mensajesMentor.slice(1));
     anadirMensaje({ autor: 'alumno', texto: limpia });
     registrarEvento('pregunta_mentor', { cursoId: estado.cursoId, leccionId: contexto?.leccionId });
     setTexto('');
     setEsperando(true);
-    const respuesta = await preguntarMentor(limpia, datosConsulta);
-    anadirMensaje({ autor: 'mentor', texto: respuesta.texto });
+    const respuesta = await preguntarMentor(limpia, { ...datosConsulta, historial });
+    anadirMensaje({
+      autor: 'mentor',
+      texto: respuesta.texto,
+      // Transparencia: se indica cuándo la respuesta la ha redactado la IA y no es una de respaldo.
+      ia: respuesta.origen === 'api' && respuesta.redactadoPorIa === true,
+      // El mentor puede proponer abrir una lección: se muestra un botón para ir a ella.
+      ...(respuesta.leccionId && respuesta.leccionTitulo
+        ? { leccionId: respuesta.leccionId, leccionTitulo: respuesta.leccionTitulo }
+        : {}),
+    });
+    if (respuesta.derivado) registrarEvento('derivacion_tutor', { cursoId: estado.cursoId, porMentor: true });
     setEsperando(false);
   };
 
@@ -151,6 +168,19 @@ export function Mentor({ navegar }) {
                 </span>
               ) : (
                 m.texto
+              )}
+              {m.ia && tecleando !== m.id && <span className={estilos.marcaIA}>Redactado con IA</span>}
+              {m.leccionId && estado.cursoId && tecleando !== m.id && (
+                <button
+                  type="button"
+                  className={`${estilos.sugerencia} ${estilos.irLeccion}`}
+                  onClick={() => {
+                    ponerContextoMentor({ leccionId: m.leccionId, titulo: m.leccionTitulo });
+                    navegar(`/curso/${estado.cursoId}/leccion/${m.leccionId}`);
+                  }}
+                >
+                  Ir a «{m.leccionTitulo}»
+                </button>
               )}
             </div>
           );

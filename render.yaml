@@ -23,6 +23,6 @@ services:
       # Dirección del frontend en Netlify, para CORS. Varias, separadas por comas.
       - key: FRONTEND_URL
         sync: false
-      # Clave de Groq. Mientras no esté, el mentor usa sus respuestas de respaldo.
+      # Clave de Groq de quien despliega. Sin ella, la IA usa sus respuestas de respaldo (docs/ia.md).
       - key: GROQ_API_KEY
         sync: false

@@ -58,7 +58,7 @@ Si Render no muestra el repositorio, hay que darle acceso en GitHub: *Settings �
 2. Rellenar las variables que pide:
    - `DATABASE_URL`: la cadena del *Session pooler* del paso 2.3, con la contraseña en lugar de `CONTRASEÑA`.
    - `FRONTEND_URL`: de momento, `http://localhost:5173`. Se cambia en el paso 4.4.
-   - `GROQ_API_KEY`: la clave de Groq, si se tiene. Sin ella, el mentor usa sus respuestas de respaldo.
+   - `GROQ_API_KEY`: la clave de Groq de quien despliega (se crea gratis en la consola de Groq). Sin ella, el diagnóstico, el mentor y la corrección usan sus respuestas de respaldo. Ver [cómo funciona la IA](ia.md).
 3. **Apply.** Cuando termine, abrir `https://NOMBRE.onrender.com/salud` (la dirección sale en el panel del servicio): tiene que responder con `"estado":"ok"`. En **Logs** tiene que aparecer `Curso: PostgreSQL (DATABASE_URL).`, y `https://NOMBRE.onrender.com/api/cursos` tiene que devolver el curso.
 
 Cada cambio que entre en `main` se despliega solo.

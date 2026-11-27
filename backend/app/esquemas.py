@@ -135,7 +135,7 @@ class SalidaEvaluacion(EsquemaApi):
     )
 
 
-class EntradaCorreccion(EsquemaApi):
+class EntradaCorreccion(ContextoAlumno):
     actividad_id: str
     texto: str = Field(max_length=2000)
 
@@ -143,6 +143,29 @@ class EntradaCorreccion(EsquemaApi):
 class SalidaCorreccion(EsquemaApi):
     correcta: bool
     solucion: str
+    comentario: str | None = Field(
+        default=None, description="Explicación breve para el alumno, si la ha redactado la IA"
+    )
+    redactado_por_ia: bool | None = Field(
+        default=None, description="True si la corrección la ha decidido la IA"
+    )
+
+
+class ProgresoAlumno(EsquemaApi):
+    """Qué lecciones domina o ha completado el alumno: el mentor lo usa para orientarle.
+
+    Solo identificadores de lecciones del curso, nada de la persona.
+    """
+
+    dominadas: list[str] = Field(default_factory=list, max_length=200)
+    completadas: list[str] = Field(default_factory=list, max_length=200)
+
+
+class MensajeAnterior(EsquemaApi):
+    """Un mensaje anterior de la conversación, para que el mentor no pierda el hilo."""
+
+    autor: Literal["alumno", "mentor"]
+    texto: str = Field(max_length=1500)
 
 
 class EntradaProactivo(ContextoAlumno):
@@ -151,6 +174,7 @@ class EntradaProactivo(ContextoAlumno):
     curso_id: str
     leccion_id: str
     senal: Literal["bloqueo", "abandono"] = "bloqueo"
+    progreso: ProgresoAlumno | None = None
 
 
 class EntradaMensaje(ContextoAlumno):
@@ -159,6 +183,10 @@ class EntradaMensaje(ContextoAlumno):
     curso_id: str | None = None
     leccion_id: str | None = None
     texto: str = Field(min_length=1, max_length=1000)
+    historial: list[MensajeAnterior] = Field(
+        default_factory=list, max_length=12, description="Últimos mensajes de la conversación"
+    )
+    progreso: ProgresoAlumno | None = None
 
 
 class EntradaDerivacion(EsquemaApi):
@@ -173,3 +201,10 @@ class SalidaTexto(EsquemaApi):
 class SalidaMensaje(EsquemaApi):
     texto: str
     derivado: bool = Field(default=False, description="Si la conversación pasa a un tutor")
+    leccion_id: str | None = Field(
+        default=None, description="Lección que el mentor propone abrir, si propone alguna"
+    )
+    leccion_titulo: str | None = Field(default=None, description="Título de esa lección")
+    redactado_por_ia: bool = Field(
+        default=False, description="Si la respuesta la ha redactado la IA o es una de respaldo"
+    )

@@ -52,7 +52,7 @@ El prototipo aborda estos problemas con tres componentes:
 | [docs/decisiones.md](docs/decisiones.md) | Decisiones de stack, modelo de IA y producto |
 | [propuestas/](propuestas/README.md) | Propuestas del equipo y su estado, con el detalle de lo aprobado |
 | [BITACORA.md](BITACORA.md) | Registro de sesiones, tareas y problemas |
-| [Tablero de tareas](https://github.com/users/andreaperibaz/projects/1) | Backlog del proyecto en GitHub Projects: qué falta, quién se encarga y en qué estado está |
+| [Tablero de tareas](https://github.com/users/Daniel-al435456/projects/1) | Backlog del proyecto en GitHub Projects, vinculado al repositorio: qué falta, quién se encarga y en qué estado está |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Roles, ramas, pull requests y definición de terminado |
 | [AGENTS.md](AGENTS.md) | Instrucciones para los asistentes de IA de desarrollo: comandos, reglas, convenciones y límites |
 | [docs/registro-harness.md](docs/registro-harness.md) | Fallos de los asistentes de IA y qué cambiamos en el proyecto para que no se repitan |

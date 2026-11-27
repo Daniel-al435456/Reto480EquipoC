@@ -6,6 +6,40 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 
 ---
 
+## Trabajo entre sesiones · Jueves 26/11/2026
+
+**Participan:** Daniel, Jeremy, Andrea
+
+### Actividades
+
+| Nombre | Actividad |
+|---|---|
+| Andrea | Rutas del backend que usa el frontend (catálogo, test inicial y evaluación, corrección de respuestas escritas y mentor, de momento sin IA ni base de datos) y conexión de la app con el backend. Fusionada en [#39](https://github.com/Daniel-al435456/Reto480EquipoC/pull/39). |
+| Daniel | Lecciones servidas desde el backend: la app pide el curso a la API en lugar de usar los datos simulados, con sus pruebas. Fusionada en [#42](https://github.com/Daniel-al435456/Reto480EquipoC/pull/42). |
+| Jeremy | Script de carga del curso de ejemplo en la base de datos (`cargar_curso.sh` y `cargar_curso.sql`): se puede ejecutar varias veces sin duplicar nada, actualiza lo que cambia y conserva los datos de los alumnos. Incluye pruebas de carga. Fusionada en [#43](https://github.com/Daniel-al435456/Reto480EquipoC/pull/43). |
+| Jeremy | Lectura del curso desde la base de datos: con `DATABASE_URL`, el backend saca el curso de PostgreSQL con el mismo formato que el JSON, y sin ella sigue leyendo el JSON. Si la base de datos falla, la app usa su copia local. También corrige la carga de ficheros de más de 128 KB y añade las pruebas de la base de datos a la comprobación automática de cada pull request. Fusionada el 27/11 en [#45](https://github.com/Daniel-al435456/Reto480EquipoC/pull/45). |
+
+### Acuerdos
+
+- **Un solo tablero de tareas:** a partir de ahora usamos el tablero [Reto480EquipoC](https://github.com/users/Daniel-al435456/projects/1), vinculado al repositorio. Los demás dejan de usarse; el [tablero anterior](https://github.com/users/andreaperibaz/projects/1) se conserva solo como consulta y no se actualiza.
+
+### Problemas y soluciones
+
+| Problema | Solución |
+|---|---|
+| Había varios tableros de tareas y cada uno se actualizaba por separado, así que no coincidían. | Nos quedamos con uno solo, vinculado al repositorio, para que se vea desde las issues y desde la pestaña Projects. |
+| La carga del curso fallaba con ficheros de más de 128 KB, porque el JSON se pasaba a `psql` como argumento y Linux no lo admite. Con las transcripciones de los vídeos, el curso supera ese tamaño. | `psql` lee el fichero directamente, y una prueba carga un curso de más de 128 KB. |
+
+### Herramientas de IA utilizadas
+
+| Herramienta | Modelo | Uso |
+|---|---|---|
+| Claude (claude.ai) | Claude Opus 5.5 | Andrea: rutas del backend, conexión de la app con el backend y redacción de esta entrada |
+| Claude | Claude Opus 5.5 | Jeremy: script de carga del curso y lectura del curso desde la base de datos |
+| GitHub Copilot (VS Code) | Sin indicar | Daniel: lecciones servidas desde el backend |
+
+---
+
 ## Trabajo entre sesiones · Miércoles 25/11/2026
 
 **Participan:** Talia, Jeremy, Andrea
@@ -55,7 +89,7 @@ Registro de las sesiones de trabajo del Equipo C: actividades, coordinación, re
 
 - Estructura base del frontend en `frontend/`: aplicación React instalable como PWA, con las pantallas del boceto, el estilo de los prototipos y respuestas simuladas mientras se decide la IA. Pendiente de revisión en una pull request.
 - Propuesta P6 para votar las pantallas nuevas de los prototipos: bienvenida, alias anónimo y perfil.
-- Tablero de tareas en GitHub Projects ([Reto 480 · Equipo C](https://github.com/users/andreaperibaz/projects/1)) con el backlog del proyecto: 15 tareas creadas como issues en el repositorio, cada una con su etiqueta y sus dependencias.
+- Tablero de tareas en GitHub Projects ([tablero anterior](https://github.com/users/andreaperibaz/projects/1), solo de consulta; desde el 26/11 se usa el [tablero del repositorio](https://github.com/users/Daniel-al435456/projects/1)) con el backlog del proyecto: 15 tareas creadas como issues en el repositorio, cada una con su etiqueta y sus dependencias.
 - Reunión del equipo, en la que participamos los cuatro, para tratar las propuestas P1 a P6 y repartirnos las tareas.
 
 ### Acuerdos de la reunión

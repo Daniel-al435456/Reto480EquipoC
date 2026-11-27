@@ -20,5 +20,17 @@ export PGOPTIONS="-c client_min_messages=warning"  # oculta avisos informativos 
 # como argumento falla a partir de 128 KB (límite de Linux), y el curso con transcripciones lo supera.
 export ARCHIVO_CURSO="$CURSO"
 # Todo en una transacción: si algo falla, la base de datos se queda como estaba.
-psql -X -q -v ON_ERROR_STOP=1 --single-transaction -d "$BD" -f "$(dirname "$0")/cargar_curso.sql"
+# Si el fichero no cumple las reglas (validar_curso.sql), el error lista los fallos; se muestra sin el
+# prefijo de psql ("psql:fichero.sql:línea: ERROR:"). Cualquier otro error (la base de datos no existe,
+# rechaza una fila...) se presenta con una línea que dice que el curso no se ha cargado.
+if ! salida="$(psql -X -q -v ON_ERROR_STOP=1 --single-transaction -d "$BD" \
+                 -f "$(dirname "$0")/cargar_curso.sql" 2>&1)"; then
+  mensaje="$(sed -e 's/^psql:[^:]*:[0-9]*: //' -e 's/^ERROR:  //' <<< "$salida")"
+  if [[ "$mensaje" != "El curso no se ha cargado"* ]]; then
+    echo "El curso no se ha cargado por un error de la base de datos:" >&2
+  fi
+  echo "$mensaje" >&2
+  exit 1
+fi
+[ -z "$salida" ] || echo "$salida"
 echo "Curso cargado en $BD desde $CURSO"

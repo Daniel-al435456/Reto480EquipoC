@@ -235,6 +235,6 @@ curl -s -X POST localhost:8000/api/actividades/correccion -H "Content-Type: appl
 
 ## 12. Pendiente
 
-- **Límite de 30 mensajes al día por alumno** (SPEC §7) y **guardar las derivaciones a tutor** para que las vea la academia: necesitan que las cuentas de los alumnos estén en la base de datos, un trabajo en curso. Mientras tanto, la cuenta y el progreso se guardan en el navegador.
+- **Límite de 30 mensajes al día por alumno** (SPEC §7) y **guardar las derivaciones a tutor** para que las vea la academia: la tabla `derivaciones` ya existe (migración 003), pero el backend necesita saber qué alumno llama, y eso depende de llevar las cuentas a la base de datos (trabajo en curso). Mientras tanto, la cuenta y el progreso se guardan en el navegador. Cuando el mentor deriva por su cuenta (`derivado: true`), el motivo que corresponde en esa tabla es `malestar`.
 - **Agente Preparador** (contenido de cada vídeo con Claude): no está automatizado; el contenido del curso de muestra se preparó aparte y está en `frontend/src/api/datos.js`.
 - **Aprobar la corrección con IA en equipo**, porque no estaba en la propuesta P1.

@@ -18,21 +18,10 @@
 -- que se conservan las matrículas, los dominios, las sesiones y los eventos de los alumnos. Lo que un curso
 -- del fichero ya no tiene (una lección, una actividad) sí se borra, con lo que dependa de ello.
 
-CREATE TEMP TABLE cursos_json AS
-  SELECT c->>'id' AS id, c
-  FROM jsonb_array_elements(:'datos'::jsonb -> 'cursos') AS c;
-CREATE TEMP TABLE videos_json AS
-  SELECT cj.id AS curso_id, v->>'id' AS id, v, n::smallint AS orden
-  FROM cursos_json cj, jsonb_array_elements(cj.c -> 'videos') WITH ORDINALITY AS t(v, n);
-CREATE TEMP TABLE lecciones_json AS
-  SELECT cj.id AS curso_id, l->>'id' AS id, l, n::smallint AS orden
-  FROM cursos_json cj, jsonb_array_elements(cj.c -> 'lecciones') WITH ORDINALITY AS t(l, n);
-CREATE TEMP TABLE actividades_json AS
-  SELECT lj.id AS leccion_id, a->>'id' AS id, a
-  FROM lecciones_json lj, jsonb_array_elements(lj.l -> 'actividades') AS a;
-CREATE TEMP TABLE test_json AS
-  SELECT p->>'id' AS id, p
-  FROM cursos_json cj, jsonb_array_elements(cj.c -> 'testInicial') AS p;
+-- Antes de tocar nada, se comprueba el fichero entero (issue #50). Si algo falla, la carga se detiene aquí
+-- y se listan todos los fallos. validar_curso.sql deja el fichero en tablas temporales: cursos_json,
+-- videos_json, lecciones_json, actividades_json y test_json.
+\ir validar_curso.sql
 
 -- Cursos.
 INSERT INTO cursos (id, titulo, descripcion, nivel)

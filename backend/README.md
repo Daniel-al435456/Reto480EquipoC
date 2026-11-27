@@ -29,7 +29,7 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 | `POST /api/actividades/correccion` | Corrige una respuesta escrita | Por palabras clave; si faltan y hay clave, decide el agente de corrección y explica el motivo |
 | `POST /api/mentor/mensaje` | Responde a una consulta con la personalidad y el trato elegidos | Con clave, el agente Mentor, con hasta 3 lecciones relacionadas, el índice del curso, el progreso y la conversación; puede proponer abrir una lección. Sin clave o si falla, respuesta de respaldo |
 | `POST /api/mentor/proactivo` | Mensaje del mentor cuando el alumno se bloquea | Con clave, el agente Mentor; sin ella o si falla, respuesta de respaldo |
-| `POST /api/mentor/derivacion` | Pasa la consulta a un tutor de la academia | Solo confirma; guardarla necesita la base de datos |
+| `POST /api/mentor/derivacion` | Pasa la consulta a un tutor de la academia | Solo confirma. La tabla `derivaciones` ya existe (migración 003); para guardarla falta saber qué alumno la pide (inicio de sesión) |
 
 El curso de ejemplo es una copia del del frontend. Si cambia `frontend/src/api/datos.js`,
 se regenera con `node herramientas/exportar-curso.mjs` desde `frontend/`.
@@ -127,7 +127,7 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 
 `aplicar.sh` anota cada migración en la tabla `migraciones_aplicadas`, así que puede ejecutarse varias veces: solo aplica las nuevas. Cada migración se aplica entera o no se aplica.
 
-`cargar_curso.sh` lleva a las tablas el curso de `app/datos/cursos-ejemplo.json` (issue #15). Se vuelve a ejecutar cada vez que cambia el curso: actualiza lo que ha cambiado, borra lo que ya no está en el fichero y no duplica nada. Tampoco borra los datos de los alumnos (matrículas, dominios, sesiones y eventos). Todo va en una transacción: si algo falla, la base de datos se queda como estaba. Cómo pasa cada campo del JSON a su tabla está explicado al principio de `cargar_curso.sql`; lo más importante:
+`cargar_curso.sh` lleva a las tablas el curso de `app/datos/cursos-ejemplo.json` (issue #15). Se vuelve a ejecutar cada vez que cambia el curso: actualiza lo que ha cambiado, borra lo que ya no está en el fichero y no duplica nada. Tampoco borra los datos de los alumnos (matrículas, dominios, sesiones y eventos). Todo va en una transacción: si algo falla, la base de datos se queda como estaba. Antes de cargar nada, `validar_curso.sql` comprueba el fichero entero (issue #50) y, si no cumple las reglas, lista todos los fallos con el identificador afectado. Cómo pasa cada campo del JSON a su tabla está explicado al principio de `cargar_curso.sql`; lo más importante:
 
 - Cada vídeo del fichero (`videos`) se guarda en su tabla, y cada lección es un trozo de su vídeo (`videoId`, `inicioS` y `finS`), con su `aviso` si lo tiene. Un vídeo sin elegir (`youtubeId` vacío) se guarda sin `youtube_id`.
 - Cada lección cubre un concepto, también con su mismo identificador.
@@ -150,7 +150,8 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 - **Identificadores.** El contenido (cursos, vídeos, lecciones, conceptos, preguntas) usa texto legible en minúsculas con guiones, igual que el frontend (`python-desde-cero`, `variables`). Los datos que generan los alumnos usan números automáticos.
 - **Valores permitidos** (`uso`, `formato`, `estado`, `rol`...) con `CHECK`, más fáciles de ampliar que los tipos `ENUM`.
 - **Nombres de tablas en plural**: las relaciones del diagrama PERTENECE, CUBRE y COMPONE son las tablas `matriculas`, `lecciones_conceptos` y `sesiones_lecciones`.
-- **Reglas que comprueba el backend**, porque dependen de varias filas o de la fecha actual: el consentimiento de la familia para menores de 14 años y que todas las lecciones de una sesión sean del mismo curso.
+- **Derivaciones a un tutor** (migración 003, H7): cada petición es una fila de `derivaciones` con su motivo (`alumno`, `malestar` o `sin_ia`, cuando la IA no responde) y su estado (`pendiente` o `atendida`), y además un evento `derivacion_tutor` en `eventos`. El evento dice que pasó; la tabla guarda el estado, que cambia. No se guarda el texto de la consulta.
+- **Reglas que comprueba el backend**, porque dependen de varias filas o de la fecha actual: el consentimiento de la familia para menores de 14 años, que todas las lecciones de una sesión sean del mismo curso y que el curso de una derivación sea el de su lección, si la tiene.
 
 ## Comprobaciones
 

@@ -29,7 +29,7 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 | `POST /api/actividades/correccion` | Corrige una respuesta escrita por palabras clave | |
 | `POST /api/mentor/mensaje` | Responde a una consulta con la personalidad y el trato elegidos | Respuesta de respaldo sin IA; con la #16, el agente Mentor |
 | `POST /api/mentor/proactivo` | Mensaje del mentor cuando el alumno se bloquea | Respuesta de respaldo sin IA |
-| `POST /api/mentor/derivacion` | Pasa la consulta a un tutor de la academia | Solo confirma; guardarla necesita la base de datos |
+| `POST /api/mentor/derivacion` | Pasa la consulta a un tutor de la academia | Solo confirma. La tabla `derivaciones` ya existe (migración 003); para guardarla falta saber qué alumno la pide (inicio de sesión) |
 
 El curso de ejemplo es una copia del del frontend. Si cambia `frontend/src/api/datos.js`,
 se regenera con `node herramientas/exportar-curso.mjs` desde `frontend/`.
@@ -147,7 +147,8 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 - **Identificadores.** El contenido (cursos, vídeos, lecciones, conceptos, preguntas) usa texto legible en minúsculas con guiones, igual que el frontend (`python-desde-cero`, `variables`). Los datos que generan los alumnos usan números automáticos.
 - **Valores permitidos** (`uso`, `formato`, `estado`, `rol`...) con `CHECK`, más fáciles de ampliar que los tipos `ENUM`.
 - **Nombres de tablas en plural**: las relaciones del diagrama PERTENECE, CUBRE y COMPONE son las tablas `matriculas`, `lecciones_conceptos` y `sesiones_lecciones`.
-- **Reglas que comprueba el backend**, porque dependen de varias filas o de la fecha actual: el consentimiento de la familia para menores de 14 años y que todas las lecciones de una sesión sean del mismo curso.
+- **Derivaciones a un tutor** (migración 003, H7): cada petición es una fila de `derivaciones` con su motivo (`alumno`, `malestar` o `sin_ia`, cuando la IA no responde) y su estado (`pendiente` o `atendida`), y además un evento `derivacion_tutor` en `eventos`. El evento dice que pasó; la tabla guarda el estado, que cambia. No se guarda el texto de la consulta.
+- **Reglas que comprueba el backend**, porque dependen de varias filas o de la fecha actual: el consentimiento de la familia para menores de 14 años, que todas las lecciones de una sesión sean del mismo curso y que el curso de una derivación sea el de su lección, si la tiene.
 
 ## Comprobaciones
 

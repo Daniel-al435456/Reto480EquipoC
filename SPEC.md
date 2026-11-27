@@ -117,9 +117,11 @@ flowchart LR
 
 ## 6. Modelo de datos y flujo hacia la IA
 
-Aprobado el 24/11/2026 ([propuesta P3](propuestas/datos-y-privacidad.md#modelo-de-datos-y-flujo-hacia-la-ia), con el diagrama entidad-relación).
+Aprobado el 24/11/2026 ([propuesta P3](propuestas/datos-y-privacidad.md#modelo-de-datos-y-flujo-hacia-la-ia), con el diagrama entidad-relación) y actualizado el 27/11/2026 con el aviso de Lección (migración 002) y Derivación (migración 003).
 
 ![Diagrama entidad-relación de la base de datos](docs/img/modelo-entidad-relacion.jpg)
+
+Derivación también se relaciona con Curso y Lección (0..1 : N), que no se dibujan para no cruzar el diagrama ([P3](propuestas/datos-y-privacidad.md#modelo-de-datos-y-flujo-hacia-la-ia)).
 
 **Entidades principales**
 
@@ -132,6 +134,7 @@ Aprobado el 24/11/2026 ([propuesta P3](propuestas/datos-y-privacidad.md#modelo-d
 | Dominio (Alumno – Concepto) | Nivel por concepto | Sí, agregado |
 | Evento, Sesión | Respuestas, vídeos vistos, sesiones | Solo eventos recientes agregados |
 | MensajeMentor | Conversación con el mentor, ya filtrada | Sí; se elimina a los 90 días |
+| Derivación | Petición de hablar con un tutor de la academia (H7): motivo (la pide el alumno, el mentor ante señales de malestar o el respaldo cuando la IA no responde), estado (pendiente o atendida) y, si los hay, curso y lección. No guarda el texto de la consulta. Se conserva mientras exista el alumno | Nunca |
 
 **Cómo se cumple la condición de privacidad**
 
@@ -146,7 +149,7 @@ Aprobado el 24/11/2026 ([propuesta P3](propuestas/datos-y-privacidad.md#modelo-d
 - **Filtro de privacidad:** todas las llamadas pasan por un único módulo del backend, que sustituye la identidad por el seudónimo, elimina del texto emails, teléfonos, DNI/NIE, direcciones y el nombre del alumno, y envía solo los campos de una lista blanca.
 - **Menores:** la IA solo recibe si el alumno es menor, nunca su edad. Con menos de 14 años se registra el consentimiento de la familia. El mentor usa un tono adaptado y deriva a un humano ante señales de malestar. La IA recomienda, pero no decide: el alumno puede elegir cualquier contenido.
 - **Proveedor:** Groq no entrena con los datos del cliente y solo recibe datos seudonimizados. El Preparador solo recibe transcripciones.
-- **Conservación y derechos:** mensajes del mentor durante 90 días; de las llamadas a la IA solo se guardan metadatos. La pantalla de privacidad muestra qué se envía a la IA y permite borrar el historial.
+- **Conservación y derechos:** mensajes del mentor durante 90 días; derivaciones a un tutor mientras exista el alumno; de las llamadas a la IA solo se guardan metadatos. La pantalla de privacidad muestra qué se envía a la IA y permite borrar el historial.
 - **Base legal:** ejecución del contrato de formación. El uso del mentor se informa en el alta y puede desactivarse.
 
 ---

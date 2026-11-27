@@ -118,7 +118,9 @@ def responder(
 def derivar_a_tutor() -> SalidaTexto:
     """Pasa la conversación a un tutor de la academia.
 
-    De momento solo confirma al alumno. Guardar la petición para que la vea el
-    tutor necesita la base de datos (tabla de mensajes del mentor).
+    De momento solo confirma al alumno. La petición se guardará en la tabla
+    `derivaciones` (migración 003), con motivo "alumno" y estado "pendiente", y
+    como evento `derivacion_tutor`; para eso falta saber qué alumno la pide
+    (inicio de sesión).
     """
     return SalidaTexto(texto="He avisado a tu tutor. Te responderá lo antes posible.")

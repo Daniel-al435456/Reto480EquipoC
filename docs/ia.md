@@ -2,7 +2,7 @@
 
 # Cómo funciona la IA en la app
 
-Qué hace la IA, qué datos recibe, dónde está cada pieza del código y cómo se configura y se prueba. El diseño aprobado está en [SPEC §7](../SPEC.md#7-agentes-de-ia) y en la [propuesta P1](../propuestas/README.md#p1-agentes-de-ia); este documento describe lo implementado (issue #16).
+Qué hace la IA, qué datos recibe, dónde está cada pieza del código y cómo se configura y se prueba. El diseño aprobado está en [SPEC §7](../SPEC.md#7-agentes-de-ia) y en la [propuesta P1](../propuestas/README.md#p1-agentes-de-ia); este documento describe lo implementado (issues #16 y #53).
 
 ---
 
@@ -13,12 +13,47 @@ Tres agentes responden en tiempo real con Groq:
 | Agente | Cuándo actúa | Modelo | Qué produce |
 |---|---|---|---|
 | **Diagnóstico** | Al terminar el test inicial | `openai/gpt-oss-20b` | Un mensaje de 80 palabras como máximo que explica al alumno su punto de partida. La nota la calcula el backend con reglas; la IA solo la explica. |
-| **Mentor** | Cuando el alumno pregunta y cuando falla dos veces seguidas una actividad (señal de bloqueo) | `openai/gpt-oss-120b` | Una respuesta de 70 palabras como máximo, basada en el contenido del curso, con una acción al final. Puede proponer abrir una lección o derivar a un tutor. |
+| **Mentor** | Cuando el alumno pregunta y cuando falla dos actividades de una misma lección (señal de bloqueo) | `openai/gpt-oss-120b` | Una respuesta de 70 palabras como máximo, basada en el contenido del curso, con una acción al final. Puede proponer abrir una lección o derivar a un tutor. |
 | **Corrección** | Cuando una respuesta escrita no contiene todas las palabras clave | `openai/gpt-oss-20b` | Si la respuesta dice lo mismo que la solución con otras palabras (o con código equivalente) y un comentario de 35 palabras como máximo que lo explica. |
 
 La corrección con IA no estaba en la [propuesta P1](../propuestas/README.md#p1-agentes-de-ia), que solo aprobó el Diagnóstico y el Mentor: se prueba en el prototipo y está pendiente de aprobación del equipo.
 
 Si no hay clave de Groq, o si la IA falla, tarda demasiado o responde algo que no sirve, la app usa las **respuestas de respaldo** de siempre, sin IA. El alumno nunca ve un error por culpa de la IA.
+
+Dónde aparece la IA en el recorrido del alumno:
+
+```mermaid
+flowchart LR
+  ALTA["Alta<br/>elige personalidad<br/>y trato del mentor"] --> TEST["Test inicial"]
+  TEST -->|"nota por reglas"| DIAG(["Diagnóstico<br/>explica el punto de partida"])
+  DIAG --> SESION["Sesión de 5, 10 o 20 min<br/>vídeo o lectura"]
+  SESION --> ACT["Actividades"]
+  ACT -->|"respuesta escrita<br/>sin todas las palabras clave"| CORR(["Corrección<br/>decide y explica"])
+  ACT -->|"dos fallos en la lección"| MENP(["Mentor<br/>mensaje por iniciativa propia"])
+  SESION -. "en cualquier momento" .-> MENR(["Mentor<br/>responde dudas"])
+  MENR -->|"propone una lección"| SESION
+  MENR -->|"malestar o duda fuera del curso"| TUTOR["Tutor de la academia"]
+```
+
+Los óvalos son los momentos en que interviene la IA; el resto funciona sin ella.
+
+### Cuándo se usa la IA y cuándo el respaldo
+
+```mermaid
+flowchart TD
+  P["Petición de la app"] --> K{"¿Hay GROQ_API_KEY?"}
+  K -- No --> R["Respuesta de respaldo"]
+  K -- Sí --> F["privacidad.py filtra los textos<br/>y llama a Groq (máx. 6 s)"]
+  F --> L{"¿Responde a tiempo?"}
+  L -- "No, o error" --> Q{"¿Error 429 y es el mentor?"}
+  Q -- Sí --> F2["Repite con el modelo de reserva"] --> L2{"¿Responde?"}
+  L2 -- No --> R
+  L2 -- Sí --> V
+  Q -- No --> R
+  L -- Sí --> V{"¿JSON válido, longitud correcta<br/>y lección existente?"}
+  V -- No --> R
+  V -- Sí --> OK["Respuesta de la IA<br/>con la marca «… con IA»"]
+```
 
 ## 2. Recorrido de una pregunta al mentor
 
@@ -38,10 +73,48 @@ flowchart LR
 2. El backend busca hasta 3 lecciones relacionadas con la pregunta: la que nombra, la lección desde la que se pregunta y las que comparten más palabras con la pregunta.
 3. Prepara las instrucciones del mentor con la personalidad y el trato, y los datos: esas lecciones (vídeo, tramo, resumen y lectura), los datos generales del curso con su índice y el progreso.
 4. `privacidad.py` quita correos, teléfonos, documentos de identidad y enlaces de todos los textos y llama a Groq.
-5. El backend comprueba la respuesta: que sea un JSON con un mensaje de longitud razonable y que la lección que propone exista. Si no, usa el respaldo.
+5. El backend comprueba la respuesta: que sea un JSON con un mensaje y que la lección que propone exista. Si el mensaje pasa de 100 palabras (se le piden 70), lo descarta. En cualquiera de esos casos usa el respaldo.
 6. La app muestra la respuesta con la marca «Redactado con IA» y, si el mentor propone una lección, un botón para abrirla.
 
+Lo que pasa en una pregunta, paso a paso:
+
+```mermaid
+sequenceDiagram
+  actor Alumno
+  participant App as App (Mentor.jsx)
+  participant API as Backend (mentor.py)
+  participant Ag as agentes.py
+  participant Pr as privacidad.py
+  participant G as Groq
+  Alumno->>App: «No entiendo las condicionales»
+  App->>API: POST /api/mentor/mensaje<br/>texto, historial (8), progreso, personalidad, trato, esMenor
+  API->>API: elige hasta 3 lecciones relacionadas
+  API->>Ag: lecciones, índice del curso, progreso
+  Ag->>Pr: instrucciones + datos
+  Pr->>Pr: quita correos, teléfonos, documentos y enlaces
+  Pr->>G: petición (gpt-oss-120b)
+  G-->>Pr: {mensaje, accion, fragmento_id}
+  Pr-->>Ag: JSON
+  Ag-->>API: comprueba longitud y que la lección exista
+  API-->>App: {texto, derivado, leccionId, leccionTitulo, redactadoPorIa}
+  App-->>Alumno: respuesta + «Redactado con IA» + botón «Ir a…»
+```
+
 ## 3. Corrección de una respuesta escrita
+
+```mermaid
+flowchart TD
+  A["Respuesta escrita del alumno"] --> B{"¿Contiene todas<br/>las palabras clave?"}
+  B -- Sí --> OK["Correcta<br/>(sin IA, sin gastar cuota)"]
+  B -- No --> C{"¿Hay IA disponible?"}
+  C -- No --> MAL["Incorrecta + solución válida"]
+  C -- Sí --> D["La IA compara con la solución<br/>y el resumen de la lección"]
+  D --> E{"¿Respuesta útil?"}
+  E -- No --> MAL
+  E -- Sí --> F{"¿Equivalente?"}
+  F -- Sí --> OKIA["Correcta + comentario<br/>«Corregido con IA»"]
+  F -- No --> MALIA["Incorrecta + comentario + solución<br/>«Corregido con IA»"]
+```
 
 1. Si la respuesta contiene todas las palabras clave de la actividad, es correcta sin consultar a la IA. Es lo más rápido y no gasta cuota.
 2. Si le falta alguna, el backend envía a la IA el enunciado, una solución válida, las palabras clave, el resumen de la lección y la respuesta del alumno.
@@ -59,6 +132,8 @@ flowchart LR
 | La respuesta a una actividad escrita, ya filtrada | |
 | Qué lecciones domina o ha completado (identificadores del curso) | Ningún dato de la cuenta |
 | Contenido del curso: lecciones, vídeos, tramos, resúmenes e índice | |
+
+El filtro detecta correos, teléfonos, documentos de identidad y enlaces. **No detecta nombres:** si un alumno escribe su nombre o el de otra persona en una pregunta, ese texto llega a la IA. Por eso la app no pide datos personales en el chat y las instrucciones del mentor le prohíben pedirlos o repetirlos.
 
 Solo `app/privacidad.py` puede hablar con un proveedor de IA. Lo comprueba una prueba de arquitectura (`pruebas/test_arquitectura.py`): si otro módulo importa un cliente HTTP o escribe la dirección de Groq, las pruebas fallan. El frontend nunca llama a la IA ni conoce la clave.
 
@@ -91,7 +166,7 @@ Están en `INSTRUCCIONES_MENTOR` (`backend/app/servicios/agentes.py`). Las princ
 
 | Fichero | Qué hace |
 |---|---|
-| `backend/app/privacidad.py` | Filtro de datos personales y única llamada a Groq. Devuelve `None` si la IA no se puede usar. Si el modelo llega a su límite de uso, prueba una vez con el modelo de reserva. |
+| `backend/app/privacidad.py` | Filtro de datos personales y única llamada a Groq. Devuelve `None` si la IA no se puede usar. Si el modelo llega a su límite de uso y quien llama indica un modelo de reserva (solo el mentor), prueba una vez con él. |
 | `backend/app/servicios/agentes.py` | Instrucciones de los tres agentes, estilos de personalidad y trato, y comprobación de las respuestas |
 | `backend/app/servicios/mentor.py` | Elige las lecciones relacionadas y decide entre la IA y el respaldo |
 | `backend/app/servicios/contenido.py` | Corrige el test con reglas y pide el mensaje al agente Diagnóstico; corrige las respuestas escritas por palabras clave y, si no bastan, con el agente de corrección |
@@ -144,7 +219,7 @@ curl -s -X POST localhost:8000/api/actividades/correccion -H "Content-Type: appl
 ## 10. Límites y costes
 
 - En el plan gratuito de Groq, cada modelo tiene un límite de peticiones y de tokens por minuto y por día; se consultan en la consola de Groq, en *Limits*. Cada pregunta al mentor envía unos 1.700 tokens.
-- Si el modelo del mentor llega a su límite (error 429), responde el modelo del diagnóstico. Si también está al límite, se usa el respaldo.
+- Si el modelo del mentor llega a su límite (error 429), responde el modelo del diagnóstico. Si también está al límite, se usa el respaldo. El diagnóstico y la corrección no tienen reserva: si su modelo está al límite, se usa directamente el respaldo.
 - La app espera 8 segundos al backend y el backend espera 6 a la IA. Si Render estaba dormido, la primera respuesta puede ser la de respaldo.
 
 ## 11. Problemas frecuentes
@@ -154,7 +229,7 @@ curl -s -X POST localhost:8000/api/actividades/correccion -H "Content-Type: appl
 | `IA: sin GROQ_API_KEY…` | Falta la clave en `backend/.env` o en Render, o tiene espacios o comillas |
 | `La IA respondió 401 (…)` | La clave no es válida o se ha borrado |
 | `… ha llegado a su límite de uso: se prueba con …` | Límite por minuto del modelo del mentor; responde el de reserva |
-| `La IA respondió 429 (…)` | Los dos modelos están al límite; esperar un minuto |
+| `La IA respondió 429 (…)` | El modelo está al límite de uso (en el mentor, también el de reserva); esperar un minuto |
 | `La IA no ha respondido (…)` | Groq no responde o ha tardado más de 6 segundos |
 | `La IA no devolvió un JSON válido…` | La respuesta no tenía el formato pedido; se usa el respaldo |
 

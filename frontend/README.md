@@ -174,7 +174,7 @@ Se aplican con atributos en `<html>` (`data-tema`, `data-texto`, `data-contraste
 
 ## Datos y conexión con el backend
 
-- `src/api/datos.js`: curso de ejemplo *Python desde cero* ([propuesta P4](../propuestas/README.md#p4-contenido-del-curso-de-muestra)). Los vídeos de YouTube están sin seleccionar. El backend sirve una copia en JSON: si cambia este fichero, se regenera con `node herramientas/exportar-curso.mjs`.
+- `src/api/datos.js`: curso de ejemplo *Python desde cero* ([propuesta P4](../propuestas/README.md#p4-contenido-del-curso-de-muestra)), con los 15 primeros vídeos del [curso de La Geekipedia De Ernesto](https://www.youtube.com/playlist?list=PLyvsggKtwbLW1j0d5yaCkRF9Axpdlhsxz), cortados en 53 lecciones de unos 5 minutos (cada lección es un trozo de un vídeo, con su inicio y su fin en segundos). El backend sirve una copia en JSON: si cambia este fichero, se regenera con `node herramientas/exportar-curso.mjs`.
 - `src/api/cliente.js`: única capa de acceso a datos. Las pantallas nunca llaman a `fetch` ni a la IA directamente.
 - `obtenerCursoCompleto` carga el curso y sus lecciones desde la API. Si no hay backend, se conserva `datos.js` como respaldo para la demo.
 

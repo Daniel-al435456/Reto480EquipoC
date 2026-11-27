@@ -71,9 +71,13 @@ class ActividadContenido(EsquemaApi):
 
 
 class LeccionContenido(EsquemaApi):
-    """Contenido completo de una lección, sin datos del test inicial."""
+    """Contenido completo de una lección, sin datos del test inicial.
+
+    Cada lección es un trozo de un vídeo: de `inicio_s` a `fin_s`, en segundos.
+    """
 
     id: str
+    video_id: str
     titulo: str
     concepto: str
     youtube_id: str
@@ -84,6 +88,7 @@ class LeccionContenido(EsquemaApi):
     duracion_video: int = Field(description="Minutos de vídeo de la lección, redondeados arriba")
     duracion_lectura: int
     descripcion: str
+    aviso: str | None = None
     lectura: list[str]
     resumen: str
     actividades: list[ActividadContenido]

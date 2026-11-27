@@ -174,7 +174,7 @@ export function TestInicial({ cursoId, modo, navegar }) {
             <strong>
               {dominadas}/{total}
             </strong>
-            <span>temas</span>
+            <span>lecciones</span>
           </span>
         </div>
         <p className={estilos.textoResumen}>
@@ -184,7 +184,7 @@ export function TestInicial({ cursoId, modo, navegar }) {
                 ? 'Empezamos desde el principio. Iremos paso a paso, a tu ritmo.'
                 : !primera
                   ? 'Ya dominas todo el contenido del curso. Puedes repasar cualquier lección cuando quieras.'
-                  : `Ya dominas ${dominadas} ${dominadas === 1 ? 'tema' : 'temas'}, así que no tendrás que verlos.`}
+                  : `Ya dominas ${dominadas} ${dominadas === 1 ? 'lección' : 'lecciones'}, así que no tendrás que ${dominadas === 1 ? 'verla' : 'verlas'}.`}
               {primera && dominadas > 0 && (
                 <>
                   {' '}
@@ -207,7 +207,7 @@ export function TestInicial({ cursoId, modo, navegar }) {
         Progreso.
       </p>
 
-      <ul className={comun.listaCompacta} aria-label="Temas del curso" aria-live="polite">
+      <ul className={comun.listaCompacta} aria-label="Lecciones del curso" aria-live="polite">
         {curso.lecciones.map((leccion) => {
           const domina = estado.dominio[leccion.id];
           const elegida = !domina && estado.dominioTest?.[leccion.id];

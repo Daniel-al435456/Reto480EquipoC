@@ -110,8 +110,8 @@ def responder(
             "su valor por pantalla."
         )
     return SalidaMensaje(
-        texto=f"{f['aclarar']} Por ejemplo: variables, condicionales, bucles, listas o "
-        "funciones. Si prefieres, puedes pedir ayuda a un tutor."
+        texto=f"{f['aclarar']} Por ejemplo: variables, cadenas, tipos de datos, condicionales "
+        "u operadores. Si prefieres, puedes pedir ayuda a un tutor."
     )
 
 

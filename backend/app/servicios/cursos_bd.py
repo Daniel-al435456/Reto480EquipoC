@@ -4,7 +4,9 @@ Monta los cursos con la misma forma que `app/datos/cursos-ejemplo.json`, así el
 servicios y el contrato con el frontend no cambian según de dónde venga el curso. Es el camino
 inverso de `migraciones/cargar_curso.sql`:
 
-  - Cada lección lleva el `youtubeId` de su vídeo y su trozo (`inicioS`, `finS`). Sin `finS`,
+  - `videos` son los vídeos del curso en su orden, con su duración en segundos.
+  - Cada lección lleva su vídeo (`videoId` y `youtubeId`), su trozo (`inicioS`, `finS`) y su
+    `aviso`, si lo tiene. Sin `finS`,
     llega hasta el final del vídeo. `duracionVideo` son los minutos de ese trozo, redondeados
     hacia arriba.
   - `concepto` es el nombre del primer concepto que cubre la lección.
@@ -29,8 +31,12 @@ CONSULTA_CURSOS = """
     SELECT id, titulo, descripcion, nivel FROM cursos ORDER BY id
 """
 
+CONSULTA_VIDEOS = """
+    SELECT curso_id, id, titulo, youtube_id, duracion_s FROM videos ORDER BY curso_id, orden
+"""
+
 CONSULTA_LECCIONES = """
-    SELECT v.curso_id, l.id, l.titulo, l.descripcion, l.resumen, l.lectura,
+    SELECT v.curso_id, l.id, l.video_id, l.titulo, l.aviso, l.descripcion, l.resumen, l.lectura,
            l.duracion_lectura_min, l.inicio_s, l.fin_s, v.youtube_id, v.duracion_s,
            (SELECT co.nombre FROM lecciones_conceptos lc JOIN conceptos co ON co.id = lc.concepto_id
             WHERE lc.leccion_id = l.id ORDER BY co.id LIMIT 1) AS concepto
@@ -99,10 +105,33 @@ def _actividad(fila: dict[str, Any]) -> dict[str, Any]:
     return actividad
 
 
+def _leccion(fila: dict[str, Any], actividades: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    leccion: dict[str, Any] = {
+        "id": fila["id"],
+        "videoId": fila["video_id"],
+        "titulo": fila["titulo"],
+        "concepto": fila["concepto"] or "",
+        "youtubeId": fila["youtube_id"] or "",
+        "inicioS": fila["inicio_s"],
+        "finS": fila["fin_s"],
+        "duracionVideo": _minutos_de_video(fila),
+        "duracionLectura": fila["duracion_lectura_min"],
+        "descripcion": fila["descripcion"] or "",
+        # cargar_curso.sql guarda los párrafos separados por una línea en blanco.
+        "lectura": fila["lectura"].split("\n\n") if fila["lectura"] else [],
+        "resumen": fila["resumen"] or "",
+        "actividades": actividades.get(fila["id"], []),
+    }
+    if fila["aviso"] is not None:
+        leccion["aviso"] = fila["aviso"]
+    return leccion
+
+
 def leer_cursos() -> list[dict[str, Any]]:
     """Todos los cursos con sus lecciones, actividades y test inicial."""
     with conexion() as bd:
         cursos = bd.execute(CONSULTA_CURSOS).fetchall()
+        videos = bd.execute(CONSULTA_VIDEOS).fetchall()
         lecciones = bd.execute(CONSULTA_LECCIONES).fetchall()
         actividades = bd.execute(CONSULTA_ACTIVIDADES).fetchall()
         preguntas_test = bd.execute(CONSULTA_TEST).fetchall()
@@ -128,22 +157,18 @@ def leer_cursos() -> list[dict[str, Any]]:
                 "titulo": curso["titulo"],
                 "descripcion": curso["descripcion"] or "",
                 "nivel": curso["nivel"] or "",
-                "lecciones": [
+                "videos": [
                     {
                         "id": fila["id"],
                         "titulo": fila["titulo"],
-                        "concepto": fila["concepto"] or "",
                         "youtubeId": fila["youtube_id"] or "",
-                        "inicioS": fila["inicio_s"],
-                        "finS": fila["fin_s"],
-                        "duracionVideo": _minutos_de_video(fila),
-                        "duracionLectura": fila["duracion_lectura_min"],
-                        "descripcion": fila["descripcion"] or "",
-                        # cargar_curso.sql guarda los párrafos separados por una línea en blanco.
-                        "lectura": fila["lectura"].split("\n\n") if fila["lectura"] else [],
-                        "resumen": fila["resumen"] or "",
-                        "actividades": actividades_por_leccion.get(fila["id"], []),
+                        "duracion": fila["duracion_s"],
                     }
+                    for fila in videos
+                    if fila["curso_id"] == curso["id"]
+                ],
+                "lecciones": [
+                    _leccion(fila, actividades_por_leccion)
                     for fila in lecciones
                     if fila["curso_id"] == curso["id"]
                 ],

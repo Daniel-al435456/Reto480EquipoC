@@ -116,18 +116,24 @@ def preguntas_test(curso_id: str) -> SalidaTest:
 
 
 def evaluar_test(curso_id: str, respuestas: dict[str, int]) -> SalidaEvaluacion:
-    """Corrige el test inicial con reglas, sin IA: cada acierto marca su lección como dominada.
+    """Corrige el test inicial con reglas, sin IA.
+
+    Cada acierto marca como dominadas todas las lecciones del vídeo de la lección de la pregunta.
 
     El mensaje es una plantilla. Con la issue #16, el agente Diagnóstico lo redactará
     a partir de este resultado y la plantilla quedará como respaldo (SPEC §7).
     """
     curso = obtener_curso(curso_id)
-    dominio = {
-        pregunta["leccionId"]: True
+    lecciones = curso["lecciones"]
+    video_de = {leccion["id"]: leccion["videoId"] for leccion in lecciones}
+    videos_acertados = {
+        video_de[pregunta["leccionId"]]
         for pregunta in curso["testInicial"]
         if respuestas.get(pregunta["id"]) == pregunta["correcta"]
     }
-    lecciones = curso["lecciones"]
+    dominio = {
+        leccion["id"]: True for leccion in lecciones if leccion["videoId"] in videos_acertados
+    }
     dominadas = [leccion for leccion in lecciones if dominio.get(leccion["id"])]
     siguiente = next((leccion for leccion in lecciones if not dominio.get(leccion["id"])), None)
     if not dominadas:
@@ -139,8 +145,8 @@ def evaluar_test(curso_id: str, respuestas: dict[str, int]) -> SalidaEvaluacion:
         )
     else:
         mensaje = (
-            f"Ya dominas {len(dominadas)} de {len(lecciones)} temas, así que no tendrás que "
-            f"verlos. Empezarás por «{siguiente['titulo']}»."
+            f"Ya dominas {len(dominadas)} de {len(lecciones)} lecciones, así que no tendrás que "
+            f"verlas. Empezarás por «{siguiente['titulo']}»."
         )
     return SalidaEvaluacion(dominio=dominio, mensaje=mensaje)
 

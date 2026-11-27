@@ -281,3 +281,92 @@ describe('PWA, accesibilidad y rendimiento', () => {
     assert.ok(total < 200 * 1024, `${Math.round(total / 1024)} KB`);
   });
 });
+
+describe('vídeo por trozos', () => {
+  it('el vídeo se para al final del trozo de la lección y se puede volver a ver', async () => {
+    const { contexto, pagina, errores } = await abrir();
+    // Reproductor de YouTube simulado: informa del tiempo como el de verdad y anota las órdenes que recibe.
+    const ordenes = [];
+    pagina.on('console', (m) => m.text().startsWith('YT ') && ordenes.push(m.text()));
+    await contexto.route('https://i.ytimg.com/**', (r) => r.fulfill({ status: 204 }));
+    await contexto.route('https://www.youtube-nocookie.com/**', (r) =>
+      r.fulfill({
+        contentType: 'text/html',
+        body: `<script>
+          let t = 205, empezado = false;
+          addEventListener('message', (e) => {
+            const d = JSON.parse(e.data);
+            console.log('YT ' + (d.func || d.event) + ' ' + JSON.stringify(d.args || []));
+            if (d.func === 'seekTo') t = d.args[0];
+            if (d.event === 'listening' && !empezado) {
+              empezado = true;
+              setInterval(() => { t += 3; parent.postMessage(JSON.stringify({ event: 'infoDelivery', info: { currentTime: t } }), '*'); }, 100);
+            }
+          });
+        </script>`,
+      }),
+    );
+
+    await completarAlta(pagina);
+    await pagina.getByRole('button', { name: /Python desde cero/ }).click();
+    await boton(pagina, 'Empezar el test').click();
+    for (let indice = 0; indice < cursos[0].testInicial.length; indice++) {
+      await pagina.getByLabel('No lo sé').check();
+      await boton(pagina, indice === cursos[0].testInicial.length - 1 ? 'Ver resultado' : 'Siguiente').click();
+    }
+    await boton(pagina, 'Empezar la lección de hoy').click();
+    await pagina.getByRole('button', { name: /^Empezar · / }).click();
+    await pagina.getByText('Este trozo va del principio al 3:34 del vídeo.').waitFor();
+    await pagina.getByRole('button', { name: /Reproducir vídeo/ }).click();
+
+    const fin = cursos[0].lecciones[0].finS;
+    assert.match(await pagina.locator('iframe').getAttribute('src'), new RegExp(`enablejsapi=1.*&end=${fin}`));
+    await pagina.getByText('Has terminado este trozo del vídeo.').waitFor({ timeout: 10000 });
+    assert.ok(ordenes.some((o) => o.startsWith('YT pauseVideo')));
+    await boton(pagina, 'Volver a verlo').click();
+    await pagina.getByText('Has terminado este trozo del vídeo.').waitFor({ state: 'detached' });
+    // Los mensajes de la consola del reproductor llegan con un pequeño retraso.
+    const vuelveAlInicio = `YT seekTo [${cursos[0].lecciones[0].inicioS},true]`;
+    for (let i = 0; i < 20 && !ordenes.includes(vuelveAlInicio); i++) await pagina.waitForTimeout(100);
+    assert.ok(ordenes.includes(vuelveAlInicio));
+    assert.deepEqual(errores, []);
+    await contexto.close();
+  });
+});
+
+describe('vídeo por trozos: inicio', () => {
+  it('al empezar un trozo que no está al principio no avisa de que se ha retrocedido', async () => {
+    const { contexto, pagina, errores } = await abrir();
+    const leccion = cursos[0].lecciones[1];
+    // Como YouTube al cargar: primero informa del segundo 0 y, tras saltar al inicio, avanza desde ahí.
+    await contexto.route('https://i.ytimg.com/**', (r) => r.fulfill({ status: 204 }));
+    await contexto.route('https://www.youtube-nocookie.com/**', (r) =>
+      r.fulfill({
+        contentType: 'text/html',
+        body: `<script>
+          let t = 0, empezado = false;
+          addEventListener('message', (e) => {
+            const d = JSON.parse(e.data);
+            if (d.func === 'seekTo') t = d.args[0];
+            if (d.event === 'listening' && !empezado) {
+              empezado = true;
+              setInterval(() => { parent.postMessage(JSON.stringify({ event: 'infoDelivery', info: { currentTime: t } }), '*'); if (t > 0) t += 0.1; }, 100);
+              setTimeout(() => { if (t === 0) t = ${leccion.inicioS}; }, 400);
+            }
+          });
+        </script>`,
+      }),
+    );
+
+    await completarAlta(pagina);
+    await pagina.evaluate((id) => {
+      location.hash = `#/curso/python-desde-cero/leccion/${id}`;
+    }, leccion.id);
+    await pagina.getByRole('button', { name: /^Estudiar la lección/ }).click();
+    await pagina.getByRole('button', { name: /Reproducir vídeo/ }).click();
+    await pagina.waitForTimeout(1500);
+    assert.equal(await pagina.getByText(/Has ido a un punto anterior/).count(), 0);
+    assert.deepEqual(errores, []);
+    await contexto.close();
+  });
+});

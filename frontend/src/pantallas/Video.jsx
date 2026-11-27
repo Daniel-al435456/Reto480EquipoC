@@ -36,6 +36,8 @@ export function Video({ leccion, paso, numero, total, alSiguiente, alSalir, nave
             <ReproductorVideo
               youtubeId={leccion.youtubeId}
               titulo={leccion.titulo}
+              inicio={leccion.inicioS}
+              fin={leccion.finS}
               alReproducir={() => registrarEvento('video_iniciado', { leccionId: leccion.id })}
             />
           )}
@@ -66,7 +68,16 @@ export function Video({ leccion, paso, numero, total, alSiguiente, alSalir, nave
         </>
       }
     >
-      {paso.tipo === 'video' && <p className={comun.medio}>{leccion.descripcion}</p>}
+      {paso.tipo === 'video' && (
+        <>
+          <p className={comun.medio}>{leccion.descripcion}</p>
+          {leccion.aviso && (
+            <p className={comun.aviso} role="note">
+              <strong>Ojo:</strong> {leccion.aviso}
+            </p>
+          )}
+        </>
+      )}
 
       {paso.tipo === 'lectura' && (
         <article className={`${comun.tarjeta} ${comun.medio}`}>

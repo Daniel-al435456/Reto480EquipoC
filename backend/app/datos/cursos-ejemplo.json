@@ -6,279 +6,2048 @@
     {
       "id": "python-desde-cero",
       "titulo": "Python desde cero",
-      "descripcion": "Aprende los fundamentos de la programación con Python.",
+      "descripcion": "Aprende los fundamentos de la programación con Python: variables, textos, operadores y condiciones.",
       "nivel": "Inicial",
+      "videos": [
+        {
+          "id": "video-01",
+          "titulo": "Introducción e instalación de Python",
+          "youtubeId": "DAdRO6ByBoU",
+          "duracion": 786
+        },
+        {
+          "id": "video-02",
+          "titulo": "Ejecución y compilación de un programa con Python",
+          "youtubeId": "UzHFkEdnRuc",
+          "duracion": 781
+        },
+        {
+          "id": "video-03",
+          "titulo": "Variables en Python",
+          "youtubeId": "w8VZxo1TlnU",
+          "duracion": 903
+        },
+        {
+          "id": "video-04",
+          "titulo": "Manipulación de cadenas de caracteres (strings)",
+          "youtubeId": "1CDE1pdVDGw",
+          "duracion": 1710
+        },
+        {
+          "id": "video-05",
+          "titulo": "Palabras reservadas en Python",
+          "youtubeId": "6yBL1mcd7iY",
+          "duracion": 320
+        },
+        {
+          "id": "video-06",
+          "titulo": "Operadores aritméticos en Python",
+          "youtubeId": "6sOEpHItJHs",
+          "duracion": 1066
+        },
+        {
+          "id": "video-07",
+          "titulo": "Comentarios en Python",
+          "youtubeId": "xptKv7yhfSA",
+          "duracion": 466
+        },
+        {
+          "id": "video-08",
+          "titulo": "Tipos de datos en Python",
+          "youtubeId": "EaWsOcc7R2M",
+          "duracion": 944
+        },
+        {
+          "id": "video-09",
+          "titulo": "Entrada de datos desde el teclado",
+          "youtubeId": "vlka4aIRqUc",
+          "duracion": 1089
+        },
+        {
+          "id": "video-10",
+          "titulo": "Sentencias condicionales simples en Python (if)",
+          "youtubeId": "Moq9OFxQTc4",
+          "duracion": 1737
+        },
+        {
+          "id": "video-11",
+          "titulo": "Sentencias condicionales compuestas en Python (if - else)",
+          "youtubeId": "43NYFfUM5uU",
+          "duracion": 1877
+        },
+        {
+          "id": "video-12",
+          "titulo": "Sentencias condicionales múltiples en Python (elif)",
+          "youtubeId": "6mBL2p1O3AY",
+          "duracion": 1337
+        },
+        {
+          "id": "video-13",
+          "titulo": "Sentencias condicionales anidadas en Python",
+          "youtubeId": "yJg0_7r3f-M",
+          "duracion": 1504
+        },
+        {
+          "id": "video-14",
+          "titulo": "Operadores relacionales en Python",
+          "youtubeId": "4vKrYztae2I",
+          "duracion": 1095
+        },
+        {
+          "id": "video-15",
+          "titulo": "Operadores lógicos en Python",
+          "youtubeId": "35kWoAtgzic",
+          "duracion": 1482
+        }
+      ],
       "lecciones": [
         {
-          "id": "introduccion",
+          "id": "que-es-python",
+          "videoId": "video-01",
           "titulo": "Qué es Python",
-          "concepto": "Primeros pasos",
-          "youtubeId": "",
+          "concepto": "Lenguaje interpretado",
+          "youtubeId": "DAdRO6ByBoU",
+          "inicioS": 0,
+          "finS": 214,
+          "duracionVideo": 4,
+          "duracionLectura": 2,
+          "descripcion": "Qué tipo de lenguaje es Python y qué hace falta para programar con él.",
+          "lectura": [
+            "Python es un lenguaje de programación interpretado, de tipado dinámico, multiplataforma y multiparadigma. Su sintaxis está pensada para que el código se lea con facilidad.",
+            "Interpretado quiere decir que el programa no se compila antes: el intérprete lo ejecuta directamente y los errores aparecen al ejecutarlo. De tipado dinámico, que no hace falta indicar el tipo de cada variable, porque Python lo deduce. Multiplataforma, que funciona en Windows, macOS y Linux. Multiparadigma, que admite programación imperativa, funcional y orientada a objetos.",
+            "Para programar hacen falta Python y un editor. En el curso se usa IDLE, el editor que se instala junto con Python. Lo importante es aprender el lenguaje: lo que aprendas sirve igual en cualquier otro editor."
+          ],
+          "resumen": "Python es interpretado, de tipado dinámico y multiplataforma. En el curso se programa con IDLE.",
+          "actividades": [
+            {
+              "id": "que-es-python-1",
+              "tipo": "vf",
+              "enunciado": "Python es un lenguaje interpretado: no hace falta compilar el programa antes de ejecutarlo.",
+              "correcta": true,
+              "explicacion": "El intérprete ejecuta el código directamente, y los errores aparecen al ejecutarlo."
+            },
+            {
+              "id": "que-es-python-2",
+              "tipo": "vf",
+              "enunciado": "En Python hay que indicar el tipo de cada variable al crearla.",
+              "correcta": false,
+              "explicacion": "Python es de tipado dinámico: deduce el tipo de cada variable al ejecutar el programa."
+            }
+          ]
+        },
+        {
+          "id": "instalar-windows-macos",
+          "videoId": "video-01",
+          "titulo": "Instalar Python en Windows y macOS",
+          "concepto": "Instalación",
+          "youtubeId": "DAdRO6ByBoU",
+          "inicioS": 212,
+          "finS": 500,
           "duracionVideo": 5,
-          "duracionLectura": 3,
-          "descripcion": "Qué es Python, para qué se usa y cómo escribir tu primer programa.",
+          "duracionLectura": 2,
+          "descripcion": "Cómo descargar Python de su web oficial e instalarlo con IDLE.",
           "lectura": [
-            "Python es un lenguaje de programación de propósito general. Se usa para crear páginas web, analizar datos, automatizar tareas o programar inteligencia artificial.",
-            "Un programa es una lista de instrucciones que el ordenador ejecuta en orden, de arriba abajo.",
-            "La instrucción print muestra un texto por pantalla. Por ejemplo, print(\"Hola\") muestra la palabra Hola. El texto va siempre entre comillas."
+            "Python se descarga de su web oficial, python.org. En el menú de descargas, la web reconoce tu sistema y ofrece directamente el botón con la última versión. El vídeo instala la 3.7; las versiones nuevas añaden funciones, pero lo que se aprende en el curso no cambia.",
+            "Al abrir el instalador en Windows hay que marcar la casilla \"Add Python to PATH\". PATH es la lista de carpetas donde el sistema busca los programas que se escriben en la consola: con la casilla marcada, Python se puede usar desde la consola y desde otros editores. Después basta con elegir \"Install Now\", que también instala IDLE.",
+            "Para comprobar que todo ha ido bien, busca IDLE en tu ordenador y ábrelo."
           ],
-          "resumen": "Python ejecuta las instrucciones en orden. print(\"texto\") muestra un texto por pantalla.",
+          "resumen": "Python se descarga de python.org. En Windows, marca \"Add Python to PATH\" e instala con \"Install Now\".",
           "actividades": [
             {
-              "id": "introduccion-1",
+              "id": "instalar-windows-macos-1",
               "tipo": "vf",
-              "enunciado": "La instrucción print(\"Hola\") muestra la palabra Hola por pantalla.",
+              "enunciado": "Al instalar Python en Windows conviene marcar la casilla \"Add Python to PATH\".",
               "correcta": true,
-              "explicacion": "print muestra por pantalla lo que va entre los paréntesis."
+              "explicacion": "Así Python se puede usar desde la consola y desde otros editores."
             },
             {
-              "id": "introduccion-2",
-              "tipo": "vf",
-              "enunciado": "Python ejecuta las instrucciones en un orden aleatorio.",
-              "correcta": false,
-              "explicacion": "Las instrucciones se ejecutan en orden, de arriba abajo."
-            },
-            {
-              "id": "introduccion-3",
+              "id": "instalar-windows-macos-2",
               "tipo": "escrita",
-              "enunciado": "Escribe la instrucción que muestra por pantalla el texto Buenos días.",
+              "enunciado": "Escribe la dirección de la web oficial desde la que se descarga Python.",
               "palabrasClave": [
-                "print",
-                "buenos días"
+                "python.org"
               ],
-              "solucion": "print(\"Buenos días\")"
+              "solucion": "python.org"
             }
           ]
         },
         {
-          "id": "variables",
-          "titulo": "Variables y tipos de datos",
+          "id": "instalar-linux-idle",
+          "videoId": "video-01",
+          "titulo": "Instalar en Linux y configurar IDLE",
+          "concepto": "IDLE",
+          "youtubeId": "DAdRO6ByBoU",
+          "inicioS": 498,
+          "finS": 786,
+          "duracionVideo": 5,
+          "duracionLectura": 2,
+          "descripcion": "Cómo instalar Python e IDLE en Linux y ajustar el tamaño de letra y los colores de IDLE.",
+          "lectura": [
+            "En Linux, Python suele venir instalado. Para comprobarlo se escribe en la terminal sudo apt install python3: si ya está, solo avisa de que tienes la versión más reciente. IDLE se instala aparte con sudo apt install idle3 y se abre escribiendo idle3 en la terminal.",
+            "IDLE se puede ajustar para programar más cómodo: en Options > Configure IDLE se cambia el tamaño de letra y, en la pestaña de colores (Highlights), el color del texto y del fondo."
+          ],
+          "resumen": "En Linux: sudo apt install python3 y sudo apt install idle3. IDLE se configura en Options > Configure IDLE.",
+          "actividades": [
+            {
+              "id": "instalar-linux-idle-1",
+              "tipo": "vf",
+              "enunciado": "En Linux, Python suele venir ya instalado.",
+              "correcta": true,
+              "explicacion": "Aun así conviene comprobarlo con sudo apt install python3."
+            },
+            {
+              "id": "instalar-linux-idle-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe el comando que instala Python 3 en Ubuntu.",
+              "palabrasClave": [
+                "sudo",
+                "apt",
+                "install",
+                "python3"
+              ],
+              "solucion": "sudo apt install python3"
+            }
+          ]
+        },
+        {
+          "id": "compilador-interprete",
+          "videoId": "video-02",
+          "titulo": "Compilador, intérprete y el shell",
+          "concepto": "Intérprete",
+          "youtubeId": "UzHFkEdnRuc",
+          "inicioS": 0,
+          "finS": 352,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "Qué es un programa, la diferencia entre compilador e intérprete y cómo probar instrucciones en el shell.",
+          "lectura": [
+            "Un programa es una serie de instrucciones que el ordenador sigue para hacer una tarea. Esas instrucciones, escritas en un lenguaje de programación, forman el código fuente.",
+            "El ordenador no entiende el código fuente directamente: hay que traducirlo a lenguaje máquina. Un compilador traduce el programa entero antes de ejecutarlo. Un intérprete lo traduce y ejecuta instrucción a instrucción. Python usa un intérprete.",
+            "Al abrir IDLE aparece el shell, el intérprete interactivo: cada instrucción se ejecuta en cuanto pulsas Intro. Por ejemplo, print(\"Hola mundo\") muestra Hola mundo. En Python no hace falta punto y coma al final. El intérprete también se abre desde la consola escribiendo python (python3 en Linux), y se sale con exit()."
+          ],
+          "resumen": "El intérprete ejecuta instrucción a instrucción. En el shell de IDLE cada línea se ejecuta al pulsar Intro.",
+          "actividades": [
+            {
+              "id": "compilador-interprete-1",
+              "tipo": "vf",
+              "enunciado": "En Python cada instrucción tiene que terminar en punto y coma.",
+              "correcta": false,
+              "explicacion": "En Python el punto y coma al final de la línea no es necesario."
+            },
+            {
+              "id": "compilador-interprete-2",
+              "tipo": "vf",
+              "enunciado": "Un intérprete traduce y ejecuta el programa instrucción a instrucción.",
+              "correcta": true,
+              "explicacion": "El compilador traduce el programa entero antes; el intérprete va instrucción a instrucción."
+            }
+          ]
+        },
+        {
+          "id": "programas-py",
+          "videoId": "video-02",
+          "titulo": "Programas en archivos .py",
+          "concepto": "Archivos .py",
+          "youtubeId": "UzHFkEdnRuc",
+          "inicioS": 350,
+          "finS": 781,
+          "duracionVideo": 8,
+          "duracionLectura": 2,
+          "descripcion": "Cómo escribir un programa de varias líneas, guardarlo y ejecutarlo.",
+          "lectura": [
+            "Para un programa de varias líneas, en IDLE se abre un archivo nuevo (File > New File). Ahí puedes escribir todas las instrucciones sin que se ejecuten. Después se guarda (Ctrl+S) con la extensión .py y se ejecuta con Run > Run Module o la tecla F5: el resultado aparece en el shell.",
+            "También se puede escribir el programa en cualquier otro editor, incluso el Bloc de notas, siempre que se guarde con la extensión .py. Para ejecutarlo, se abre la consola, se va a la carpeta del archivo y se escribe python programa.py."
+          ],
+          "resumen": "Los programas se guardan en archivos .py y se ejecutan con F5 en IDLE o con python archivo.py en la consola.",
+          "actividades": [
+            {
+              "id": "programas-py-1",
+              "tipo": "vf",
+              "enunciado": "En IDLE, un programa guardado se ejecuta con la tecla F5.",
+              "correcta": true,
+              "explicacion": "F5 equivale a Run > Run Module."
+            },
+            {
+              "id": "programas-py-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe el comando de la consola que ejecuta el archivo programa.py.",
+              "palabrasClave": [
+                "python",
+                "programa.py"
+              ],
+              "solucion": "python programa.py"
+            }
+          ]
+        },
+        {
+          "id": "que-es-una-variable",
+          "videoId": "video-03",
+          "titulo": "Qué es una variable",
           "concepto": "Variables",
-          "youtubeId": "",
+          "youtubeId": "w8VZxo1TlnU",
+          "inicioS": 0,
+          "finS": 306,
           "duracionVideo": 6,
-          "duracionLectura": 4,
-          "descripcion": "Cómo guardar datos en variables y qué tipos de datos existen.",
+          "duracionLectura": 2,
+          "descripcion": "Cómo guardar datos en variables y qué nombres se pueden usar.",
           "lectura": [
-            "Una variable es un nombre que guarda un valor para usarlo más tarde. Se crea con el signo igual: edad = 18.",
-            "Los tipos de datos más comunes son: números enteros (int), como 18; números decimales (float), como 3.14; textos (str), como \"Hola\"; y valores lógicos (bool), que solo pueden ser True o False.",
-            "El valor de una variable puede cambiar durante el programa: si escribes edad = 19, la variable pasa a valer 19."
+            "Una variable es un espacio de la memoria, con un nombre, donde el programa guarda un dato para usarlo después.",
+            "Se crea escribiendo el nombre, el signo = y el valor: numero_1 = 2. El signo = asigna: guarda el valor de la derecha en la variable de la izquierda. Python deduce el tipo solo: 2 es un número entero (int), 2.5 un decimal (float) y \"Hola mundo\" un texto (str), que va siempre entre comillas.",
+            "El nombre no puede tener espacios (se escribe numero_1 o numeroUno, no numero 1) ni coincidir con una palabra reservada. Python distingue mayúsculas de minúsculas: Numero_1 y numero_1 son dos variables distintas."
           ],
-          "resumen": "Una variable guarda un valor: nombre = valor. Tipos básicos: int, float, str y bool.",
+          "resumen": "nombre = valor guarda un dato en una variable. El nombre no lleva espacios, y Python distingue mayúsculas de minúsculas.",
           "actividades": [
             {
-              "id": "variables-1",
+              "id": "que-es-una-variable-1",
               "tipo": "vf",
-              "enunciado": "El valor 3.14 es de tipo float.",
-              "correcta": true,
-              "explicacion": "Los números con decimales son de tipo float."
-            },
-            {
-              "id": "variables-2",
-              "tipo": "vf",
-              "enunciado": "Una vez creada, una variable no puede cambiar de valor.",
+              "enunciado": "edad y Edad son la misma variable en Python.",
               "correcta": false,
-              "explicacion": "Puedes asignar un valor nuevo a una variable en cualquier momento."
+              "explicacion": "Python distingue mayúsculas de minúsculas, así que son dos variables distintas."
             },
             {
-              "id": "variables-3",
-              "tipo": "escrita",
-              "enunciado": "Crea una variable llamada nombre que guarde el texto Ana.",
-              "palabrasClave": [
-                "nombre",
-                "=",
-                "ana"
-              ],
-              "solucion": "nombre = \"Ana\""
+              "id": "que-es-una-variable-2",
+              "tipo": "vf",
+              "enunciado": "mi nombre es un nombre de variable válido.",
+              "correcta": false,
+              "explicacion": "Los nombres de variable no pueden tener espacios: se escribiría mi_nombre."
             }
           ]
         },
         {
-          "id": "condicionales",
-          "titulo": "Condicionales",
-          "concepto": "Condicionales",
-          "youtubeId": "",
-          "duracionVideo": 6,
-          "duracionLectura": 4,
-          "descripcion": "Cómo hacer que el programa tome decisiones con if, elif y else.",
+          "id": "ejecucion-paso-a-paso",
+          "videoId": "video-03",
+          "titulo": "Cómo ejecuta Python un programa",
+          "concepto": "Ejecución paso a paso",
+          "youtubeId": "w8VZxo1TlnU",
+          "inicioS": 304,
+          "finS": 554,
+          "duracionVideo": 5,
+          "duracionLectura": 2,
+          "descripcion": "Qué pasa en la memoria con cada instrucción de un programa que suma dos números.",
           "lectura": [
-            "Los condicionales permiten ejecutar unas instrucciones u otras según se cumpla una condición.",
-            "if comprueba una condición. elif comprueba otra condición si la anterior no se ha cumplido. else se ejecuta cuando no se ha cumplido ninguna.",
-            "Ejemplo: if nota >= 5: print(\"Aprobado\") else: print(\"Suspenso\"). Las instrucciones de cada bloque van con sangría, es decir, desplazadas a la derecha."
+            "Python ejecuta las instrucciones de arriba abajo, una tras otra. En este programa: print(\"Esto es una suma\"), numero_1 = 2, numero_2 = 4, resultado = numero_1 + numero_2 y print(resultado).",
+            "La primera instrucción muestra el texto. La segunda crea la variable numero_1 y guarda un 2; la tercera hace lo mismo con numero_2 y un 4. La cuarta toma los valores guardados, los suma y guarda el 6 en resultado. La última muestra el contenido de resultado: 6."
           ],
-          "resumen": "if comprueba una condición, elif otra alternativa y else el resto de casos. Cada bloque va con sangría.",
+          "resumen": "Las instrucciones se ejecutan de arriba abajo. Cada asignación guarda un valor que las instrucciones siguientes pueden usar.",
           "actividades": [
             {
-              "id": "condicionales-1",
+              "id": "ejecucion-paso-a-paso-1",
               "tipo": "vf",
-              "enunciado": "En Python se escribe elif para comprobar otra condición.",
+              "enunciado": "Python ejecuta las instrucciones de un programa de arriba abajo, una tras otra.",
               "correcta": true,
-              "explicacion": "elif es la forma corta de \"else if\" que usa Python."
+              "explicacion": "Cada instrucción se ejecuta cuando ha terminado la anterior."
             },
             {
-              "id": "condicionales-2",
+              "id": "ejecucion-paso-a-paso-2",
               "tipo": "vf",
-              "enunciado": "El bloque else se ejecuta siempre, se cumpla o no la condición.",
+              "enunciado": "Si resultado vale 6, print(resultado) muestra la palabra resultado.",
               "correcta": false,
-              "explicacion": "else solo se ejecuta cuando no se ha cumplido ninguna de las condiciones anteriores."
-            },
+              "explicacion": "Sin comillas, print muestra el valor de la variable: 6."
+            }
+          ]
+        },
+        {
+          "id": "programa-suma",
+          "videoId": "video-03",
+          "titulo": "Primer programa: una suma",
+          "concepto": "Programa con variables",
+          "youtubeId": "w8VZxo1TlnU",
+          "inicioS": 552,
+          "finS": 903,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "Cómo escribir, guardar, ejecutar y volver a abrir un programa con variables.",
+          "lectura": [
+            "El ejemplo de la suma se escribe en un archivo nuevo de IDLE. Los textos pueden ir entre comillas simples o dobles: el resultado es el mismo. Para mostrar el valor de una variable se escribe su nombre sin comillas: print(resultado).",
+            "Se guarda como suma.py y se ejecuta con F5. Para volver a abrir un programa guardado se usa File > Open."
+          ],
+          "resumen": "Los textos van entre comillas simples o dobles; las variables, sin comillas. File > Open abre un programa guardado.",
+          "actividades": [
             {
-              "id": "condicionales-3",
+              "id": "programa-suma-1",
               "tipo": "escrita",
-              "enunciado": "Escribe la primera línea de un condicional que compruebe si la variable edad es mayor o igual que 18.",
+              "enunciado": "Crea una variable llamada edad con el valor 18.",
               "palabrasClave": [
-                "if",
                 "edad",
-                ">=",
+                "=",
                 "18"
               ],
-              "solucion": "if edad >= 18:"
+              "solucion": "edad = 18"
+            },
+            {
+              "id": "programa-suma-2",
+              "tipo": "vf",
+              "enunciado": "Para mostrar el valor de una variable se escribe su nombre entre comillas.",
+              "correcta": false,
+              "explicacion": "Entre comillas se mostraría el nombre como texto, no su valor."
             }
           ]
         },
         {
-          "id": "bucles",
-          "titulo": "Bucles",
-          "concepto": "Bucles",
-          "youtubeId": "",
+          "id": "anadir-texto",
+          "videoId": "video-04",
+          "titulo": "Añadir texto a una cadena (+=)",
+          "concepto": "Cadenas",
+          "youtubeId": "1CDE1pdVDGw",
+          "inicioS": 0,
+          "finS": 401,
           "duracionVideo": 7,
-          "duracionLectura": 4,
-          "descripcion": "Cómo repetir instrucciones con for y while.",
+          "duracionLectura": 2,
+          "descripcion": "Qué es una cadena de caracteres y cómo añadirle texto sin perder lo que tenía.",
           "lectura": [
-            "Un bucle repite un bloque de instrucciones varias veces.",
-            "for repite el bloque un número concreto de veces. Por ejemplo, for i in range(3): repite el bloque tres veces, con i valiendo 0, 1 y 2.",
-            "while repite el bloque mientras se cumpla una condición. Hay que asegurarse de que la condición deje de cumplirse en algún momento; si no, el bucle no termina nunca."
+            "Una cadena de caracteres, o string, es una secuencia de letras, números, signos y espacios escrita entre comillas. Python permite asignar, concatenar, buscar, extraer y comparar cadenas.",
+            "Para añadir texto al final de una variable sin borrar lo que ya tenía se usa +=. Con mensaje = \"Hola\", después mensaje += \" \" y mensaje += \"Ernesto\", la variable guarda \"Hola Ernesto\". Con = a secas, en cambio, el contenido anterior se sustituye."
           ],
-          "resumen": "for repite un número concreto de veces; while repite mientras se cumpla una condición.",
+          "resumen": "+= añade texto al final de una variable; = sustituye lo que tenía.",
           "actividades": [
             {
-              "id": "bucles-1",
+              "id": "anadir-texto-1",
               "tipo": "vf",
-              "enunciado": "for i in range(3): repite el bloque tres veces.",
-              "correcta": true,
-              "explicacion": "range(3) genera los valores 0, 1 y 2: tres repeticiones."
-            },
-            {
-              "id": "bucles-2",
-              "tipo": "vf",
-              "enunciado": "Un bucle while siempre termina por sí solo.",
+              "enunciado": "Si mensaje = \"Hola\" y después mensaje = \"Ana\", mensaje guarda \"HolaAna\".",
               "correcta": false,
-              "explicacion": "Si la condición nunca deja de cumplirse, el bucle se repite indefinidamente."
+              "explicacion": "Con = se sustituye el contenido: mensaje guarda solo \"Ana\". Para añadir se usa +=."
             },
             {
-              "id": "bucles-3",
+              "id": "anadir-texto-2",
               "tipo": "escrita",
-              "enunciado": "Escribe la primera línea de un bucle for que se repita 5 veces.",
+              "enunciado": "Añade el texto \" Ana\" al final de la variable mensaje.",
               "palabrasClave": [
-                "for",
-                "in",
-                "range",
-                "5"
+                "mensaje",
+                "+=",
+                "ana"
               ],
-              "solucion": "for i in range(5):"
+              "solucion": "mensaje += \" Ana\""
             }
           ]
         },
         {
-          "id": "listas",
-          "titulo": "Listas",
-          "concepto": "Listas",
-          "youtubeId": "",
+          "id": "concatenar",
+          "videoId": "video-04",
+          "titulo": "Unir cadenas (concatenar)",
+          "concepto": "Concatenar",
+          "youtubeId": "1CDE1pdVDGw",
+          "inicioS": 399,
+          "finS": 832,
+          "duracionVideo": 8,
+          "duracionLectura": 2,
+          "descripcion": "Cómo unir varias cadenas con + y qué hacer cuando hay números.",
+          "lectura": [
+            "Concatenar es unir dos o más cadenas en una más larga con el signo +. Con mensaje = \"Hola\", espacio = \" \" y nombre = \"Ernesto\", print(mensaje + espacio + nombre) muestra Hola Ernesto.",
+            "Python decide si + suma o concatena según lo que haya a cada lado. Un texto y un número no se pueden unir con +: \"El resultado es \" + resultado da error si resultado es un número. Hay que convertirlo antes con str(): \"El resultado es \" + str(resultado)."
+          ],
+          "resumen": "+ une cadenas. Para unir un texto con un número, conviértelo con str().",
+          "actividades": [
+            {
+              "id": "concatenar-1",
+              "tipo": "vf",
+              "enunciado": "\"Total: \" + 10 funciona sin errores.",
+              "correcta": false,
+              "explicacion": "No se puede unir un texto con un número: hay que escribir \"Total: \" + str(10)."
+            },
+            {
+              "id": "concatenar-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la expresión que une las variables nombre y apellido con un espacio en medio.",
+              "palabrasClave": [
+                "nombre",
+                "+",
+                "apellido"
+              ],
+              "solucion": "nombre + \" \" + apellido"
+            }
+          ]
+        },
+        {
+          "id": "buscar-en-cadenas",
+          "videoId": "video-04",
+          "titulo": "Buscar dentro de una cadena (find)",
+          "concepto": "find",
+          "youtubeId": "1CDE1pdVDGw",
+          "inicioS": 830,
+          "finS": 1177,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "Cómo se numeran los caracteres de una cadena y cómo buscar un texto con find.",
+          "lectura": [
+            "Cada carácter de una cadena ocupa una posición, y las posiciones empiezan a contar desde 0. Los espacios también ocupan una posición. En \"Hola Ernesto\", la H está en la posición 0 y el espacio en la 4.",
+            "El método find busca un texto dentro de otro y devuelve la posición donde empieza: \"Hola Ernesto\".find(\"Ernesto\") devuelve 5. Si no lo encuentra, devuelve -1. Un método es una función que se escribe detrás del valor, con un punto."
+          ],
+          "resumen": "Las posiciones empiezan en 0. texto.find(\"algo\") devuelve la posición donde empieza \"algo\".",
+          "actividades": [
+            {
+              "id": "buscar-en-cadenas-1",
+              "tipo": "vf",
+              "enunciado": "En la cadena \"Hola\", la letra H está en la posición 1.",
+              "correcta": false,
+              "explicacion": "Las posiciones empiezan a contar desde 0, así que la H está en la posición 0."
+            },
+            {
+              "id": "buscar-en-cadenas-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la expresión que busca la palabra mundo dentro de la variable texto.",
+              "palabrasClave": [
+                "texto.find",
+                "mundo"
+              ],
+              "solucion": "texto.find(\"mundo\")"
+            }
+          ]
+        },
+        {
+          "id": "extraer-de-cadenas",
+          "videoId": "video-04",
+          "titulo": "Extraer parte de una cadena",
+          "concepto": "Extraer",
+          "youtubeId": "1CDE1pdVDGw",
+          "inicioS": 1175,
+          "finS": 1426,
           "duracionVideo": 5,
-          "duracionLectura": 3,
-          "descripcion": "Cómo guardar varios valores en una lista y acceder a ellos.",
+          "duracionLectura": 1,
+          "descripcion": "Cómo sacar un trozo de una cadena indicando sus posiciones.",
           "lectura": [
-            "Una lista guarda varios valores en orden, entre corchetes y separados por comas: numeros = [10, 20, 30].",
-            "Cada elemento tiene una posición, llamada índice, que empieza en 0. Por eso numeros[0] vale 10 y numeros[2] vale 30.",
-            "Para añadir un elemento al final de la lista se usa append: numeros.append(40)."
+            "Para extraer una parte de una cadena se escriben entre corchetes la posición inicial y la final, separadas por dos puntos. El carácter de la posición final no se incluye.",
+            "Con mensaje = \"Hola Ernesto\", mensaje[1:4] devuelve \"ola\": empieza en la posición 1 y termina en la 3. mensaje[0:4] devuelve \"Hola\"."
           ],
-          "resumen": "Una lista guarda varios valores: [10, 20, 30]. El primer índice es 0. append añade al final.",
+          "resumen": "texto[inicio:fin] extrae desde inicio hasta la posición anterior a fin.",
           "actividades": [
             {
-              "id": "listas-1",
+              "id": "extraer-de-cadenas-1",
               "tipo": "vf",
-              "enunciado": "En la lista [10, 20, 30], el elemento en la posición 0 es 10.",
+              "enunciado": "\"Python\"[0:2] devuelve \"Py\".",
               "correcta": true,
-              "explicacion": "Los índices de las listas empiezan en 0."
+              "explicacion": "Toma las posiciones 0 y 1: la 2 ya no se incluye."
             },
             {
-              "id": "listas-2",
-              "tipo": "vf",
-              "enunciado": "append añade un elemento al principio de la lista.",
-              "correcta": false,
-              "explicacion": "append añade el elemento al final de la lista."
-            },
-            {
-              "id": "listas-3",
+              "id": "extraer-de-cadenas-2",
               "tipo": "escrita",
-              "enunciado": "Escribe la instrucción que añade el número 5 al final de la lista numeros.",
+              "enunciado": "Extrae las tres primeras letras de la variable palabra.",
               "palabrasClave": [
-                "numeros",
-                "append",
-                "5"
+                "palabra[",
+                ":3]"
               ],
-              "solucion": "numeros.append(5)"
+              "solucion": "palabra[0:3]"
             }
           ]
         },
         {
-          "id": "funciones",
-          "titulo": "Funciones",
-          "concepto": "Funciones",
-          "youtubeId": "",
-          "duracionVideo": 7,
-          "duracionLectura": 4,
-          "descripcion": "Cómo agrupar instrucciones en funciones para reutilizarlas.",
+          "id": "comparar-cadenas",
+          "videoId": "video-04",
+          "titulo": "Comparar cadenas (==)",
+          "concepto": "Comparar cadenas",
+          "youtubeId": "1CDE1pdVDGw",
+          "inicioS": 1424,
+          "finS": 1710,
+          "duracionVideo": 5,
+          "duracionLectura": 1,
+          "descripcion": "Cómo saber si dos cadenas son exactamente iguales.",
           "lectura": [
-            "Una función agrupa instrucciones bajo un nombre para poder usarlas tantas veces como quieras.",
-            "Se define con la palabra def, el nombre y los paréntesis: def saludar():. Las instrucciones de la función van con sangría.",
-            "Una función puede recibir datos (parámetros) y devolver un resultado con return. Por ejemplo, def doble(n): return n * 2."
+            "Para comparar dos cadenas se usa ==, que da True (cierto) si son exactamente iguales y False (falso) si no. No hay que confundirlo con =, que guarda un valor en una variable.",
+            "Las mayúsculas cuentan: \"Hola\" == \"hola\" da False. En el shell el resultado aparece solo; en un programa hay que mostrarlo con print: print(mensaje_1 == mensaje_2)."
           ],
-          "resumen": "def nombre(parámetros): define una función. return devuelve un resultado.",
+          "resumen": "== compara dos cadenas y da True o False. Las mayúsculas cuentan.",
           "actividades": [
             {
-              "id": "funciones-1",
+              "id": "comparar-cadenas-1",
               "tipo": "vf",
-              "enunciado": "Las funciones en Python se definen con la palabra def.",
-              "correcta": true,
-              "explicacion": "def es la palabra clave para definir funciones."
-            },
-            {
-              "id": "funciones-2",
-              "tipo": "vf",
-              "enunciado": "Una función solo se puede usar una vez en un programa.",
+              "enunciado": "\"Hola\" == \"hola\" da True.",
               "correcta": false,
-              "explicacion": "La ventaja de las funciones es que se pueden reutilizar tantas veces como se necesite."
+              "explicacion": "La comparación distingue mayúsculas de minúsculas, así que da False."
             },
             {
-              "id": "funciones-3",
+              "id": "comparar-cadenas-2",
               "tipo": "escrita",
-              "enunciado": "Escribe la primera línea de una función llamada saludar sin parámetros.",
+              "enunciado": "Escribe la instrucción que muestra si las variables a y b son iguales.",
               "palabrasClave": [
-                "def",
-                "saludar",
-                "("
+                "print",
+                "a",
+                "==",
+                "b"
               ],
-              "solucion": "def saludar():"
+              "solucion": "print(a == b)"
+            }
+          ]
+        },
+        {
+          "id": "palabras-reservadas",
+          "videoId": "video-05",
+          "titulo": "Palabras reservadas",
+          "concepto": "Palabras reservadas",
+          "youtubeId": "6yBL1mcd7iY",
+          "inicioS": 0,
+          "finS": 320,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "Qué palabras usa Python para sí mismo y por qué no sirven como nombres de variables.",
+          "aviso": "El vídeo sigue Python 2: dice que hay 28 palabras reservadas y que print es una de ellas. En Python 3 hay 35, y print es una función.",
+          "lectura": [
+            "Las palabras reservadas son las que el lenguaje usa para sí mismo, como if, else, for, while, def, return, import, True, False o None. No se pueden usar como nombre de una variable: if = 5 produce un error y el programa no llega a ejecutarse.",
+            "Se escriben en minúsculas, salvo True, False y None. Como Python distingue mayúsculas de minúsculas, If ya no es una palabra reservada, pero usar nombres así confunde y es mejor evitarlo.",
+            "La lista completa se ve con import keyword y print(keyword.kwlist). En Python 3 hay 35. print no es una palabra reservada sino una función; aun así, no la uses como nombre de variable, porque después no podrías mostrar nada por pantalla."
+          ],
+          "resumen": "if, else, for, def, True y el resto de palabras reservadas no sirven como nombres de variables.",
+          "actividades": [
+            {
+              "id": "palabras-reservadas-1",
+              "tipo": "vf",
+              "enunciado": "Se puede crear una variable llamada if.",
+              "correcta": false,
+              "explicacion": "if es una palabra reservada: usarla como nombre de variable produce un error."
+            },
+            {
+              "id": "palabras-reservadas-2",
+              "tipo": "vf",
+              "enunciado": "True y False son palabras reservadas de Python.",
+              "correcta": true,
+              "explicacion": "Son palabras reservadas y, junto con None, las únicas que empiezan por mayúscula."
+            }
+          ]
+        },
+        {
+          "id": "suma-resta-multiplicacion",
+          "videoId": "video-06",
+          "titulo": "Suma, resta y multiplicación",
+          "concepto": "Operadores aritméticos",
+          "youtubeId": "6sOEpHItJHs",
+          "inicioS": 0,
+          "finS": 380,
+          "duracionVideo": 7,
+          "duracionLectura": 2,
+          "descripcion": "Los operadores aritméticos de Python y los tres primeros: +, - y *.",
+          "lectura": [
+            "Los operadores aritméticos hacen cálculos con números enteros y decimales: suma (+), resta (-), multiplicación (*), división (/), potencia (**), módulo (%) y división entera (//).",
+            "Con numero_1 = 5 y numero_2 = 4: numero_1 + numero_2 da 9, numero_1 - numero_2 da 1 y numero_1 * numero_2 da 20. Para mostrar el resultado junto a un texto con +, hay que convertirlo: print(\"El resultado es \" + str(resultado))."
+          ],
+          "resumen": "+ suma, - resta y * multiplica.",
+          "actividades": [
+            {
+              "id": "suma-resta-multiplicacion-1",
+              "tipo": "vf",
+              "enunciado": "En Python, la multiplicación se escribe con el signo x.",
+              "correcta": false,
+              "explicacion": "Se escribe con un asterisco: 5 * 4."
+            },
+            {
+              "id": "suma-resta-multiplicacion-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la expresión que multiplica precio por cantidad.",
+              "palabrasClave": [
+                "precio",
+                "*",
+                "cantidad"
+              ],
+              "solucion": "precio * cantidad"
+            }
+          ]
+        },
+        {
+          "id": "potencia-division",
+          "videoId": "video-06",
+          "titulo": "Potencia y división",
+          "concepto": "Potencia",
+          "youtubeId": "6sOEpHItJHs",
+          "inicioS": 378,
+          "finS": 695,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "Cómo elevar un número a una potencia y por qué la división siempre da decimales.",
+          "lectura": [
+            "La potencia (**) multiplica un número por sí mismo tantas veces como indica el exponente: 2 ** 5 es 2 · 2 · 2 · 2 · 2. Paso a paso: 2 · 2 = 4, 4 · 2 = 8, 8 · 2 = 16 y 16 · 2 = 32.",
+            "La división se escribe con la barra inclinada a la derecha (/) y siempre da un número decimal, aunque la división sea exacta: 4 / 2 da 2.0 y 10 / 3 da 3.3333333333333335."
+          ],
+          "resumen": "** eleva a una potencia: 2 ** 5 da 32. / siempre da un decimal: 4 / 2 da 2.0.",
+          "actividades": [
+            {
+              "id": "potencia-division-1",
+              "tipo": "vf",
+              "enunciado": "4 / 2 da 2, sin decimales.",
+              "correcta": false,
+              "explicacion": "La división / siempre da un decimal: 4 / 2 da 2.0. Para obtener un entero se usa //."
+            },
+            {
+              "id": "potencia-division-2",
+              "tipo": "vf",
+              "enunciado": "2 ** 3 da 8.",
+              "correcta": true,
+              "explicacion": "2 · 2 · 2 = 8."
+            }
+          ]
+        },
+        {
+          "id": "modulo-division-entera",
+          "videoId": "video-06",
+          "titulo": "Módulo y división entera",
+          "concepto": "Módulo",
+          "youtubeId": "6sOEpHItJHs",
+          "inicioS": 693,
+          "finS": 1066,
+          "duracionVideo": 7,
+          "duracionLectura": 2,
+          "descripcion": "Cómo obtener el resto de una división y su parte entera.",
+          "lectura": [
+            "El módulo (%) da el resto de una división: 10 % 3 da 1, porque 3 · 3 = 9 y falta 1 para llegar a 10. Del mismo modo, 30 % 8 da 6, porque 3 · 8 = 24 y faltan 6 para llegar a 30.",
+            "La división entera (//) se queda solo con la parte entera del resultado: 10 // 3 da 3 y 4 // 2 da 2, sin el .0."
+          ],
+          "resumen": "% da el resto de la división y // su parte entera.",
+          "actividades": [
+            {
+              "id": "modulo-division-entera-1",
+              "tipo": "vf",
+              "enunciado": "7 // 2 da 3.",
+              "correcta": true,
+              "explicacion": "La división entera se queda con la parte entera de 3.5, que es 3."
+            },
+            {
+              "id": "modulo-division-entera-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la operación que calcula el resto de dividir 30 entre 8.",
+              "palabrasClave": [
+                "30",
+                "%",
+                "8"
+              ],
+              "solucion": "30 % 8"
+            }
+          ]
+        },
+        {
+          "id": "comentarios",
+          "videoId": "video-07",
+          "titulo": "Comentarios",
+          "concepto": "Comentarios",
+          "youtubeId": "xptKv7yhfSA",
+          "inicioS": 0,
+          "finS": 466,
+          "duracionVideo": 8,
+          "duracionLectura": 2,
+          "descripcion": "Cómo añadir notas al código que Python no ejecuta.",
+          "lectura": [
+            "Un comentario es una nota en el código para las personas que lo leen. Python lo ignora al ejecutar, así que no cambia lo que hace el programa. Sirven para explicar el código y que sea más fácil de mantener o reutilizar. No son obligatorios.",
+            "La forma habitual es la almohadilla (#): todo lo que va detrás, hasta el final de la línea, es un comentario. Por ejemplo: # Muestra un saludo.",
+            "Para notas de varias líneas se usan comillas triples (\"\"\" o ''') al principio y al final. En realidad no son comentarios, sino textos que no se guardan en ninguna variable, y por eso no tienen ningún efecto."
+          ],
+          "resumen": "# comenta hasta el final de la línea. Las comillas triples sirven para notas de varias líneas.",
+          "actividades": [
+            {
+              "id": "comentarios-1",
+              "tipo": "vf",
+              "enunciado": "Los comentarios cambian el resultado del programa.",
+              "correcta": false,
+              "explicacion": "Python ignora los comentarios al ejecutar el programa."
+            },
+            {
+              "id": "comentarios-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe un comentario que diga: calcula la media",
+              "palabrasClave": [
+                "#",
+                "calcula la media"
+              ],
+              "solucion": "# calcula la media"
+            }
+          ]
+        },
+        {
+          "id": "tipos-de-datos",
+          "videoId": "video-08",
+          "titulo": "Tipos de datos y números enteros",
+          "concepto": "Tipos de datos",
+          "youtubeId": "EaWsOcc7R2M",
+          "inicioS": 0,
+          "finS": 463,
+          "duracionVideo": 8,
+          "duracionLectura": 2,
+          "descripcion": "Qué es un tipo de dato, cuáles hay en Python y cómo saber de qué tipo es un valor.",
+          "aviso": "El vídeo menciona el tipo long. En Python 3 ya no existe: los enteros (int) no tienen límite de tamaño.",
+          "lectura": [
+            "El tipo de dato indica qué clase de valor guarda una variable. Los principales en Python son: enteros (int), decimales (float), números complejos (complex), textos (str) y booleanos (bool).",
+            "Los enteros son números sin decimales, positivos o negativos, como 15 o -3. No hace falta indicar el tipo al crear la variable, porque Python lo deduce al ejecutar. Para consultarlo se usa type(): print(numero, type(numero)) muestra 15 <class 'int'>.",
+            "Separar con comas dentro de print permite mostrar varios valores en la misma línea sin convertirlos en texto."
+          ],
+          "resumen": "int, float, complex, str y bool. type(valor) dice de qué tipo es.",
+          "actividades": [
+            {
+              "id": "tipos-de-datos-1",
+              "tipo": "vf",
+              "enunciado": "type(15) indica que 15 es de tipo int.",
+              "correcta": true,
+              "explicacion": "15 es un número sin decimales: un entero."
+            },
+            {
+              "id": "tipos-de-datos-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la instrucción que muestra el tipo de la variable precio.",
+              "palabrasClave": [
+                "print",
+                "type",
+                "precio"
+              ],
+              "solucion": "print(type(precio))"
+            }
+          ]
+        },
+        {
+          "id": "decimales-complejos",
+          "videoId": "video-08",
+          "titulo": "Decimales y números complejos",
+          "concepto": "float",
+          "youtubeId": "EaWsOcc7R2M",
+          "inicioS": 461,
+          "finS": 649,
+          "duracionVideo": 4,
+          "duracionLectura": 1,
+          "descripcion": "Los números con decimales (float) y los números complejos (complex).",
+          "lectura": [
+            "Los números decimales o reales tienen parte decimal, como 15.5, y en Python son de tipo float. El decimal se separa con un punto, no con una coma.",
+            "Los números complejos tienen una parte real y una parte imaginaria, que en Python se escribe con j: 5 + 6j. Son de tipo complex y se usan sobre todo en ingeniería y ciencias."
+          ],
+          "resumen": "15.5 es un float; 5 + 6j es un complex. Los decimales se escriben con punto.",
+          "actividades": [
+            {
+              "id": "decimales-complejos-1",
+              "tipo": "vf",
+              "enunciado": "15.5 es de tipo int.",
+              "correcta": false,
+              "explicacion": "Tiene parte decimal, así que es de tipo float."
+            },
+            {
+              "id": "decimales-complejos-2",
+              "tipo": "vf",
+              "enunciado": "En Python, la parte imaginaria de un número complejo se escribe con j.",
+              "correcta": true,
+              "explicacion": "Por ejemplo, 5 + 6j."
+            }
+          ]
+        },
+        {
+          "id": "textos-booleanos",
+          "videoId": "video-08",
+          "titulo": "Textos y booleanos",
+          "concepto": "Booleanos",
+          "youtubeId": "EaWsOcc7R2M",
+          "inicioS": 647,
+          "finS": 944,
+          "duracionVideo": 5,
+          "duracionLectura": 2,
+          "descripcion": "Las cadenas de texto (str) y los valores verdadero o falso (bool).",
+          "lectura": [
+            "Las cadenas (str) son texto entre comillas simples o dobles. Con comillas triples, el texto puede ocupar varias líneas y se respetan los saltos de línea al mostrarlo.",
+            "Los booleanos (bool) solo pueden valer True (cierto) o False (falso). Suelen salir de comparaciones: verdadero_falso = 3 == 3 guarda True. Son la base de las condiciones que se ven más adelante."
+          ],
+          "resumen": "El texto es de tipo str. Los booleanos (bool) valen True o False y suelen salir de comparaciones.",
+          "actividades": [
+            {
+              "id": "textos-booleanos-1",
+              "tipo": "vf",
+              "enunciado": "El valor True es de tipo bool.",
+              "correcta": true,
+              "explicacion": "Los booleanos solo pueden valer True o False."
+            },
+            {
+              "id": "textos-booleanos-2",
+              "tipo": "vf",
+              "enunciado": "El valor \"15\" es de tipo int.",
+              "correcta": false,
+              "explicacion": "Va entre comillas, así que es un texto (str)."
+            }
+          ]
+        },
+        {
+          "id": "pedir-datos",
+          "videoId": "video-09",
+          "titulo": "Pedir datos al usuario: input()",
+          "concepto": "input",
+          "youtubeId": "vlka4aIRqUc",
+          "inicioS": 0,
+          "finS": 331,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "Cómo pedir datos con input y convertirlos en números enteros.",
+          "lectura": [
+            "Para que el usuario escriba datos se usa input(): muestra un mensaje, espera a que el usuario escriba y pulse Intro, y devuelve lo que ha escrito. Por ejemplo: palabra = input(\"Introduce una palabra: \").",
+            "input() siempre devuelve texto. Para usar el dato como número entero hay que convertirlo con int(): num_int = int(input(\"Introduce un número entero: \")). Fíjate en los dos pares de paréntesis: unos son de int y otros de input."
+          ],
+          "resumen": "input(\"mensaje\") pide un dato y lo devuelve como texto. int(input(...)) lo convierte en entero.",
+          "actividades": [
+            {
+              "id": "pedir-datos-1",
+              "tipo": "vf",
+              "enunciado": "input() devuelve siempre un texto.",
+              "correcta": true,
+              "explicacion": "Por eso, para hacer cálculos, hay que convertirlo con int() o float()."
+            },
+            {
+              "id": "pedir-datos-2",
+              "tipo": "escrita",
+              "enunciado": "Pide la edad al usuario y guárdala como número entero en la variable edad.",
+              "palabrasClave": [
+                "edad",
+                "=",
+                "int",
+                "input"
+              ],
+              "solucion": "edad = int(input(\"¿Cuántos años tienes? \"))"
+            }
+          ]
+        },
+        {
+          "id": "convertir-datos",
+          "videoId": "video-09",
+          "titulo": "Decimales, complejos y errores al pedir datos",
+          "concepto": "Conversión de tipos",
+          "youtubeId": "vlka4aIRqUc",
+          "inicioS": 329,
+          "finS": 711,
+          "duracionVideo": 7,
+          "duracionLectura": 2,
+          "descripcion": "Cómo pedir decimales y complejos, y qué pasa si el usuario escribe otra cosa.",
+          "lectura": [
+            "Igual que con int(), los decimales se piden con float(input(...)) y los números complejos con complex(input(...)). Para mostrar los datos, print(\"Entero:\", num_int) separa con comas y no obliga a convertirlos en texto. El nombre de la variable tiene que coincidir exactamente en todo el programa.",
+            "Si el usuario escribe algo que no se puede convertir, como letras cuando se espera un número, el programa se detiene con un error. Más adelante se aprende a comprobar lo que escribe el usuario antes de usarlo."
+          ],
+          "resumen": "float(input(...)) pide decimales. Si el dato no se puede convertir, el programa se detiene con un error.",
+          "actividades": [
+            {
+              "id": "convertir-datos-1",
+              "tipo": "vf",
+              "enunciado": "Si se espera un entero y el usuario escribe letras, int() lo convierte en 0.",
+              "correcta": false,
+              "explicacion": "int() no puede convertir letras: el programa se detiene con un error."
+            },
+            {
+              "id": "convertir-datos-2",
+              "tipo": "escrita",
+              "enunciado": "Pide un precio con decimales y guárdalo en la variable precio.",
+              "palabrasClave": [
+                "precio",
+                "=",
+                "float",
+                "input"
+              ],
+              "solucion": "precio = float(input(\"Precio: \"))"
+            }
+          ]
+        },
+        {
+          "id": "programa-saludo-suma",
+          "videoId": "video-09",
+          "titulo": "Programa: saludar y sumar",
+          "concepto": "Programa interactivo",
+          "youtubeId": "vlka4aIRqUc",
+          "inicioS": 709,
+          "finS": 1089,
+          "duracionVideo": 7,
+          "duracionLectura": 2,
+          "descripcion": "Un programa que pregunta el nombre, pide dos números y muestra su suma.",
+          "lectura": [
+            "El programa pide el nombre con nombre = input(\"¿Cuál es tu nombre? \") y saluda con print(\"Hola \" + nombre + \", vamos a realizar una suma.\"). Como nombre es texto, se puede unir con + directamente.",
+            "Después pide los dos valores con int(input(...)), los suma en resultado y muestra print(nombre + \" el resultado de la suma es\", resultado). Con 5 y 10, muestra 15. Sin int(), los dos valores serían textos y + los uniría: \"510\"."
+          ],
+          "resumen": "Un texto se une con +; un número se muestra con una coma en print. Sin int(), \"5\" + \"10\" da \"510\".",
+          "actividades": [
+            {
+              "id": "programa-saludo-suma-1",
+              "tipo": "vf",
+              "enunciado": "Si num_1 y num_2 se piden con input() sin int() y el usuario escribe 5 y 10, num_1 + num_2 da 15.",
+              "correcta": false,
+              "explicacion": "input() devuelve textos, así que + los une: \"510\"."
+            },
+            {
+              "id": "programa-saludo-suma-2",
+              "tipo": "vf",
+              "enunciado": "Si nombre guarda un texto, \"Hola \" + nombre funciona sin convertir nada.",
+              "correcta": true,
+              "explicacion": "Se están uniendo dos textos."
+            }
+          ]
+        },
+        {
+          "id": "que-es-un-if",
+          "videoId": "video-10",
+          "titulo": "Qué es una condicional (if)",
+          "concepto": "Condicionales",
+          "youtubeId": "Moq9OFxQTc4",
+          "inicioS": 0,
+          "finS": 322,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "Cómo hacer que el programa ejecute instrucciones solo si se cumple una condición.",
+          "lectura": [
+            "Una sentencia condicional ejecuta unas instrucciones solo si se cumple una condición lógica. Así el programa toma decisiones.",
+            "Se escribe con la palabra if, la condición y dos puntos: if promedio >= 6:. Las instrucciones que dependen del if van debajo con sangría, es decir, con un tabulador o cuatro espacios al principio. La sangría es obligatoria: indica qué instrucciones pertenecen al if. Las que van sin sangría ya no forman parte de él."
+          ],
+          "resumen": "if condición: y debajo, con sangría, lo que se ejecuta si se cumple.",
+          "actividades": [
+            {
+              "id": "que-es-un-if-1",
+              "tipo": "vf",
+              "enunciado": "Las instrucciones que dependen de un if van con sangría.",
+              "correcta": true,
+              "explicacion": "La sangría es lo que indica qué instrucciones pertenecen al if."
+            },
+            {
+              "id": "que-es-un-if-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la primera línea de un if que comprueba si nota es mayor o igual que 5.",
+              "palabrasClave": [
+                "if",
+                "nota",
+                ">=",
+                "5",
+                ":"
+              ],
+              "solucion": "if nota >= 5:"
+            }
+          ]
+        },
+        {
+          "id": "como-se-ejecuta-un-if",
+          "videoId": "video-10",
+          "titulo": "Cómo se ejecuta un if",
+          "concepto": "Diagrama de flujo",
+          "youtubeId": "Moq9OFxQTc4",
+          "inicioS": 320,
+          "finS": 616,
+          "duracionVideo": 5,
+          "duracionLectura": 2,
+          "descripcion": "Los dos caminos de una condición, en un diagrama de flujo y en código.",
+          "lectura": [
+            "Una condición tiene dos caminos: verdadero, si se cumple, y falso, si no. Un diagrama de flujo representa estos caminos con dibujos: es la representación gráfica de un algoritmo, la serie de pasos para resolver un problema.",
+            "Con numero_1 = 5, la condición if numero_1 == 5: se cumple y se muestra \"El número es 5\"; después se muestra \"Fin\", que va sin sangría. Con numero_1 = 10, la condición no se cumple, el bloque se salta y solo se muestra \"Fin\". Recuerda: == compara y = asigna."
+          ],
+          "resumen": "Si la condición se cumple, se ejecuta el bloque; si no, se salta. Lo que va sin sangría se ejecuta siempre.",
+          "actividades": [
+            {
+              "id": "como-se-ejecuta-un-if-1",
+              "tipo": "vf",
+              "enunciado": "Si la condición de un if no se cumple, el programa se detiene.",
+              "correcta": false,
+              "explicacion": "Se salta el bloque del if y el programa sigue con las instrucciones de después."
+            },
+            {
+              "id": "como-se-ejecuta-un-if-2",
+              "tipo": "vf",
+              "enunciado": "Con numero = 10, if numero == 5: print(\"Es 5\") no muestra nada.",
+              "correcta": true,
+              "explicacion": "10 no es igual a 5, así que el bloque se salta."
+            }
+          ]
+        },
+        {
+          "id": "ejercicio-promedio",
+          "videoId": "video-10",
+          "titulo": "Ejercicio: el promedio de un alumno",
+          "concepto": "Ejercicio del promedio",
+          "youtubeId": "Moq9OFxQTc4",
+          "inicioS": 614,
+          "finS": 836,
+          "duracionVideo": 4,
+          "duracionLectura": 1,
+          "descripcion": "Qué tiene que hacer el programa del ejercicio, para intentarlo antes de ver la solución.",
+          "lectura": [
+            "El ejercicio es un programa que pregunta el nombre del alumno y sus notas de matemáticas, química y biología, calcula la media y, si es 6 o más, le felicita. Tanto si aprueba como si no, al final muestra \"Fin\".",
+            "Intenta escribirlo antes de ver la solución, con lo que ya sabes: input(), int(), operadores y if."
+          ],
+          "resumen": "Pedir nombre y tres notas, calcular la media y felicitar si es 6 o más. Siempre termina con \"Fin\".",
+          "actividades": [
+            {
+              "id": "ejercicio-promedio-1",
+              "tipo": "vf",
+              "enunciado": "En el ejercicio, un alumno con una media de 5.9 aprueba.",
+              "correcta": false,
+              "explicacion": "Para aprobar, la media tiene que ser 6 o más."
+            },
+            {
+              "id": "ejercicio-promedio-2",
+              "tipo": "vf",
+              "enunciado": "La palabra Fin se muestra tanto si el alumno aprueba como si no.",
+              "correcta": true,
+              "explicacion": "Esa instrucción va sin sangría, fuera del if."
+            }
+          ]
+        },
+        {
+          "id": "promedio-pedir-notas",
+          "videoId": "video-10",
+          "titulo": "Pedir el nombre y las notas",
+          "concepto": "Pedir notas",
+          "youtubeId": "Moq9OFxQTc4",
+          "inicioS": 834,
+          "finS": 1130,
+          "duracionVideo": 5,
+          "duracionLectura": 2,
+          "descripcion": "La primera parte de la solución: el título, el nombre y las tres notas.",
+          "lectura": [
+            "El programa empieza mostrando su título con print(\"Sistema para calcular el promedio de un alumno\") y pide el nombre con nombre = input(\"Para comenzar, ¿cuál es tu nombre? \").",
+            "Las notas se piden como enteros, porque con ellas se van a hacer cálculos: matematicas = int(input(nombre + \" ¿cuál es tu calificación en matemáticas? \")). Los espacios al principio y al final del texto evitan que se amontone con el nombre y con lo que escribe el usuario. Lo mismo se repite para química y biología."
+          ],
+          "resumen": "Cada nota se pide con int(input(...)), porque se va a operar con ella.",
+          "actividades": [
+            {
+              "id": "promedio-pedir-notas-1",
+              "tipo": "escrita",
+              "enunciado": "Pide la nota de química como número entero y guárdala en la variable quimica.",
+              "palabrasClave": [
+                "quimica",
+                "=",
+                "int",
+                "input"
+              ],
+              "solucion": "quimica = int(input(\"¿Cuál es tu calificación en química? \"))"
+            },
+            {
+              "id": "promedio-pedir-notas-2",
+              "tipo": "vf",
+              "enunciado": "Como input() devuelve un número, no hace falta int() para calcular la media.",
+              "correcta": false,
+              "explicacion": "input() devuelve texto: sin int() no se puede calcular la media."
+            }
+          ]
+        },
+        {
+          "id": "promedio-condicion",
+          "videoId": "video-10",
+          "titulo": "Calcular la media y escribir el if",
+          "concepto": "Promedio",
+          "youtubeId": "Moq9OFxQTc4",
+          "inicioS": 1128,
+          "finS": 1482,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "La fórmula de la media y la condición que decide si el alumno aprueba.",
+          "lectura": [
+            "La media se calcula con promedio = (matematicas + quimica + biologia) / 3. Los paréntesis hacen que primero se sume y después se divida.",
+            "La condición es if promedio >= 6:, con mayor o igual, para que un 6 justo también apruebe. Dentro, con sangría: print('Felicidades ' + nombre + ' \"aprobaste\" con un promedio de:', promedio). El texto va entre comillas simples para poder mostrar comillas dobles dentro. Fuera del if, sin sangría, print(\"Fin.\")."
+          ],
+          "resumen": "promedio = (a + b + c) / 3. if promedio >= 6: felicita; \"Fin\" va sin sangría.",
+          "actividades": [
+            {
+              "id": "promedio-condicion-1",
+              "tipo": "vf",
+              "enunciado": "En (8 + 9 + 9) / 3, los paréntesis hacen que primero se sume y luego se divida.",
+              "correcta": true,
+              "explicacion": "Sin paréntesis, solo se dividiría la última nota entre 3."
+            },
+            {
+              "id": "promedio-condicion-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la primera línea del if que comprueba si promedio es mayor o igual que 6.",
+              "palabrasClave": [
+                "if",
+                "promedio",
+                ">=",
+                "6",
+                ":"
+              ],
+              "solucion": "if promedio >= 6:"
+            }
+          ]
+        },
+        {
+          "id": "promedio-sin-decimales",
+          "videoId": "video-10",
+          "titulo": "Quitar los decimales y probarlo",
+          "concepto": "int()",
+          "youtubeId": "Moq9OFxQTc4",
+          "inicioS": 1480,
+          "finS": 1737,
+          "duracionVideo": 5,
+          "duracionLectura": 1,
+          "descripcion": "Cómo quedarse con la parte entera de la media y comprobar los dos caminos.",
+          "lectura": [
+            "Al dividir, la media es un decimal, como 8.666666666666666. Para mostrar solo la parte entera se añade promedio = int(promedio) después de calcularla: int() quita los decimales, no redondea.",
+            "Para comprobar el programa hay que probar los dos caminos: con 8, 9 y 9 felicita con un promedio de 8; con 5, 5 y 4 solo muestra \"Fin\"."
+          ],
+          "resumen": "int(promedio) quita los decimales sin redondear. Prueba el camino que aprueba y el que no.",
+          "actividades": [
+            {
+              "id": "promedio-sin-decimales-1",
+              "tipo": "vf",
+              "enunciado": "int(8.67) da 9.",
+              "correcta": false,
+              "explicacion": "int() quita los decimales sin redondear: da 8."
+            },
+            {
+              "id": "promedio-sin-decimales-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la instrucción que deja en promedio solo su parte entera.",
+              "palabrasClave": [
+                "promedio",
+                "=",
+                "int(promedio)"
+              ],
+              "solucion": "promedio = int(promedio)"
+            }
+          ]
+        },
+        {
+          "id": "que-es-if-else",
+          "videoId": "video-11",
+          "titulo": "Qué es una condicional compuesta (if-else)",
+          "concepto": "else",
+          "youtubeId": "43NYFfUM5uU",
+          "inicioS": 0,
+          "finS": 293,
+          "duracionVideo": 5,
+          "duracionLectura": 1,
+          "descripcion": "Cómo indicar qué hacer cuando la condición se cumple y qué hacer cuando no.",
+          "lectura": [
+            "Una condicional compuesta tiene dos caminos: uno para cuando la condición se cumple y otro para cuando no. El segundo se escribe con else, seguido de dos puntos.",
+            "else va a la misma altura que su if, sin sangría, y no lleva condición. Sus instrucciones van debajo, con sangría, como las del if."
+          ],
+          "resumen": "if condición: … else: …. else va a la altura del if y no lleva condición.",
+          "actividades": [
+            {
+              "id": "que-es-if-else-1",
+              "tipo": "vf",
+              "enunciado": "else no lleva condición.",
+              "correcta": true,
+              "explicacion": "else recoge todos los casos en los que la condición del if no se cumple."
+            },
+            {
+              "id": "que-es-if-else-2",
+              "tipo": "vf",
+              "enunciado": "else se escribe con más sangría que su if.",
+              "correcta": false,
+              "explicacion": "Va a la misma altura que su if."
+            }
+          ]
+        },
+        {
+          "id": "como-se-ejecuta-if-else",
+          "videoId": "video-11",
+          "titulo": "Cómo se ejecuta un if-else",
+          "concepto": "Dos caminos",
+          "youtubeId": "43NYFfUM5uU",
+          "inicioS": 291,
+          "finS": 597,
+          "duracionVideo": 6,
+          "duracionLectura": 1,
+          "descripcion": "Por qué en un if-else siempre se ejecuta un bloque y nunca los dos.",
+          "lectura": [
+            "En un if-else nunca se ejecutan los dos bloques: o el del if o el del else, según la condición.",
+            "Con numero_1 = 5, if numero_1 == 5: muestra \"El número es 5\". Con numero_1 = 10, la condición no se cumple y se ejecuta el else: \"El número no es 5\". En los dos casos, después se muestra \"Fin\", que va sin sangría."
+          ],
+          "resumen": "Se ejecuta el bloque del if o el del else, nunca los dos.",
+          "actividades": [
+            {
+              "id": "como-se-ejecuta-if-else-1",
+              "tipo": "vf",
+              "enunciado": "En un if-else se pueden ejecutar los dos bloques.",
+              "correcta": false,
+              "explicacion": "Se ejecuta el del if si la condición se cumple, o el del else si no. Nunca los dos."
+            },
+            {
+              "id": "como-se-ejecuta-if-else-2",
+              "tipo": "vf",
+              "enunciado": "Con numero = 10, if numero == 5: print(\"Es 5\") else: print(\"No es 5\") muestra No es 5.",
+              "correcta": true,
+              "explicacion": "La condición no se cumple, así que se ejecuta el else."
+            }
+          ]
+        },
+        {
+          "id": "ejercicio-aprobado-suspenso",
+          "videoId": "video-11",
+          "titulo": "Ejercicio: aprobado o suspenso",
+          "concepto": "Ejercicio de if-else",
+          "youtubeId": "43NYFfUM5uU",
+          "inicioS": 595,
+          "finS": 761,
+          "duracionVideo": 3,
+          "duracionLectura": 1,
+          "descripcion": "Qué tiene que hacer el programa del ejercicio, para intentarlo antes de ver la solución.",
+          "lectura": [
+            "El ejercicio retoma el programa del promedio de la lección del if, pero ahora con dos mensajes: si la media es 6 o más, felicita al alumno; si no, le dice que ha suspendido. Cada mensaje muestra la media con todos sus decimales y, debajo, redondeada.",
+            "Intenta escribirlo antes de ver la solución, con lo que ya sabes del if y del else."
+          ],
+          "resumen": "El programa del promedio con dos caminos: un mensaje si aprueba y otro si suspende.",
+          "actividades": [
+            {
+              "id": "ejercicio-aprobado-suspenso-1",
+              "tipo": "vf",
+              "enunciado": "En el ejercicio, el programa muestra un mensaje distinto si el alumno aprueba o si suspende.",
+              "correcta": true,
+              "explicacion": "Es justo lo que permite el if-else: un camino para cada caso."
+            },
+            {
+              "id": "ejercicio-aprobado-suspenso-2",
+              "tipo": "vf",
+              "enunciado": "En el ejercicio, el alumno ve a la vez el mensaje de aprobado y el de suspenso.",
+              "correcta": false,
+              "explicacion": "En un if-else solo se ejecuta uno de los dos bloques."
+            }
+          ]
+        },
+        {
+          "id": "notas-con-decimales",
+          "videoId": "video-11",
+          "titulo": "Pedir las notas con decimales",
+          "concepto": "float()",
+          "youtubeId": "43NYFfUM5uU",
+          "inicioS": 759,
+          "finS": 1082,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "La primera parte de la solución: el nombre y las notas, que pueden llevar decimales.",
+          "lectura": [
+            "La solución empieza como la del if: el título y el nombre. La diferencia es que ahora las notas pueden llevar decimales, como 5.3.",
+            "Por eso se piden con float en lugar de int: matematicas = float(input(nombre + \" ¿cuál es tu calificación en matemáticas? \")). Con tantos paréntesis es fácil equivocarse: si sale un error, revisa que cada uno tenga su pareja."
+          ],
+          "resumen": "Las notas con decimales se piden con float(input(...)).",
+          "actividades": [
+            {
+              "id": "notas-con-decimales-1",
+              "tipo": "escrita",
+              "enunciado": "Pide la nota de matemáticas con decimales y guárdala en la variable matematicas.",
+              "palabrasClave": [
+                "matematicas",
+                "=",
+                "float",
+                "input"
+              ],
+              "solucion": "matematicas = float(input(\"¿Cuál es tu calificación en matemáticas? \"))"
+            },
+            {
+              "id": "notas-con-decimales-2",
+              "tipo": "vf",
+              "enunciado": "int(input()) acepta que el usuario escriba 7.5.",
+              "correcta": false,
+              "explicacion": "int() no convierte un texto con decimales: hay que usar float()."
+            }
+          ]
+        },
+        {
+          "id": "aprobado-o-suspenso",
+          "videoId": "video-11",
+          "titulo": "La condición y los dos mensajes",
+          "concepto": "Comillas",
+          "youtubeId": "43NYFfUM5uU",
+          "inicioS": 1080,
+          "finS": 1408,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "La media, la condición del ejercicio, el mensaje de cada camino y cómo mostrar comillas.",
+          "lectura": [
+            "Con las tres notas, la media se calcula con promedio = (matematicas + quimica + biologia) / 3. La condición es if promedio >= 6:. Con solo mayor que (>), un alumno con un 6 justo suspendería.",
+            "En el if, el mensaje va entre comillas simples para poder mostrar comillas dobles dentro: 'Felicidades ' + nombre + ' \"aprobaste\" con un promedio de:'. En el else es al revés: comillas dobles por fuera y simples dentro, como en \"Lo sentimos \" + nombre + \" has 'reprobado'\". El promedio se añade con una coma."
+          ],
+          "resumen": "if promedio >= 6: un mensaje; else: el otro. Comillas simples fuera para mostrar dobles dentro, y al revés.",
+          "actividades": [
+            {
+              "id": "aprobado-o-suspenso-1",
+              "tipo": "vf",
+              "enunciado": "Con la condición if promedio > 6:, un alumno con un 6 justo aprueba.",
+              "correcta": false,
+              "explicacion": "6 no es mayor que 6. Para que apruebe hace falta >=."
+            },
+            {
+              "id": "aprobado-o-suspenso-2",
+              "tipo": "vf",
+              "enunciado": "print('Has \"aprobado\"') muestra la palabra aprobado entre comillas dobles.",
+              "correcta": true,
+              "explicacion": "El texto va entre comillas simples, así que las dobles se muestran tal cual."
+            }
+          ]
+        },
+        {
+          "id": "redondear-round",
+          "videoId": "video-11",
+          "titulo": "Redondear con round() y probarlo",
+          "concepto": "round",
+          "youtubeId": "43NYFfUM5uU",
+          "inicioS": 1406,
+          "finS": 1877,
+          "duracionVideo": 8,
+          "duracionLectura": 1,
+          "descripcion": "Cómo mostrar solo los decimales que quieras y comprobar los dos caminos.",
+          "lectura": [
+            "round(numero, decimales) redondea al número de decimales que indiques: round(promedio, 2) convierte 8.666666666666666 en 8.67, y round(promedio, 1) convierte 5.333333333333333 en 5.3. A diferencia de int(), round() redondea en lugar de cortar.",
+            "Para comprobar el programa se prueban los dos caminos: con 9, 8 y 9 aprueba; con 5, 6 y 5 suspende."
+          ],
+          "resumen": "round(numero, 2) redondea a dos decimales. int() corta; round() redondea.",
+          "actividades": [
+            {
+              "id": "redondear-round-1",
+              "tipo": "escrita",
+              "enunciado": "Escribe la expresión que redondea la variable promedio a un decimal.",
+              "palabrasClave": [
+                "round",
+                "promedio",
+                "1"
+              ],
+              "solucion": "round(promedio, 1)"
+            },
+            {
+              "id": "redondear-round-2",
+              "tipo": "vf",
+              "enunciado": "round(5.3333, 1) da 5.3.",
+              "correcta": true,
+              "explicacion": "Redondea a un decimal."
+            }
+          ]
+        },
+        {
+          "id": "que-es-elif",
+          "videoId": "video-12",
+          "titulo": "Qué es una condicional múltiple (elif)",
+          "concepto": "elif",
+          "youtubeId": "6mBL2p1O3AY",
+          "inicioS": 0,
+          "finS": 385,
+          "duracionVideo": 7,
+          "duracionLectura": 2,
+          "descripcion": "Cómo elegir entre más de dos caminos con elif.",
+          "lectura": [
+            "Cuando hay más de dos caminos se usa elif, que viene de else if. Después del if se ponen tantos elif como hagan falta, cada uno con su condición y sus dos puntos, y al final un else opcional para el resto de casos.",
+            "Python comprueba las condiciones en orden. En cuanto una se cumple, ejecuta su bloque y sale de toda la estructura. Si no se cumple ninguna, se ejecuta el else."
+          ],
+          "resumen": "if … elif … elif … else: se comprueban en orden y solo se ejecuta el primer bloque que se cumple.",
+          "actividades": [
+            {
+              "id": "que-es-elif-1",
+              "tipo": "vf",
+              "enunciado": "Se pueden poner varios elif seguidos.",
+              "correcta": true,
+              "explicacion": "No hay límite: se añaden tantos elif como caminos haga falta."
+            },
+            {
+              "id": "que-es-elif-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la línea que añade a una cadena if-elif la condición \"numero es igual a 3\".",
+              "palabrasClave": [
+                "elif",
+                "numero",
+                "==",
+                "3",
+                ":"
+              ],
+              "solucion": "elif numero == 3:"
+            }
+          ]
+        },
+        {
+          "id": "como-se-ejecuta-elif",
+          "videoId": "video-12",
+          "titulo": "Cómo se ejecuta una cadena if-elif",
+          "concepto": "Orden de las condiciones",
+          "youtubeId": "6mBL2p1O3AY",
+          "inicioS": 383,
+          "finS": 733,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "Un ejemplo paso a paso con tres valores distintos.",
+          "lectura": [
+            "Con un if para el 1, un elif para el 2 y un else: si numero_1 vale 1, se cumple la primera condición, se muestra \"El número es 1\" y el elif y el else ya no se miran.",
+            "Si vale 2, la primera no se cumple y se comprueba el elif, que sí se cumple: \"El número es 2\". Si vale 3, no se cumple ninguna y se ejecuta el else: \"El número se desconoce\". En los tres casos, después se muestra \"Fin\"."
+          ],
+          "resumen": "Se comprueban las condiciones en orden. La primera que se cumple corta la cadena; si ninguna se cumple, el else.",
+          "actividades": [
+            {
+              "id": "como-se-ejecuta-elif-1",
+              "tipo": "vf",
+              "enunciado": "Si se cumplen dos condiciones de una cadena if-elif, se ejecutan los dos bloques.",
+              "correcta": false,
+              "explicacion": "Solo se ejecuta el primer bloque cuya condición se cumple; los demás ya no se comprueban."
+            },
+            {
+              "id": "como-se-ejecuta-elif-2",
+              "tipo": "vf",
+              "enunciado": "Con numero = 3, un if para el 1, un elif para el 2 y un else, se ejecuta el else.",
+              "correcta": true,
+              "explicacion": "No se cumple ninguna de las dos condiciones."
+            }
+          ]
+        },
+        {
+          "id": "convertidor-numeros",
+          "videoId": "video-12",
+          "titulo": "Ejercicio: escribir números con letras",
+          "concepto": "Convertidor",
+          "youtubeId": "6mBL2p1O3AY",
+          "inicioS": 731,
+          "finS": 961,
+          "duracionVideo": 4,
+          "duracionLectura": 2,
+          "descripcion": "Qué tiene que hacer el convertidor y cómo empieza la solución.",
+          "lectura": [
+            "El ejercicio es un convertidor: el usuario escribe un número del 1 al 5 y el programa lo muestra con letras. Si escribe otro número, avisa de que solo convierte hasta el 5.",
+            "La solución empieza con el título enmarcado con líneas de signos = (es opcional, solo por estética) y pide el número como entero, porque se va a comparar con 1, 2, 3…: num_1 = int(input(\"¿Cuál es el número que deseas convertir? \"))."
+          ],
+          "resumen": "El convertidor pide un número entero del 1 al 5 y lo escribe con letras.",
+          "actividades": [
+            {
+              "id": "convertidor-numeros-1",
+              "tipo": "vf",
+              "enunciado": "El convertidor pide el número con int() porque lo va a comparar con 1, 2, 3...",
+              "correcta": true,
+              "explicacion": "input() devuelve texto, y \"1\" no es igual a 1."
+            },
+            {
+              "id": "convertidor-numeros-2",
+              "tipo": "vf",
+              "enunciado": "Si el usuario escribe 8, el convertidor del ejercicio da un error.",
+              "correcta": false,
+              "explicacion": "Lo recoge el else, que avisa de que solo convierte hasta el 5."
+            }
+          ]
+        },
+        {
+          "id": "convertidor-solucion",
+          "videoId": "video-12",
+          "titulo": "El convertidor con if, elif y else",
+          "concepto": "Cadena de elif",
+          "youtubeId": "6mBL2p1O3AY",
+          "inicioS": 959,
+          "finS": 1337,
+          "duracionVideo": 7,
+          "duracionLectura": 1,
+          "descripcion": "La cadena de condiciones completa del convertidor.",
+          "lectura": [
+            "El convertidor compara el número con cada valor: if num_1 == 1: print('El número es \"uno\"'), elif num_1 == 2: print('El número es \"dos\"'), y así hasta el 5.",
+            "Al final, else: print(\"Este programa solo puede convertir hasta el número 5\"). Fuera de la cadena, sin sangría, print(\"Fin.\"), que se muestra siempre."
+          ],
+          "resumen": "Un if y un elif por cada número, y un else para los que no están.",
+          "actividades": [
+            {
+              "id": "convertidor-solucion-1",
+              "tipo": "escrita",
+              "enunciado": "Escribe la línea que empieza el bloque para los números que no cumplen ninguna condición.",
+              "palabrasClave": [
+                "else",
+                ":"
+              ],
+              "solucion": "else:"
+            },
+            {
+              "id": "convertidor-solucion-2",
+              "tipo": "vf",
+              "enunciado": "En el convertidor, Fin solo se muestra si el número no está entre 1 y 5.",
+              "correcta": false,
+              "explicacion": "Va sin sangría, fuera de la cadena: se muestra siempre."
+            }
+          ]
+        },
+        {
+          "id": "que-es-anidada",
+          "videoId": "video-13",
+          "titulo": "Qué es una condicional anidada",
+          "concepto": "Anidadas",
+          "youtubeId": "yJg0_7r3f-M",
+          "inicioS": 0,
+          "finS": 349,
+          "duracionVideo": 6,
+          "duracionLectura": 1,
+          "descripcion": "Qué es poner una condicional dentro de otra y para qué sirve.",
+          "lectura": [
+            "Una condicional anidada es una condicional escrita dentro del bloque de otra. La de dentro solo se comprueba si el programa ha entrado en el bloque que la contiene. Así se toman decisiones por pasos.",
+            "El ejemplo es un conversor con un menú: la opción 1 convierte de número a palabra y la 2, de palabra a número. Primero se decide la opción y, dentro de cada una, otra condicional hace la conversión."
+          ],
+          "resumen": "Una condicional dentro de otra: la de dentro solo se comprueba si se entra en el bloque de fuera.",
+          "actividades": [
+            {
+              "id": "que-es-anidada-1",
+              "tipo": "vf",
+              "enunciado": "Una condicional anidada se comprueba siempre, aunque el programa no entre en el bloque que la contiene.",
+              "correcta": false,
+              "explicacion": "Solo se comprueba si el programa entra en el bloque donde está escrita."
+            },
+            {
+              "id": "que-es-anidada-2",
+              "tipo": "vf",
+              "enunciado": "Con las condicionales anidadas, un programa puede tomar una decisión y, después, otra dentro de ella.",
+              "correcta": true,
+              "explicacion": "Por ejemplo, primero la opción del menú y luego el número que hay que convertir."
+            }
+          ]
+        },
+        {
+          "id": "menu-de-opciones",
+          "videoId": "video-13",
+          "titulo": "Un menú de opciones",
+          "concepto": "Menú",
+          "youtubeId": "yJg0_7r3f-M",
+          "inicioS": 347,
+          "finS": 634,
+          "duracionVideo": 5,
+          "duracionLectura": 2,
+          "descripcion": "Cómo mostrar un menú, pedir la opción y avisar si no existe.",
+          "lectura": [
+            "\\n dentro de un texto añade un salto de línea, para que el menú no salga amontonado: print(\"Menú de opciones: \\n\"). Después se muestran las opciones: print(\"Presiona 1 para convertir de número a palabra\").",
+            "La opción se pide como entero: opcion = int(input(\"¿Cuál es tu opción deseada? \")). Después, if opcion == 1:, elif opcion == 2: y else: print(\"Opción no disponible\"), por si el usuario escribe otra cosa."
+          ],
+          "resumen": "\\n añade un salto de línea. El menú pide la opción con int(input(...)) y usa if, elif y else.",
+          "actividades": [
+            {
+              "id": "menu-de-opciones-1",
+              "tipo": "vf",
+              "enunciado": "\\n dentro de un texto añade un salto de línea.",
+              "correcta": true,
+              "explicacion": "Por ejemplo, print(\"Hola\\nmundo\") muestra cada palabra en una línea."
+            },
+            {
+              "id": "menu-de-opciones-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la línea de la cadena del menú para la opción 2.",
+              "palabrasClave": [
+                "elif",
+                "opcion",
+                "==",
+                "2",
+                ":"
+              ],
+              "solucion": "elif opcion == 2:"
+            }
+          ]
+        },
+        {
+          "id": "numero-a-palabra",
+          "videoId": "video-13",
+          "titulo": "De número a palabra: la condicional anidada",
+          "concepto": "Niveles de sangría",
+          "youtubeId": "yJg0_7r3f-M",
+          "inicioS": 632,
+          "finS": 934,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "La condicional que va dentro de la opción 1 y sus niveles de sangría.",
+          "lectura": [
+            "Dentro de la opción 1, con un nivel de sangría, se pide el número: opcion_1 = int(input(\"¿Cuál es el número que deseas convertir a palabra? \")).",
+            "Debajo va la condicional anidada: if opcion_1 == 1:, elif opcion_1 == 2: y así hasta el 5, con un else que avisa de que el número no está registrado. Sus instrucciones llevan dos niveles de sangría: uno por la opción del menú y otro por el número."
+          ],
+          "resumen": "La condicional anidada va con un nivel de sangría, y sus instrucciones, con dos.",
+          "actividades": [
+            {
+              "id": "numero-a-palabra-1",
+              "tipo": "vf",
+              "enunciado": "Las instrucciones de un if anidado llevan dos niveles de sangría.",
+              "correcta": true,
+              "explicacion": "Uno por la condicional de fuera y otro por la de dentro."
+            },
+            {
+              "id": "numero-a-palabra-2",
+              "tipo": "vf",
+              "enunciado": "El if anidado de la opción 1 se comprueba aunque el usuario elija la opción 2.",
+              "correcta": false,
+              "explicacion": "Solo se comprueba si el usuario entra en la opción 1."
+            }
+          ]
+        },
+        {
+          "id": "palabra-a-numero",
+          "videoId": "video-13",
+          "titulo": "De palabra a número: comparar textos",
+          "concepto": "Comparar textos",
+          "youtubeId": "yJg0_7r3f-M",
+          "inicioS": 932,
+          "finS": 1268,
+          "duracionVideo": 6,
+          "duracionLectura": 1,
+          "descripcion": "La opción 2, que compara lo que escribe el usuario con palabras.",
+          "lectura": [
+            "En la opción 2 se compara texto, así que el dato se pide sin int(): opcion_2 = input(\"¿Cuál es la palabra que deseas convertir a número? \").",
+            "Las condiciones comparan con palabras entre comillas: if opcion_2 == \"uno\": print(\"El número es 1\"), elif opcion_2 == \"dos\": y así hasta el cinco, con su else."
+          ],
+          "resumen": "Para comparar con palabras, el dato se pide como texto y se compara con textos entre comillas.",
+          "actividades": [
+            {
+              "id": "palabra-a-numero-1",
+              "tipo": "vf",
+              "enunciado": "Para comparar la respuesta con \"dos\" hay que convertirla con int().",
+              "correcta": false,
+              "explicacion": "Se compara texto con texto: int() daría un error."
+            },
+            {
+              "id": "palabra-a-numero-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la condición que comprueba si la variable palabra es igual al texto tres.",
+              "palabrasClave": [
+                "palabra",
+                "==",
+                "tres"
+              ],
+              "solucion": "palabra == \"tres\""
+            }
+          ]
+        },
+        {
+          "id": "minusculas-lower",
+          "videoId": "video-13",
+          "titulo": "Mayúsculas y minúsculas: lower()",
+          "concepto": "lower",
+          "youtubeId": "yJg0_7r3f-M",
+          "inicioS": 1266,
+          "finS": 1504,
+          "duracionVideo": 4,
+          "duracionLectura": 1,
+          "descripcion": "Cómo evitar que una comparación falle porque el usuario escribe con mayúsculas.",
+          "lectura": [
+            "Si el usuario escribe \"Dos\", la comparación con \"dos\" no se cumple, porque las mayúsculas cuentan.",
+            "Para evitarlo, después de pedir el dato se añade opcion_2 = opcion_2.lower(). El método lower() devuelve el texto en minúsculas, y así \"Dos\", \"DOS\" o \"dOs\" se convierten en \"dos\"."
+          ],
+          "resumen": "texto.lower() pasa un texto a minúsculas para comparar sin que importen las mayúsculas.",
+          "actividades": [
+            {
+              "id": "minusculas-lower-1",
+              "tipo": "vf",
+              "enunciado": "\"HOLA\".lower() devuelve \"hola\".",
+              "correcta": true,
+              "explicacion": "lower() devuelve el texto en minúsculas."
+            },
+            {
+              "id": "minusculas-lower-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe la instrucción que pasa a minúsculas el texto de la variable respuesta y lo vuelve a guardar en ella.",
+              "palabrasClave": [
+                "respuesta",
+                "=",
+                "respuesta.lower()"
+              ],
+              "solucion": "respuesta = respuesta.lower()"
+            }
+          ]
+        },
+        {
+          "id": "operadores-relacionales",
+          "videoId": "video-14",
+          "titulo": "Los seis operadores relacionales",
+          "concepto": "Operadores relacionales",
+          "youtubeId": "4vKrYztae2I",
+          "inicioS": 0,
+          "finS": 340,
+          "duracionVideo": 6,
+          "duracionLectura": 2,
+          "descripcion": "Los seis operadores que comparan dos valores.",
+          "lectura": [
+            "Los operadores relacionales comparan dos valores y dan True o False. Se usan sobre todo en las condiciones. Son seis: menor que (<), mayor que (>), igual a (==), distinto de (!=), menor o igual que (<=) y mayor o igual que (>=).",
+            "En <= y >= basta con que se cumpla una de las dos partes: 6 <= 6 da True porque, aunque 6 no es menor que 6, sí es igual. 9 >= 5 da True porque 9 es mayor que 5."
+          ],
+          "resumen": "< > == != <= >= comparan dos valores y dan True o False.",
+          "actividades": [
+            {
+              "id": "operadores-relacionales-1",
+              "tipo": "vf",
+              "enunciado": "5 != 5 da True.",
+              "correcta": false,
+              "explicacion": "!= significa distinto de, y 5 no es distinto de 5, así que da False."
+            },
+            {
+              "id": "operadores-relacionales-2",
+              "tipo": "vf",
+              "enunciado": "6 <= 6 da True.",
+              "correcta": true,
+              "explicacion": "6 no es menor que 6, pero sí es igual, y con eso basta."
+            }
+          ]
+        },
+        {
+          "id": "pedir-numeros-comparar",
+          "videoId": "video-14",
+          "titulo": "Ejercicio: pedir los números a comparar",
+          "concepto": "Mostrar resultados",
+          "youtubeId": "4vKrYztae2I",
+          "inicioS": 338,
+          "finS": 733,
+          "duracionVideo": 7,
+          "duracionLectura": 2,
+          "descripcion": "Qué hace el programa del ejercicio y cómo pide y muestra los dos números.",
+          "lectura": [
+            "El ejercicio pide dos números y dice qué operadores relacionales se cumplen entre ellos. Con 9 y 5, por ejemplo: es diferente, es mayor y es mayor o igual.",
+            "Los números se piden como enteros, porque se van a comparar: num_1 = int(input(\"Introduce el primer número: \")). Para mostrarlos se usan comas dentro de print, que evitan convertirlos en texto, y \\n para separar las líneas: print(\"\\nLos números a comparar son:\", num_1, \"y\", num_2, \"\\n\")."
+          ],
+          "resumen": "Los números a comparar se piden con int(input(...)). Las comas en print muestran texto y números juntos.",
+          "actividades": [
+            {
+              "id": "pedir-numeros-comparar-1",
+              "tipo": "vf",
+              "enunciado": "print(\"Valor:\", num) muestra el texto y el número sin tener que usar str().",
+              "correcta": true,
+              "explicacion": "La coma separa los valores y Python los muestra en la misma línea."
+            },
+            {
+              "id": "pedir-numeros-comparar-2",
+              "tipo": "escrita",
+              "enunciado": "Pide el primer número como entero y guárdalo en la variable num_1.",
+              "palabrasClave": [
+                "num_1",
+                "=",
+                "int",
+                "input"
+              ],
+              "solucion": "num_1 = int(input(\"Introduce el primer número: \"))"
+            }
+          ]
+        },
+        {
+          "id": "seis-if",
+          "videoId": "video-14",
+          "titulo": "Seis if seguidos, uno por operador",
+          "concepto": "Varios if seguidos",
+          "youtubeId": "4vKrYztae2I",
+          "inicioS": 731,
+          "finS": 1095,
+          "duracionVideo": 7,
+          "duracionLectura": 2,
+          "descripcion": "Cómo comprobar cada operador con su propio if.",
+          "lectura": [
+            "El programa usa seis if seguidos, uno por operador: if num_1 == num_2: print(\"Es igual...\"), if num_1 != num_2: print(\"Es diferente...\") y así con <, >, <= y >=. Distinto se escribe con el signo de exclamación de cierre y el igual: !=.",
+            "Como son if independientes, sin elif ni anidar, se comprueban todos y se muestran todas las comparaciones que se cumplen. Con 15 y 2 aparecen tres: es diferente, es mayor y es mayor o igual."
+          ],
+          "resumen": "Varios if seguidos se comprueban todos, así que pueden mostrarse varios mensajes.",
+          "actividades": [
+            {
+              "id": "seis-if-1",
+              "tipo": "escrita",
+              "enunciado": "Escribe la condición que comprueba si la variable a es distinta de la variable b.",
+              "palabrasClave": [
+                "a",
+                "!=",
+                "b"
+              ],
+              "solucion": "a != b"
+            },
+            {
+              "id": "seis-if-2",
+              "tipo": "vf",
+              "enunciado": "Con seis if seguidos, sin elif, pueden mostrarse varios mensajes.",
+              "correcta": true,
+              "explicacion": "Cada if se comprueba por separado."
+            }
+          ]
+        },
+        {
+          "id": "operador-and",
+          "videoId": "video-15",
+          "titulo": "El operador and",
+          "concepto": "Operadores lógicos",
+          "youtubeId": "35kWoAtgzic",
+          "inicioS": 0,
+          "finS": 301,
+          "duracionVideo": 6,
+          "duracionLectura": 1,
+          "descripcion": "Cómo unir dos condiciones que se tienen que cumplir a la vez.",
+          "lectura": [
+            "Los operadores lógicos unen varias condiciones en una sola. Python tiene tres: and (conjunción), or (disyunción) y not (negación).",
+            "and se cumple solo si se cumplen las dos condiciones. Con num_1 = 5 y num_2 = 5, if num_1 == 5 and num_2 >= 5: se cumple. Si num_2 vale 2, la segunda parte falla y se ejecuta el else."
+          ],
+          "resumen": "and: la condición se cumple solo si se cumplen las dos partes.",
+          "actividades": [
+            {
+              "id": "operador-and-1",
+              "tipo": "vf",
+              "enunciado": "True and False da True.",
+              "correcta": false,
+              "explicacion": "and solo da True si las dos partes son verdaderas."
+            },
+            {
+              "id": "operador-and-2",
+              "tipo": "vf",
+              "enunciado": "Con num_1 = 5 y num_2 = 2, num_1 == 5 and num_2 >= 5 da False.",
+              "correcta": true,
+              "explicacion": "La segunda parte no se cumple, y con and tienen que cumplirse las dos."
+            }
+          ]
+        },
+        {
+          "id": "operadores-or-not",
+          "videoId": "video-15",
+          "titulo": "Los operadores or y not",
+          "concepto": "Disyunción y negación",
+          "youtubeId": "35kWoAtgzic",
+          "inicioS": 299,
+          "finS": 668,
+          "duracionVideo": 7,
+          "duracionLectura": 2,
+          "descripcion": "Cómo pedir que se cumpla al menos una condición y cómo invertir una condición.",
+          "lectura": [
+            "or se cumple si se cumple al menos una de las condiciones: con num_1 = 5 y num_2 = 2, num_1 == 5 or num_2 >= 5 se cumple. Solo falla si no se cumple ninguna.",
+            "not invierte una condición: not num_2 > 5 se cumple cuando num_2 no es mayor que 5. Con 2 se cumple; con 9, no. Muchas veces es más claro usar el operador contrario, como num_2 <= 5."
+          ],
+          "resumen": "or: se cumple si se cumple al menos una parte. not: invierte la condición.",
+          "actividades": [
+            {
+              "id": "operadores-or-not-1",
+              "tipo": "vf",
+              "enunciado": "True or False da True.",
+              "correcta": true,
+              "explicacion": "or da True si al menos una de las dos partes es verdadera."
+            },
+            {
+              "id": "operadores-or-not-2",
+              "tipo": "vf",
+              "enunciado": "not 9 > 5 da True.",
+              "correcta": false,
+              "explicacion": "9 > 5 es True, y not lo invierte: da False."
+            }
+          ]
+        },
+        {
+          "id": "practica-and",
+          "videoId": "video-15",
+          "titulo": "Práctica: un número entre 2 y 5",
+          "concepto": "Conjunción",
+          "youtubeId": "35kWoAtgzic",
+          "inicioS": 666,
+          "finS": 956,
+          "duracionVideo": 5,
+          "duracionLectura": 1,
+          "descripcion": "Un programa que comprueba si un número está entre dos valores.",
+          "lectura": [
+            "El programa pide un número con num_1 = int(input(\"Escribe un número mayor a 2 y menor a 5: \")) y comprueba if num_1 > 2 and num_1 < 5:.",
+            "Si se cumplen las dos partes, muestra que el número cumple la condición; si no, el else avisa de que NO la cumple. Con 3 o 4 se cumple; con 6, no, porque es mayor que 2 pero no menor que 5. Los comentarios con # separan cada parte del programa."
+          ],
+          "resumen": "num > 2 and num < 5 se cumple solo con los números que están entre los dos valores.",
+          "actividades": [
+            {
+              "id": "practica-and-1",
+              "tipo": "escrita",
+              "enunciado": "Escribe la condición que comprueba si edad está entre 13 y 17, los dos incluidos, usando and.",
+              "palabrasClave": [
+                ">=",
+                "13",
+                "and",
+                "<=",
+                "17"
+              ],
+              "solucion": "edad >= 13 and edad <= 17"
+            },
+            {
+              "id": "practica-and-2",
+              "tipo": "vf",
+              "enunciado": "Con la condición num > 2 and num < 5, el 5 cumple la condición.",
+              "correcta": false,
+              "explicacion": "5 no es menor que 5."
+            }
+          ]
+        },
+        {
+          "id": "practica-or",
+          "videoId": "video-15",
+          "titulo": "Práctica: sí o yes",
+          "concepto": "Disyunción",
+          "youtubeId": "35kWoAtgzic",
+          "inicioS": 954,
+          "finS": 1139,
+          "duracionVideo": 4,
+          "duracionLectura": 1,
+          "descripcion": "Un programa que acepta dos respuestas distintas.",
+          "lectura": [
+            "El programa pide una palabra con palabra = input(\"Para cumplir con la condición escribe sí o yes: \"), sin int(), porque es texto.",
+            "La condición es if palabra == \"sí\" or palabra == \"yes\":. Hay que escribir la comparación completa en las dos partes: palabra == \"sí\" or \"yes\" no hace lo que parece. Con cualquier otra palabra se ejecuta el else."
+          ],
+          "resumen": "palabra == \"sí\" or palabra == \"yes\": la comparación completa va en cada parte.",
+          "actividades": [
+            {
+              "id": "practica-or-1",
+              "tipo": "escrita",
+              "enunciado": "Escribe la condición que se cumple si palabra es \"sí\" o \"yes\".",
+              "palabrasClave": [
+                "palabra",
+                "==",
+                "si",
+                "or",
+                "yes"
+              ],
+              "solucion": "palabra == \"sí\" or palabra == \"yes\""
+            },
+            {
+              "id": "practica-or-2",
+              "tipo": "vf",
+              "enunciado": "palabra == \"sí\" or \"yes\" compara bien las dos palabras.",
+              "correcta": false,
+              "explicacion": "Hay que repetir la comparación: palabra == \"sí\" or palabra == \"yes\"."
+            }
+          ]
+        },
+        {
+          "id": "practica-not",
+          "videoId": "video-15",
+          "titulo": "Práctica: invertir una condición con not",
+          "concepto": "Negación",
+          "youtubeId": "35kWoAtgzic",
+          "inicioS": 1137,
+          "finS": 1482,
+          "duracionVideo": 6,
+          "duracionLectura": 1,
+          "descripcion": "Un programa que usa not para cumplirse cuando un número no es 5.",
+          "lectura": [
+            "El programa pide num_1 = int(input(\"Introduce un número igual a 5: \")) y comprueba if not num_1 == 5:. La condición se cumple cuando el número no es 5: entonces muestra que es diferente a 5.",
+            "Si el usuario escribe 5, se ejecuta el else, que indica que el número es igual a 5 y no cumple la condición. not num_1 == 5 equivale a num_1 != 5, que se lee más fácil."
+          ],
+          "resumen": "not num == 5 se cumple cuando num es distinto de 5, igual que num != 5.",
+          "actividades": [
+            {
+              "id": "practica-not-1",
+              "tipo": "vf",
+              "enunciado": "if not num == 5: se cumple cuando num es distinto de 5.",
+              "correcta": true,
+              "explicacion": "not invierte la condición num == 5."
+            },
+            {
+              "id": "practica-not-2",
+              "tipo": "escrita",
+              "enunciado": "Escribe, sin not, una condición equivalente a not num == 5.",
+              "palabrasClave": [
+                "num",
+                "!=",
+                "5"
+              ],
+              "solucion": "num != 5"
             }
           ]
         }
       ],
       "testInicial": [
         {
-          "id": "t-introduccion",
-          "leccionId": "introduccion",
-          "enunciado": "¿Qué instrucción muestra un texto por pantalla en Python?",
+          "id": "t-ejecucion",
+          "leccionId": "compilador-interprete",
+          "enunciado": "¿Qué extensión tienen los archivos de un programa en Python?",
           "opciones": [
-            "print(\"Hola\")",
-            "echo \"Hola\"",
-            "console.log(\"Hola\")",
-            "System.out.println(\"Hola\")"
+            ".py",
+            ".pt",
+            ".python",
+            ".exe"
           ],
           "correcta": 0
         },
         {
           "id": "t-variables",
-          "leccionId": "variables",
+          "leccionId": "que-es-una-variable",
+          "enunciado": "¿Cuál de estos nombres de variable es válido en Python?",
+          "opciones": [
+            "mi edad",
+            "mi_edad",
+            "2edad",
+            "mi-edad"
+          ],
+          "correcta": 1
+        },
+        {
+          "id": "t-cadenas",
+          "leccionId": "anadir-texto",
+          "enunciado": "Si mensaje = \"Hola Ana\", ¿qué devuelve mensaje[0:4]?",
+          "opciones": [
+            "\"Hola\"",
+            "\"Hola \"",
+            "\"ola \"",
+            "\"Ana\""
+          ],
+          "correcta": 0
+        },
+        {
+          "id": "t-operadores-aritmeticos",
+          "leccionId": "suma-resta-multiplicacion",
+          "enunciado": "¿Cuánto da 10 % 3 en Python?",
+          "opciones": [
+            "3",
+            "1",
+            "3.33",
+            "0"
+          ],
+          "correcta": 1
+        },
+        {
+          "id": "t-tipos-de-datos",
+          "leccionId": "tipos-de-datos",
           "enunciado": "¿De qué tipo es el valor 3.14 en Python?",
           "opciones": [
             "int",
@@ -289,8 +2058,44 @@
           "correcta": 1
         },
         {
-          "id": "t-condicionales",
-          "leccionId": "condicionales",
+          "id": "t-entrada-de-datos",
+          "leccionId": "pedir-datos",
+          "enunciado": "¿Qué devuelve input() cuando el usuario escribe 25?",
+          "opciones": [
+            "El número entero 25",
+            "El número decimal 25.0",
+            "El texto \"25\"",
+            "Un error"
+          ],
+          "correcta": 2
+        },
+        {
+          "id": "t-condicionales-simples",
+          "leccionId": "que-es-un-if",
+          "enunciado": "¿Qué indica en Python qué instrucciones pertenecen a un if?",
+          "opciones": [
+            "Las llaves { }",
+            "La sangría",
+            "El punto y coma",
+            "La palabra end"
+          ],
+          "correcta": 1
+        },
+        {
+          "id": "t-condicionales-compuestas",
+          "leccionId": "que-es-if-else",
+          "enunciado": "¿Qué palabra introduce lo que se ejecuta cuando la condición de un if no se cumple?",
+          "opciones": [
+            "else",
+            "then",
+            "otherwise",
+            "except"
+          ],
+          "correcta": 0
+        },
+        {
+          "id": "t-condicionales-multiples",
+          "leccionId": "que-es-elif",
           "enunciado": "¿Qué palabra se usa para comprobar otra condición si la primera no se cumple?",
           "opciones": [
             "else if",
@@ -301,40 +2106,40 @@
           "correcta": 2
         },
         {
-          "id": "t-bucles",
-          "leccionId": "bucles",
-          "enunciado": "¿Cuántas veces se repite el bloque de for i in range(3):?",
+          "id": "t-condicionales-anidadas",
+          "leccionId": "que-es-anidada",
+          "enunciado": "¿Qué es una condicional anidada?",
           "opciones": [
-            "2 veces",
-            "3 veces",
-            "4 veces",
-            "Infinitas veces"
-          ],
-          "correcta": 1
-        },
-        {
-          "id": "t-listas",
-          "leccionId": "listas",
-          "enunciado": "Si numeros = [10, 20, 30], ¿qué devuelve numeros[0]?",
-          "opciones": [
-            "10",
-            "20",
-            "30",
-            "Un error"
+            "Una condicional dentro de otra",
+            "Una condición que une dos comparaciones con and",
+            "Un if sin else",
+            "Un if que se repite varias veces"
           ],
           "correcta": 0
         },
         {
-          "id": "t-funciones",
-          "leccionId": "funciones",
-          "enunciado": "¿Qué palabra clave se usa para definir una función?",
+          "id": "t-operadores-relacionales",
+          "leccionId": "operadores-relacionales",
+          "enunciado": "¿Qué operador comprueba si dos valores son distintos?",
           "opciones": [
-            "function",
-            "func",
-            "fn",
-            "def"
+            "<>",
+            "=!",
+            "!=",
+            "=/="
           ],
-          "correcta": 3
+          "correcta": 2
+        },
+        {
+          "id": "t-operadores-logicos",
+          "leccionId": "operador-and",
+          "enunciado": "¿Cuándo es verdadera la condición a and b?",
+          "opciones": [
+            "Cuando a o b es verdadera",
+            "Solo cuando a y b son verdaderas",
+            "Cuando a y b son falsas",
+            "Siempre"
+          ],
+          "correcta": 1
         }
       ]
     }

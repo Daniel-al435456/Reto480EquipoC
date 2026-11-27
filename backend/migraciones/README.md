@@ -32,6 +32,8 @@ desde `backend/`:
 `cargar_curso.sh` no es una migración: no cambia el esquema, solo llena las tablas
 de contenido con `app/datos/cursos-ejemplo.json`. Por eso no lleva número y
 `aplicar.sh` no lo ejecuta.
+Cada vídeo del fichero se guarda en `videos`, y cada lección es un trozo de su vídeo
+(`inicio_s` y `fin_s`, en segundos), con un `aviso` opcional que se muestra bajo el vídeo.
 
 Los ficheros se nombran con tres dígitos y un guion bajo (`001_esquema_inicial.sql`,
 `002_...`) y no se editan una vez fusionados en `main`: si algo cambia, se añade un

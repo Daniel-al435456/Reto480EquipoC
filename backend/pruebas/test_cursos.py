@@ -12,7 +12,7 @@ def test_el_catalogo_lista_los_cursos_con_su_numero_de_lecciones(cliente: TestCl
     assert respuesta.status_code == 200
     curso = respuesta.json()["cursos"][0]
     assert curso["id"] == CURSO
-    assert curso["numeroLecciones"] == 6
+    assert curso["numeroLecciones"] == 53
 
 
 def test_el_contenido_de_las_lecciones_devuelve_el_curso_completo_sin_test(
@@ -23,13 +23,16 @@ def test_el_contenido_de_las_lecciones_devuelve_el_curso_completo_sin_test(
     curso = respuesta.json()
     assert curso["id"] == CURSO
     assert curso["titulo"] == "Python desde cero"
-    assert len(curso["lecciones"]) == 6
+    assert len(curso["lecciones"]) == 53
     leccion = curso["lecciones"][0]
     assert {
         "id",
+        "videoId",
         "titulo",
         "concepto",
         "youtubeId",
+        "inicioS",
+        "finS",
         "duracionVideo",
         "duracionLectura",
         "descripcion",
@@ -37,9 +40,11 @@ def test_el_contenido_de_las_lecciones_devuelve_el_curso_completo_sin_test(
         "resumen",
         "actividades",
     } <= set(leccion)
-    assert leccion["duracionVideo"] == 5
+    assert leccion["youtubeId"] == "DAdRO6ByBoU"
+    assert (leccion["inicioS"], leccion["finS"]) == (0, 214)
+    assert leccion["duracionVideo"] == 4
     assert leccion["lectura"]
-    assert leccion["actividades"][0]["id"] == "introduccion-1"
+    assert leccion["actividades"][0]["id"] == "que-es-python-1"
     assert "testInicial" not in curso
 
 
@@ -47,7 +52,7 @@ def test_el_test_inicial_no_envia_las_respuestas_correctas(cliente: TestClient) 
     respuesta = cliente.get(f"/api/cursos/{CURSO}/test")
     assert respuesta.status_code == 200
     preguntas = respuesta.json()["preguntas"]
-    assert len(preguntas) == 6
+    assert len(preguntas) == 12
     assert set(preguntas[0]) == {"id", "leccionId", "enunciado", "opciones"}
 
 
@@ -63,15 +68,17 @@ def test_el_contenido_de_un_curso_que_no_existe_devuelve_404(cliente: TestClient
     assert respuesta.json()["error"] == "curso_no_encontrado"
 
 
-def test_la_evaluacion_marca_como_dominadas_las_lecciones_acertadas(cliente: TestClient) -> None:
+def test_un_acierto_marca_como_dominadas_todas_las_lecciones_de_su_video(
+    cliente: TestClient,
+) -> None:
     respuesta = cliente.post(
         f"/api/cursos/{CURSO}/test/evaluacion",
-        json={"respuestas": {"t-introduccion": 0, "t-variables": 0}, "esMenor": False},
+        json={"respuestas": {"t-ejecucion": 0, "t-variables": 0}, "esMenor": False},
     )
     assert respuesta.status_code == 200
     cuerpo = respuesta.json()
-    assert cuerpo["dominio"] == {"introduccion": True}
-    assert "1 de 6" in cuerpo["mensaje"]
+    assert cuerpo["dominio"] == {"compilador-interprete": True, "programas-py": True}
+    assert "2 de 53" in cuerpo["mensaje"]
     assert cuerpo["redactadoPorIa"] is False  # plantilla: la IA llega con la issue #16
 
 

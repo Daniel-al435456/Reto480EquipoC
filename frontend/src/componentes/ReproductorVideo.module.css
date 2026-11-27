@@ -58,3 +58,51 @@
   position: static;
   transform: none;
 }
+
+/* Aviso al llegar al final del trozo de la lección: tapa el vídeo para que no siga. */
+.final {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  background: var(--color-grafito);
+  color: var(--color-grafito-texto);
+  text-align: center;
+}
+
+/* Tramo del vídeo sobre la portada, antes de reproducir. */
+.chip {
+  position: absolute;
+  top: var(--espacio-3);
+  left: var(--espacio-3);
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  background: var(--color-grafito);
+  color: var(--color-grafito-texto);
+  font-size: var(--texto-pequeno);
+  font-weight: 600;
+}
+
+/* Explicación del trozo, bajo el vídeo. */
+.trozo {
+  margin-top: var(--espacio-2);
+  font-size: var(--texto-pequeno);
+  color: var(--color-texto-suave);
+}
+
+.trozo strong {
+  color: var(--color-texto);
+}
+
+.devuelto:empty {
+  display: none;
+}
+
+.devuelto {
+  margin-top: var(--espacio-1);
+  color: var(--color-texto);
+  font-weight: 600;
+}

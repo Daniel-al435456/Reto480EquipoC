@@ -14,12 +14,18 @@ def test_el_curso_del_backend_es_el_mismo_que_el_del_frontend() -> None:
     assert "exportar-curso.mjs" in datos["aviso"]
 
 
-def test_acertar_todo_el_test_deja_todo_el_curso_dominado() -> None:
+def test_acertar_todo_el_test_marca_las_lecciones_de_los_videos_con_pregunta() -> None:
+    """Cada acierto marca todo su vídeo. Los vídeos sin pregunta siempre se estudian."""
     curso = contenido.obtener_curso("python-desde-cero")
     respuestas = {pregunta["id"]: pregunta["correcta"] for pregunta in curso["testInicial"]}
     resultado = contenido.evaluar_test("python-desde-cero", respuestas)
-    assert len(resultado.dominio) == len(curso["lecciones"])
-    assert resultado.mensaje.startswith("Ya dominas todo")
+    video_de = {leccion["id"]: leccion["videoId"] for leccion in curso["lecciones"]}
+    con_pregunta = {video_de[pregunta["leccionId"]] for pregunta in curso["testInicial"]}
+    esperadas = {
+        leccion["id"] for leccion in curso["lecciones"] if leccion["videoId"] in con_pregunta
+    }
+    assert set(resultado.dominio) == esperadas
+    assert len(curso["testInicial"]) <= 12  # SPEC §4, H1
 
 
 def test_no_acertar_nada_empieza_desde_el_principio() -> None:

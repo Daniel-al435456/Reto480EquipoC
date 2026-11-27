@@ -10,7 +10,7 @@ import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './Mentor.module.css';
 
-const SUGERENCIAS = ['No entiendo los bucles', '¿Qué es una variable?', 'Dame un ejemplo'];
+const SUGERENCIAS = ['No entiendo las condicionales', '¿Qué es una variable?', 'Dame un ejemplo'];
 
 /**
  * Pantalla 5 del boceto: mentor virtual (agente Mentor, propuesta P1).

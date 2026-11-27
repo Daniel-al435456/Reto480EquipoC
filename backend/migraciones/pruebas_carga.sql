@@ -2,7 +2,7 @@
 -- Las ejecuta probar.sh sobre una base de datos temporal, en cuatro fases, después de cada carga:
 --   primera: tras cargar el fichero por primera vez. Además crea los datos de un alumno.
 --   segunda: tras volver a cargar el mismo fichero: no se duplica nada ni se borran datos de alumnos.
---   cambios: tras cargar el fichero con un vídeo ya elegido y una actividad menos.
+--   cambios: tras cargar el fichero con otro vídeo de YouTube en el primer vídeo y una actividad menos.
 --   grande:  tras cargar el fichero con más de 128 KB (como cuando lleve las transcripciones).
 -- Recibe la variable de psql fase y, en la variable de entorno ARCHIVO_CURSO, la ruta del JSON que se
 -- acaba de cargar. Lo esperado se calcula a partir de ese JSON, así que las pruebas siguen valiendo
@@ -26,6 +26,9 @@ END $$;
 CREATE TEMP TABLE cursos_esperados AS
   SELECT c->>'id' AS id, c
   FROM jsonb_array_elements(:'datos'::jsonb -> 'cursos') AS c;
+CREATE TEMP TABLE videos_esperados AS
+  SELECT ce.id AS curso_id, v->>'id' AS id, v, n AS orden
+  FROM cursos_esperados ce, jsonb_array_elements(ce.c -> 'videos') WITH ORDINALITY AS t(v, n);
 CREATE TEMP TABLE lecciones_esperadas AS
   SELECT ce.id AS curso_id, l->>'id' AS id, l, n AS orden
   FROM cursos_esperados ce, jsonb_array_elements(ce.c -> 'lecciones') WITH ORDINALITY AS t(l, n);
@@ -48,26 +51,34 @@ SELECT pg_temp.comprobar(
        OR c.nivel IS DISTINCT FROM ce.c->>'nivel'),
   'cada curso del fichero está en la base de datos, con su título, descripción y nivel');
 
--- 2. Lecciones y vídeos.
+-- 2. Vídeos y lecciones.
+SELECT pg_temp.comprobar(
+  (SELECT count(*) FROM videos) = (SELECT count(*) FROM videos_esperados)
+  AND NOT EXISTS (
+    SELECT FROM videos_esperados ve LEFT JOIN videos v ON v.id = ve.id
+    WHERE v.curso_id IS DISTINCT FROM ve.curso_id
+       OR v.orden IS DISTINCT FROM ve.orden
+       OR v.titulo IS DISTINCT FROM ve.v->>'titulo'
+       OR v.youtube_id IS DISTINCT FROM NULLIF(ve.v->>'youtubeId', '')
+       OR v.duracion_s IS DISTINCT FROM (ve.v->>'duracion')::integer),
+  'cada vídeo del fichero está guardado, en su orden, con su título, su identificador de YouTube y su duración');
 SELECT pg_temp.comprobar(
   (SELECT count(*) FROM lecciones) = (SELECT count(*) FROM lecciones_esperadas)
-  AND (SELECT count(*) FROM videos) = (SELECT count(*) FROM lecciones_esperadas)
   AND NOT EXISTS (
-    SELECT FROM lecciones_esperadas le
-    LEFT JOIN lecciones l ON l.id = le.id
-    LEFT JOIN videos v ON v.id = l.video_id
-    WHERE v.curso_id IS DISTINCT FROM le.curso_id OR v.orden IS DISTINCT FROM le.orden),
-  'cada lección tiene su propio vídeo, en el orden del fichero');
+    SELECT FROM lecciones_esperadas le LEFT JOIN lecciones l ON l.id = le.id
+    WHERE l.video_id IS DISTINCT FROM le.l->>'videoId'
+       OR l.inicio_s IS DISTINCT FROM (le.l->>'inicioS')::integer
+       OR l.fin_s IS DISTINCT FROM (le.l->>'finS')::integer
+       OR l.aviso IS DISTINCT FROM le.l->>'aviso'),
+  'cada lección es el trozo de su vídeo, de inicio_s a fin_s');
 SELECT pg_temp.comprobar(
   NOT EXISTS (
     SELECT FROM lecciones_esperadas le
     LEFT JOIN lecciones l ON l.id = le.id
-    LEFT JOIN videos v ON v.id = l.video_id
     WHERE l.titulo IS DISTINCT FROM le.l->>'titulo'
        OR l.descripcion IS DISTINCT FROM le.l->>'descripcion'
        OR l.resumen IS DISTINCT FROM le.l->>'resumen'
-       OR l.duracion_lectura_min IS DISTINCT FROM (le.l->>'duracionLectura')::smallint
-       OR v.titulo IS DISTINCT FROM le.l->>'titulo'),
+       OR l.duracion_lectura_min IS DISTINCT FROM (le.l->>'duracionLectura')::smallint),
   'cada lección guarda su título, descripción, resumen y minutos de lectura');
 SELECT pg_temp.comprobar(
   NOT EXISTS (
@@ -75,16 +86,6 @@ SELECT pg_temp.comprobar(
     WHERE string_to_array(l.lectura, E'\n\n')
           IS DISTINCT FROM ARRAY(SELECT jsonb_array_elements_text(le.l->'lectura'))),
   'la lectura guarda los párrafos separados por una línea en blanco');
-SELECT pg_temp.comprobar(
-  NOT EXISTS (
-    SELECT FROM lecciones_esperadas le JOIN lecciones l ON l.id = le.id JOIN videos v ON v.id = l.video_id
-    WHERE v.duracion_s IS DISTINCT FROM (le.l->>'duracionVideo')::integer * 60),
-  'la duración del vídeo pasa de minutos a segundos');
-SELECT pg_temp.comprobar(
-  NOT EXISTS (
-    SELECT FROM lecciones_esperadas le JOIN lecciones l ON l.id = le.id JOIN videos v ON v.id = l.video_id
-    WHERE v.youtube_id IS DISTINCT FROM NULLIF(le.l->>'youtubeId', '')),
-  'un vídeo sin elegir se guarda sin youtube_id, y uno elegido con su identificador');
 
 -- 3. Conceptos: uno por lección, con el mismo identificador que la lección.
 SELECT pg_temp.comprobar(
@@ -166,6 +167,6 @@ SELECT pg_temp.comprobar(
 
 SELECT :'fase' = 'cambios' AS es_cambios \gset
 \if :es_cambios
-SELECT pg_temp.comprobar((SELECT count(*) FROM videos WHERE youtube_id IS NOT NULL) > 0,
-  'al volver a cargar, el vídeo elegido después queda guardado');
+SELECT pg_temp.comprobar((SELECT count(*) FROM videos WHERE youtube_id = 'video-elegido') = 1,
+  'al volver a cargar, el vídeo de YouTube cambiado queda guardado');
 \endif

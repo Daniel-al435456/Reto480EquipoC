@@ -154,6 +154,10 @@ SELECT pg_temp.debe_fallar($$INSERT INTO recursos (leccion_id, tipo, contenido) 
 SELECT pg_temp.debe_fallar($$INSERT INTO lecciones (id, video_id, titulo, inicio_s, fin_s, duracion_lectura_min)
   VALUES ('huerfana', 'no-existe', 'x', 0, 10, 1)$$, '23503',
   'una lección debe pertenecer a un vídeo existente');
+SELECT pg_temp.comprobar(
+  (SELECT is_nullable = 'YES' AND data_type = 'text' FROM information_schema.columns
+   WHERE table_name = 'lecciones' AND column_name = 'aviso'),
+  'una lección puede llevar un aviso bajo el vídeo, y es opcional');
 
 -- 6. Aprendizaje.
 SELECT pg_temp.debe_fallar($$UPDATE dominios SET nivel = 1.5 WHERE alumno_id = 1$$, '23514',

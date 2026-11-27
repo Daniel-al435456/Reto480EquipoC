@@ -15,7 +15,7 @@ def test_el_mentor_responde_con_la_personalidad_elegida(cliente: TestClient) -> 
     assert respuesta.status_code == 200
     cuerpo = respuesta.json()
     assert cuerpo["texto"].startswith("Cuac, esta me la sé:")
-    assert "Variables" in cuerpo["texto"]
+    assert "«Qué es una variable»" in cuerpo["texto"]
     assert cuerpo["derivado"] is False
 
 
@@ -29,7 +29,7 @@ def test_el_mensaje_proactivo_usa_el_trato_elegido(cliente: TestClient) -> None:
         "/api/mentor/proactivo",
         json={
             "cursoId": CURSO,
-            "leccionId": "bucles",
+            "leccionId": "que-es-un-if",
             "senal": "bloqueo",
             "tratamiento": "femenino",
         },

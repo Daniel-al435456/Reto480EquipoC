@@ -5,8 +5,9 @@
 --
 -- Del JSON a las tablas:
 --   curso              → cursos
---   lección            → lecciones, con su propio vídeo entero en videos (mismo id que la lección)
---                        y su concepto en conceptos y lecciones_conceptos (mismo id que la lección)
+--   vídeo              → videos, en el orden del fichero
+--   lección            → lecciones: un trozo de un vídeo (inicio_s y fin_s) con su aviso, si lo tiene, y su concepto en conceptos
+--                        y lecciones_conceptos (mismo id que la lección)
 --   actividad          → preguntas de comprobación de su lección:
 --                        vf, con dos opciones (Verdadero y Falso) y la correcta marcada;
 --                        escrita, con su solución y sus palabras clave
@@ -20,6 +21,9 @@
 CREATE TEMP TABLE cursos_json AS
   SELECT c->>'id' AS id, c
   FROM jsonb_array_elements(:'datos'::jsonb -> 'cursos') AS c;
+CREATE TEMP TABLE videos_json AS
+  SELECT cj.id AS curso_id, v->>'id' AS id, v, n::smallint AS orden
+  FROM cursos_json cj, jsonb_array_elements(cj.c -> 'videos') WITH ORDINALITY AS t(v, n);
 CREATE TEMP TABLE lecciones_json AS
   SELECT cj.id AS curso_id, l->>'id' AS id, l, n::smallint AS orden
   FROM cursos_json cj, jsonb_array_elements(cj.c -> 'lecciones') WITH ORDINALITY AS t(l, n);
@@ -37,23 +41,26 @@ FROM cursos_json
 ON CONFLICT (id) DO UPDATE
   SET titulo = EXCLUDED.titulo, descripcion = EXCLUDED.descripcion, nivel = EXCLUDED.nivel;
 
--- Vídeos. Primero se apartan los órdenes actuales, para que cambiar el orden de las lecciones no choque con
--- UNIQUE (curso_id, orden). La transcripción no está en el fichero: si ya había una, se conserva.
-UPDATE videos SET orden = orden + 1000 WHERE curso_id IN (SELECT id FROM cursos_json);
+-- Vídeos. Primero se apartan los órdenes y los identificadores de YouTube actuales, para que cambiar el orden
+-- de los vídeos o pasar un identificador de un vídeo a otro no choque con UNIQUE (curso_id, orden) ni con
+-- UNIQUE (youtube_id). La transcripción no está en el fichero: si ya había una, se conserva.
+UPDATE videos SET orden = orden + 1000, youtube_id = NULL WHERE curso_id IN (SELECT id FROM cursos_json);
 INSERT INTO videos (id, curso_id, titulo, youtube_id, duracion_s, orden)
-SELECT id, curso_id, l->>'titulo', NULLIF(l->>'youtubeId', ''), (l->>'duracionVideo')::integer * 60, orden
-FROM lecciones_json
+SELECT id, curso_id, v->>'titulo', NULLIF(v->>'youtubeId', ''), (v->>'duracion')::integer, orden
+FROM videos_json
 ON CONFLICT (id) DO UPDATE
   SET curso_id = EXCLUDED.curso_id, titulo = EXCLUDED.titulo, youtube_id = EXCLUDED.youtube_id,
       duracion_s = EXCLUDED.duracion_s, orden = EXCLUDED.orden;
 
--- Lecciones: cada una ocupa su vídeo entero (inicio_s 0 y sin fin_s, los valores por defecto).
-INSERT INTO lecciones (id, video_id, titulo, descripcion, duracion_lectura_min, resumen, lectura)
-SELECT id, id, l->>'titulo', l->>'descripcion', (l->>'duracionLectura')::smallint, l->>'resumen',
+-- Lecciones: cada una es un trozo de su vídeo, de inicio_s a fin_s.
+INSERT INTO lecciones (id, video_id, titulo, descripcion, inicio_s, fin_s, aviso, duracion_lectura_min, resumen, lectura)
+SELECT id, l->>'videoId', l->>'titulo', l->>'descripcion', (l->>'inicioS')::integer, (l->>'finS')::integer,
+       l->>'aviso', (l->>'duracionLectura')::smallint, l->>'resumen',
        array_to_string(ARRAY(SELECT jsonb_array_elements_text(l->'lectura')), E'\n\n')
 FROM lecciones_json
 ON CONFLICT (id) DO UPDATE
   SET video_id = EXCLUDED.video_id, titulo = EXCLUDED.titulo, descripcion = EXCLUDED.descripcion,
+      inicio_s = EXCLUDED.inicio_s, fin_s = EXCLUDED.fin_s, aviso = EXCLUDED.aviso,
       duracion_lectura_min = EXCLUDED.duracion_lectura_min, resumen = EXCLUDED.resumen,
       lectura = EXCLUDED.lectura;
 
@@ -106,6 +113,6 @@ WHERE le.video_id = v.id
   AND v.curso_id IN (SELECT id FROM cursos_json)
   AND le.id NOT IN (SELECT id FROM lecciones_json);
 DELETE FROM videos
-WHERE curso_id IN (SELECT id FROM cursos_json) AND id NOT IN (SELECT id FROM lecciones_json);
+WHERE curso_id IN (SELECT id FROM cursos_json) AND id NOT IN (SELECT id FROM videos_json);
 DELETE FROM conceptos
 WHERE curso_id IN (SELECT id FROM cursos_json) AND id NOT IN (SELECT id FROM lecciones_json);

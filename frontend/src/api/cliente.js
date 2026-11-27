@@ -124,7 +124,8 @@ export async function obtenerTestInicial(cursoId) {
 }
 
 /**
- * Evalúa el test inicial. La puntuación es determinista: cada acierto marca la lección como dominada.
+ * Evalúa el test inicial. La puntuación es determinista: cada acierto marca como dominadas todas las
+ * lecciones del vídeo al que pertenece la lección de la pregunta.
  * Con backend, la explicación la redacta la IA (agente Diagnóstico); sin backend, una plantilla.
  * Devuelve { dominio, mensaje, origen }.
  */
@@ -138,8 +139,12 @@ async function evaluarTestSimulado(cursoId, respuestas) {
   await esperar(500);
   const curso = obtenerCurso(cursoId);
   const dominio = {};
+  const videoDe = Object.fromEntries(curso.lecciones.map((l) => [l.id, l.videoId]));
   for (const pregunta of curso.testInicial) {
-    if (respuestas[pregunta.id] === pregunta.correcta) dominio[pregunta.leccionId] = true;
+    if (respuestas[pregunta.id] !== pregunta.correcta) continue;
+    for (const leccion of curso.lecciones) {
+      if (leccion.videoId === videoDe[pregunta.leccionId]) dominio[leccion.id] = true;
+    }
   }
   const dominadas = curso.lecciones.filter((l) => dominio[l.id]);
   const siguiente = curso.lecciones.find((l) => !dominio[l.id]);
@@ -150,7 +155,7 @@ async function evaluarTestSimulado(cursoId, respuestas) {
   } else if (!siguiente) {
     mensaje = 'Ya dominas todo el contenido del curso. Puedes repasar cualquier lección cuando quieras.';
   } else {
-    mensaje = `Ya dominas ${dominadas.length} de ${curso.lecciones.length} temas, así que no tendrás que verlos. Empezarás por «${siguiente.titulo}».`;
+    mensaje = `Ya dominas ${dominadas.length} de ${curso.lecciones.length} lecciones, así que no tendrás que verlas. Empezarás por «${siguiente.titulo}».`;
   }
   return { dominio, mensaje };
 }
@@ -220,7 +225,7 @@ async function respuestaMentorSimulada(texto, { cursoId, leccionId, personalidad
   }
   return {
     texto:
-      `${frases.aclarar} Por ejemplo: variables, condicionales, bucles, listas o funciones. Si prefieres, puedes pedir ayuda a un tutor.`,
+      `${frases.aclarar} Por ejemplo: variables, cadenas, tipos de datos, condicionales u operadores. Si prefieres, puedes pedir ayuda a un tutor.`,
   };
 }
 

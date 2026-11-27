@@ -27,15 +27,11 @@ def _cursos_del_json() -> list[dict[str, Any]]:
 def _comparable(cursos: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Lo que se puede comparar entre las dos fuentes.
 
-    Quita el inicio y el fin de cada lección (el JSON de ejemplo no los tiene: cada lección es un
-    vídeo entero) y ordena las palabras clave (la base de datos no guarda su orden, y no importa
-    para corregir).
+    Ordena las palabras clave: la base de datos no guarda su orden, y no importa para corregir.
     """
     copia = copy.deepcopy(cursos)
     for curso in copia:
         for leccion in curso["lecciones"]:
-            leccion.pop("inicioS", None)
-            leccion.pop("finS", None)
             for actividad in leccion["actividades"]:
                 if "palabrasClave" in actividad:
                     actividad["palabrasClave"] = sorted(actividad["palabrasClave"])
@@ -53,16 +49,9 @@ def test_sin_base_de_datos_el_curso_sale_del_json() -> None:
 
 
 def test_el_curso_leido_de_postgresql_es_el_mismo_que_el_del_json(con_base_de_datos: str) -> None:
-    """Todo lo que usa la API sale igual: lecciones, actividades, test inicial y su orden."""
+    """Todo lo que usa la API sale igual: vídeos, lecciones con su trozo y su aviso, actividades,
+    test inicial y su orden."""
     assert _comparable(contenido._cursos()) == _comparable(_cursos_del_json())
-
-
-def test_una_leccion_que_ocupa_todo_su_video_empieza_en_0_y_no_tiene_fin(
-    con_base_de_datos: str,
-) -> None:
-    for leccion in contenido._cursos()[0]["lecciones"]:
-        assert leccion["inicioS"] == 0
-        assert leccion["finS"] is None
 
 
 @pytest.fixture

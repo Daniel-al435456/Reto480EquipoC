@@ -126,12 +126,12 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 
 `cargar_curso.sh` lleva a las tablas el curso de `app/datos/cursos-ejemplo.json` (issue #15). Se vuelve a ejecutar cada vez que cambia el curso: actualiza lo que ha cambiado, borra lo que ya no está en el fichero y no duplica nada. Tampoco borra los datos de los alumnos (matrículas, dominios, sesiones y eventos). Todo va en una transacción: si algo falla, la base de datos se queda como estaba. Cómo pasa cada campo del JSON a su tabla está explicado al principio de `cargar_curso.sql`; lo más importante:
 
-- Cada lección tiene su propio vídeo entero, con el mismo identificador que la lección. Un vídeo sin elegir (`youtubeId` vacío) se guarda sin `youtube_id`.
+- Cada vídeo del fichero (`videos`) se guarda en su tabla, y cada lección es un trozo de su vídeo (`videoId`, `inicioS` y `finS`), con su `aviso` si lo tiene. Un vídeo sin elegir (`youtubeId` vacío) se guarda sin `youtube_id`.
 - Cada lección cubre un concepto, también con su mismo identificador.
 - Las actividades son preguntas de comprobación de su lección. Las de verdadero o falso se guardan con dos opciones, "Verdadero" y "Falso".
 - Las preguntas del test inicial son de diagnóstico: van unidas al concepto de su lección, no a la lección.
 
-`probar.sh` crea dos bases de datos temporales y las borra al terminar; no toca la base de datos de trabajo. En la primera aplica las migraciones y ejecuta `pruebas.sql`. En la segunda carga el curso cuatro veces y, tras cada carga, ejecuta `pruebas_carga.sql`: la primera vez, la segunda (no duplica nada ni borra los datos de un alumno), una tercera con un vídeo ya elegido y una actividad menos, y una cuarta con un fichero de más de 128 KB.
+`probar.sh` crea dos bases de datos temporales y las borra al terminar; no toca la base de datos de trabajo. En la primera aplica las migraciones y ejecuta `pruebas.sql`. En la segunda carga el curso cuatro veces y, tras cada carga, ejecuta `pruebas_carga.sql`: la primera vez, la segunda (no duplica nada ni borra los datos de un alumno), una tercera con otro vídeo de YouTube en el primer vídeo y una actividad menos, y una cuarta con un fichero de más de 128 KB.
 
 `cargar_curso.sh` no pasa el JSON a `psql` como argumento: le da la ruta en la variable de entorno `ARCHIVO_CURSO` y `cargar_curso.sql` lo lee él mismo. Linux no admite un argumento de más de 128 KB, y el curso con las transcripciones de los vídeos lo supera.
 

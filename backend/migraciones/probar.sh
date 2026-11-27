@@ -36,9 +36,9 @@ echo "Todas las pruebas del esquema pasan."
 createdb "$BD_CARGA"
 ./aplicar.sh "$BD_CARGA" > /dev/null
 
-# El mismo curso con el vídeo de la primera lección ya elegido y sin su tercera actividad.
-transformar_curso "jsonb_set(:'datos'::jsonb, '{cursos,0,lecciones,0,youtubeId}', '\"video-elegido\"')
-                   #- '{cursos,0,lecciones,0,actividades,2}'" "$CURSO_CAMBIADO"
+# El mismo curso con otro vídeo de YouTube en el primer vídeo y sin la segunda actividad de la primera lección.
+transformar_curso "jsonb_set(:'datos'::jsonb, '{cursos,0,videos,0,youtubeId}', '\"video-elegido\"')
+                   #- '{cursos,0,lecciones,0,actividades,1}'" "$CURSO_CAMBIADO"
 
 # El mismo curso con 200 KB de texto de más, como cuando lleve las transcripciones de los vídeos.
 # Linux no admite un argumento de más de 128 KB: así se comprueba que el JSON no se pasa como argumento.

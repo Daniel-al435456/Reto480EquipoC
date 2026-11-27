@@ -1,7 +1,16 @@
 // Personalidad del mentor, trato y datos que se envían a la IA.
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { contextoIA, frasesMentor, palabra, PERSONALIDADES, TRATAMIENTOS } from '../../src/api/mentor.js';
+import {
+  contextoIA,
+  frasesMentor,
+  historialIA,
+  MENSAJES_DE_CONTEXTO,
+  palabra,
+  PERSONALIDADES,
+  progresoIA,
+  TRATAMIENTOS,
+} from '../../src/api/mentor.js';
 
 describe('mentor', () => {
   it('cada personalidad tiene sus propias frases', () => {
@@ -34,5 +43,18 @@ describe('mentor', () => {
     const contexto = contextoIA(estado);
     assert.deepEqual(Object.keys(contexto).sort(), ['esMenor', 'personalidad', 'tratamiento']);
     assert.ok(!JSON.stringify(contexto).match(/Lucía|acme|1990/i));
+  });
+
+  it('el progreso solo lleva identificadores de lecciones dominadas y completadas', () => {
+    const progreso = progresoIA({ dominio: { a: true, b: false }, completadas: ['c'], alias: 'Rayo', cuenta: { email: 'x@y.es' } });
+    assert.deepEqual(progreso, { dominadas: ['a'], completadas: ['c'] });
+  });
+
+  it('el mentor ve solo los últimos mensajes de la conversación, sin datos extra', () => {
+    const mensajes = Array.from({ length: 12 }, (_, i) => ({ id: i, autor: i % 2 ? 'mentor' : 'alumno', texto: `m${i}`, proactivo: true }));
+    const historial = historialIA(mensajes);
+    assert.equal(historial.length, MENSAJES_DE_CONTEXTO);
+    assert.deepEqual(historial.at(-1), { autor: 'mentor', texto: 'm11' });
+    assert.deepEqual(Object.keys(historial[0]).sort(), ['autor', 'texto']);
   });
 });

@@ -165,11 +165,12 @@ export function planificarSesion(curso, modo, dominio, completadas) {
 }
 
 /**
- * Corrige una respuesta escrita comprobando palabras clave (simulado).
- * Con IA, se sustituiría por una corrección que entienda respuestas equivalentes.
+ * Corrige una respuesta escrita. Con backend, si faltan palabras clave, la IA decide si la respuesta dice lo mismo
+ * con otras palabras y lo explica en `comentario`. Sin backend, solo cuentan las palabras clave.
+ * contexto: { esMenor, personalidad, tratamiento }. Devuelve { correcta, solucion, comentario?, redactadoPorIa?, origen }.
  */
-export function corregirRespuestaEscrita(actividad, texto) {
-  return conRespaldo('/api/actividades/correccion', { actividadId: actividad.id, texto }, async () => {
+export function corregirRespuestaEscrita(actividad, texto, contexto = {}) {
+  return conRespaldo('/api/actividades/correccion', { ...contexto, actividadId: actividad.id, texto }, async () => {
     await esperar(400);
     const normalizado = normalizar(texto);
     const faltan = actividad.palabrasClave.filter((p) => !normalizado.includes(normalizar(p)));

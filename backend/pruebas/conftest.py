@@ -36,6 +36,9 @@ def _usar_base_de_datos(monkeypatch: pytest.MonkeyPatch, conexion: str) -> None:
 def sin_base_de_datos(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     """Por defecto, ninguna prueba usa la base de datos: la pide expresamente quien la necesita."""
     _usar_base_de_datos(monkeypatch, "")
+    # Ninguna prueba llama a la IA de verdad, aunque haya una clave en backend/.env.
+    monkeypatch.setenv("GROQ_API_KEY", "")
+    obtener_configuracion.cache_clear()
     yield
     obtener_configuracion.cache_clear()
 

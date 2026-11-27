@@ -70,3 +70,9 @@
   background: transparent;
   color: var(--color-grafito-texto);
 }
+
+/* Aviso discreto de que la corrección la ha decidido la IA (uso responsable de la IA). */
+.marcaIA {
+  font-size: 0.75rem;
+  color: var(--color-texto-suave);
+}

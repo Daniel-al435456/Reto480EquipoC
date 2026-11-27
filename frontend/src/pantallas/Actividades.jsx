@@ -4,7 +4,7 @@ import { Boton } from '../componentes/Boton.jsx';
 import { IconoMentor } from '../componentes/Iconos.jsx';
 import { Pato } from '../componentes/Pato.jsx';
 import { Pantalla } from '../componentes/Pantalla.jsx';
-import { contextoIA } from '../api/mentor.js';
+import { contextoIA, progresoIA } from '../api/mentor.js';
 import { useEstado } from '../hooks/useEstado.jsx';
 import comun from './comun.module.css';
 import estilos from './Actividades.module.css';
@@ -34,13 +34,17 @@ export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, a
     setComprobando(true);
     let correcta;
     let solucion;
+    let comentario = null;
     if (actividad.tipo === 'vf') {
       correcta = respuesta === actividad.correcta;
     } else {
-      ({ correcta, solucion } = await corregirRespuestaEscrita(actividad, respuesta ?? ''));
+      const corregida = await corregirRespuestaEscrita(actividad, respuesta ?? '', contextoIA(estado));
+      ({ correcta, solucion } = corregida);
+      // Solo se muestra el comentario de la IA cuando el backend confirma que lo ha redactado ella.
+      if (corregida.origen === 'api' && corregida.redactadoPorIa === true) comentario = corregida.comentario;
     }
     setComprobando(false);
-    setResultado({ correcta, solucion });
+    setResultado({ correcta, solucion, comentario });
     registrarEvento('actividad_respondida', { leccionId: leccion.id, actividadId: actividad.id, correcta });
 
     if (correcta) {
@@ -48,7 +52,11 @@ export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, a
     } else {
       fallos.current += 1;
       if (fallos.current === FALLOS_PARA_AYUDA && estado.mentorIA) {
-        const texto = await mensajeProactivoMentor(leccion, { cursoId: estado.cursoId, ...contextoIA(estado) });
+        const texto = await mensajeProactivoMentor(leccion, {
+          cursoId: estado.cursoId,
+          ...contextoIA(estado),
+          progreso: progresoIA(estado),
+        });
         anadirMensaje({ autor: 'mentor', texto, proactivo: true });
         registrarEvento('mentor_proactivo', { leccionId: leccion.id, senal: 'fallos_repetidos' });
         setPistaMentor(texto);
@@ -169,11 +177,13 @@ export function Actividades({ leccion, paso, numero, total, cuentaComoLeccion, a
           <div className={resultado.correcta ? comun.correcto : comun.incorrecto}>
             <strong>{resultado.correcta ? 'Correcto' : 'No es correcto'}</strong>
             {actividad.tipo === 'vf' && <span>{actividad.explicacion}</span>}
+            {resultado.comentario && <span>{resultado.comentario}</span>}
             {actividad.tipo === 'escrita' && !resultado.correcta && (
               <span>
                 Una respuesta válida es: <code>{resultado.solucion}</code>
               </span>
             )}
+            {resultado.comentario && <span className={estilos.marcaIA}>Corregido con IA</span>}
           </div>
         )}
       </div>

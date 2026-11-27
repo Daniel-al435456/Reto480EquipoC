@@ -199,6 +199,50 @@ describe('mentor', () => {
     assert.deepEqual(errores, []);
     await contexto.close();
   });
+
+  it('con IA, envía la conversación y el progreso y abre la lección que propone', async () => {
+    const { contexto, pagina, errores } = await abrir();
+    const enviados = [];
+    await pagina.route('**/salud', (route) =>
+      route.fulfill({ json: { estado: 'ok', servicio: 'prueba', version: 'test' } }),
+    );
+    await pagina.route('**/api/mentor/mensaje', (route) => {
+      enviados.push(route.request().postDataJSON());
+      return route.fulfill({
+        json: {
+          texto: 'Ábrela y prueba el ejemplo del minuto 1.',
+          derivado: false,
+          leccionId: 'que-es-un-if',
+          leccionTitulo: 'Qué es una condicional (if)',
+          redactadoPorIa: true,
+        },
+      });
+    });
+    await completarAlta(pagina, { personalidad: 'Estricto', tratamiento: 'Masculino' });
+    await pagina.getByRole('button', { name: /Python desde cero/ }).click();
+    await pagina.goto(servidor.url + '#/mentor');
+    for (const pregunta of ['No entiendo las condicionales', 'Dame otro ejemplo']) {
+      await pagina.locator('#pregunta-mentor').fill(pregunta);
+      await pagina.keyboard.press('Enter');
+      await pagina.getByText('Ábrela y prueba el ejemplo del minuto 1.').last().waitFor({ state: 'attached' });
+      await pagina.waitForFunction(() => !document.querySelector('[aria-label="El mentor está escribiendo"]'));
+    }
+    assert.equal(enviados.length, 2);
+    assert.equal(enviados[1].texto, 'Dame otro ejemplo');
+    assert.equal(enviados[1].personalidad, 'estricto');
+    assert.equal(enviados[1].tratamiento, 'masculino');
+    assert.deepEqual(Object.keys(enviados[1].progreso).sort(), ['completadas', 'dominadas']);
+    assert.deepEqual(
+      enviados[1].historial.slice(-2).map((m) => m.autor),
+      ['alumno', 'mentor'],
+    );
+    assert.ok(!JSON.stringify(enviados).match(/Lucía|lucia@acme|Acme/));
+    await pagina.getByText('Redactado con IA').first().waitFor();
+    await pagina.getByRole('button', { name: 'Ir a «Qué es una condicional (if)»' }).last().click();
+    await pagina.waitForFunction(() => location.hash === '#/curso/python-desde-cero/leccion/que-es-un-if');
+    assert.deepEqual(errores, []);
+    await contexto.close();
+  });
 });
 
 describe('cuenta y sesión', () => {

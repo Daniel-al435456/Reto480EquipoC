@@ -77,3 +77,25 @@ export function contextoIA(estado) {
     tratamiento: estado.tratamiento ?? TRATAMIENTO_INICIAL,
   };
 }
+
+/**
+ * Progreso del alumno para el mentor: qué lecciones domina y cuáles ha completado. Solo identificadores de
+ * lecciones del curso, para que pueda decirle qué le falta o qué viene después. No es un dato personal.
+ */
+export function progresoIA(estado) {
+  return {
+    dominadas: Object.keys(estado.dominio ?? {}).filter((id) => estado.dominio[id]),
+    completadas: estado.completadas ?? [],
+  };
+}
+
+/** Mensajes que el mentor ve de la conversación anterior para no perder el hilo. */
+export const MENSAJES_DE_CONTEXTO = 8;
+
+/** Los últimos mensajes de la conversación, como los espera el backend: { autor, texto }. */
+export function historialIA(mensajes) {
+  return mensajes
+    .filter((m) => m.autor === 'alumno' || m.autor === 'mentor')
+    .slice(-MENSAJES_DE_CONTEXTO)
+    .map((m) => ({ autor: m.autor, texto: m.texto.slice(0, 1500) }));
+}

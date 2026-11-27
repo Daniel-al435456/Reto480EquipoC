@@ -1,0 +1,18 @@
+# Frontend en Netlify. Guía paso a paso: docs/despliegue.md.
+# La dirección del backend (VITE_API_URL) no va aquí, porque cambia según quién despliegue: se define en
+# Netlify, en Site configuration → Environment variables.
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# El navegador vuelve a pedir siempre el service worker, para que una versión nueva de la app llegue sin
+# esperar a que caduque la caché.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"

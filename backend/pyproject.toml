@@ -10,6 +10,9 @@ dependencies = [
   "fastapi>=0.115,<1",
   "uvicorn[standard]>=0.30",
   "pydantic-settings>=2.4",
+  # Conexión con PostgreSQL (issue #40). La versión "binary" trae su propia libpq: no hace falta
+  # compilar nada ni instalar librerías del sistema.
+  "psycopg[binary]>=3.2,<4",
 ]
 
 [project.optional-dependencies]

@@ -77,7 +77,11 @@ class LeccionContenido(EsquemaApi):
     titulo: str
     concepto: str
     youtube_id: str
-    duracion_video: int
+    inicio_s: int = Field(default=0, description="Segundo del vídeo en el que empieza la lección")
+    fin_s: int | None = Field(
+        default=None, description="Segundo en el que termina; sin él, llega al final del vídeo"
+    )
+    duracion_video: int = Field(description="Minutos de vídeo de la lección, redondeados arriba")
     duracion_lectura: int
     descripcion: str
     lectura: list[str]

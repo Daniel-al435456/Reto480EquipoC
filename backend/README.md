@@ -8,9 +8,10 @@ en la Fase 2).
 
 Estado: la **base de datos ya está creada** (issue #14) y el servidor tiene las
 **rutas que usa el frontend** (issue #13), con el curso de ejemplo y el mentor sin IA.
-El catálogo, las lecciones y el test se sirven de momento desde
-`app/datos/cursos-ejemplo.json`. El curso ya se puede cargar en PostgreSQL
-(`migraciones/cargar_curso.sh`, issue #15); que el servicio lo lea de allí es la issue #40. También quedan pendientes `app/privacidad.py` y el agente Mentor (issue #16).
+El curso (catálogo, lecciones, actividades y test) se lee de PostgreSQL si está configurada
+`DATABASE_URL` (issue #40), y si no, de `app/datos/cursos-ejemplo.json`
+([Conectar la base de datos](#conectar-la-base-de-datos)). Quedan pendientes `app/privacidad.py`
+y el agente Mentor (issue #16).
 
 ## Rutas
 
@@ -21,9 +22,9 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 | Ruta | Qué hace | De momento |
 |---|---|---|
 | `GET /salud` | Comprueba que el servidor responde | |
-| `GET /api/cursos` | Catálogo de cursos | Curso de ejemplo en JSON |
-| `GET /api/cursos/{curso_id}/lecciones` | Datos del curso y contenido completo de sus lecciones | Curso de ejemplo en JSON; no incluye el test inicial |
-| `GET /api/cursos/{curso_id}/test` | Preguntas del test inicial, sin la respuesta correcta | Curso de ejemplo en JSON |
+| `GET /api/cursos` | Catálogo de cursos | |
+| `GET /api/cursos/{curso_id}/lecciones` | Datos del curso y contenido completo de sus lecciones, con el trozo de vídeo de cada una (`inicioS`, `finS`) | No incluye el test inicial |
+| `GET /api/cursos/{curso_id}/test` | Preguntas del test inicial, sin la respuesta correcta | |
 | `POST /api/cursos/{curso_id}/test/evaluacion` | Corrige el test con reglas y explica el itinerario | Mensaje de plantilla; con la #16, el agente Diagnóstico |
 | `POST /api/actividades/correccion` | Corrige una respuesta escrita por palabras clave | |
 | `POST /api/mentor/mensaje` | Responde a una consulta con la personalidad y el trato elegidos | Respuesta de respaldo sin IA; con la #16, el agente Mentor |
@@ -33,11 +34,22 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 El curso de ejemplo es una copia del del frontend. Si cambia `frontend/src/api/datos.js`,
 se regenera con `node herramientas/exportar-curso.mjs` desde `frontend/`.
 
+Si la base de datos está configurada pero no se puede usar, las rutas del curso devuelven 503 y
+el frontend pasa a sus respuestas de ejemplo. El motivo queda en el registro del servidor (sin
+la contraseña):
+
+| Error | Cuándo |
+|---|---|
+| `base_datos_no_disponible` | No responde, rechaza el acceso, `DATABASE_URL` está mal escrita o faltan las tablas (no se ha ejecutado `aplicar.sh`) |
+| `base_datos_sin_cursos` | Las tablas existen, pero no se ha cargado ningún curso (`cargar_curso.sh`) |
+
+`/salud` no se ve afectado: no toca la base de datos a propósito.
+
 ## Requisitos
 
 - Python 3.12 o superior para ejecutar la API (`python3 --version`).
-- PostgreSQL 13 o posterior solo para las migraciones y la futura conexión del servicio
-  (se ha probado con la versión 18). En macOS, por ejemplo, con
+- PostgreSQL 13 o posterior para las migraciones y para que la API lea el curso de la base de
+  datos; sin él, la API funciona con el JSON de ejemplo (se ha probado con la versión 18). En macOS, por ejemplo, con
   [Postgres.app](https://postgres.app); en Ubuntu/Debian, con `sudo apt install postgresql`;
   en el resto de sistemas, con el instalador oficial o un contenedor de Docker.
 - La clave `GROQ_API_KEY` no es necesaria para las rutas actuales; se usará al integrar
@@ -58,9 +70,30 @@ python3 -m venv .venv
 .venv/bin/uvicorn app.main:app --reload
 ```
 
-Las rutas actuales leen el curso del JSON de ejemplo, así que no hace falta configurar
-PostgreSQL ni crear un fichero `.env` para arrancar la API. Cuando el servicio se conecte
-a la base de datos, la configuración se documentará junto con ese cambio.
+Sin más configuración, la API lee el curso del JSON de ejemplo: no hace falta PostgreSQL
+ni un fichero `.env` para arrancarla.
+
+### Conectar la base de datos
+
+Para que la API lea el curso de PostgreSQL (issue #40):
+
+1. Crear la base de datos, sus tablas y cargar el curso ([Puesta en marcha](#puesta-en-marcha)).
+2. Copiar la plantilla `cp .env.example .env` (el `.env` no se sube al repositorio) y dejar la
+   línea de la base de datos así:
+
+   ```
+   DATABASE_URL=dbname=reto480
+   ```
+
+   Con solo el nombre, se conecta a la base de datos local con tu usuario y sin contraseña,
+   igual que `psql reto480`. El formato de la plantilla
+   (`postgresql+psycopg://USUARIO@localhost:5432/reto480`) también vale, pero va por la red y
+   PostgreSQL suele pedir contraseña: habría que añadirla (`USUARIO:CONTRASEÑA@`) o usar
+   `PGPASSWORD`.
+3. Arrancar (o reiniciar) la API.
+
+Mientras está en marcha, si se vuelve a cargar el curso con `cargar_curso.sh`, la API sirve lo
+nuevo sin reiniciarla.
 
 La API queda en `http://localhost:8000` y la documentación interactiva en
 `http://localhost:8000/docs`.
@@ -98,7 +131,9 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 - Las actividades son preguntas de comprobación de su lección. Las de verdadero o falso se guardan con dos opciones, "Verdadero" y "Falso".
 - Las preguntas del test inicial son de diagnóstico: van unidas al concepto de su lección, no a la lección.
 
-`probar.sh` crea dos bases de datos temporales y las borra al terminar; no toca la base de datos de trabajo. En la primera aplica las migraciones y ejecuta `pruebas.sql`. En la segunda carga el curso tres veces y, tras cada carga, ejecuta `pruebas_carga.sql`: la primera vez, la segunda (no duplica nada ni borra los datos de un alumno) y una tercera con un vídeo ya elegido y una actividad menos.
+`probar.sh` crea dos bases de datos temporales y las borra al terminar; no toca la base de datos de trabajo. En la primera aplica las migraciones y ejecuta `pruebas.sql`. En la segunda carga el curso cuatro veces y, tras cada carga, ejecuta `pruebas_carga.sql`: la primera vez, la segunda (no duplica nada ni borra los datos de un alumno), una tercera con un vídeo ya elegido y una actividad menos, y una cuarta con un fichero de más de 128 KB.
+
+`cargar_curso.sh` no pasa el JSON a `psql` como argumento: le da la ruta en la variable de entorno `ARCHIVO_CURSO` y `cargar_curso.sql` lo lee él mismo. Linux no admite un argumento de más de 128 KB, y el curso con las transcripciones de los vídeos lo supera.
 
 ### Añadir un cambio de esquema
 
@@ -135,7 +170,8 @@ Las mismas comprobaciones se ejecutan solas en cada pull request
 | `app/esquemas.py` | Contratos de entrada y salida (Pydantic) |
 | `app/errores.py` | Formato único de error: `{"error", "mensaje"}` |
 | `app/config.py` | Variables de entorno. Aquí no se escribe ningún valor secreto |
-| `app/datos/` | Curso de ejemplo en JSON, hasta que esté cargado en la base de datos (#15) |
+| `app/datos/` | Curso de ejemplo en JSON: lo que carga `cargar_curso.sh` y lo que se usa sin base de datos |
+| `app/persistencia.py` | Único módulo que abre conexiones con PostgreSQL (#40) |
 | `app/privacidad.py` | Previsto (Fase 2): único módulo que hablará con la IA (SPEC §5) |
 | `migraciones/` | Único origen del esquema de la base de datos |
 | `pruebas/` | Pruebas por endpoint y pruebas de arquitectura |

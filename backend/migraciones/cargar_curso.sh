@@ -16,7 +16,9 @@ if [ ! -f "$CURSO" ]; then
 fi
 
 export PGOPTIONS="-c client_min_messages=warning"  # oculta avisos informativos de PostgreSQL
+# La ruta va en una variable de entorno y cargar_curso.sql lee el fichero él mismo: pasar el JSON
+# como argumento falla a partir de 128 KB (límite de Linux), y el curso con transcripciones lo supera.
+export ARCHIVO_CURSO="$CURSO"
 # Todo en una transacción: si algo falla, la base de datos se queda como estaba.
-psql -X -q -v ON_ERROR_STOP=1 --single-transaction -d "$BD" -v datos="$(cat "$CURSO")" \
-  -f "$(dirname "$0")/cargar_curso.sql"
+psql -X -q -v ON_ERROR_STOP=1 --single-transaction -d "$BD" -f "$(dirname "$0")/cargar_curso.sql"
 echo "Curso cargado en $BD desde $CURSO"

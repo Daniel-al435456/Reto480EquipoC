@@ -1,5 +1,7 @@
 -- Carga en la base de datos el curso de ejemplo (issue #15). Lo ejecuta cargar_curso.sh en una sola transacción.
--- Variable: datos, el contenido de app/datos/cursos-ejemplo.json.
+-- Recibe en la variable de entorno ARCHIVO_CURSO la ruta del JSON (por defecto, app/datos/cursos-ejemplo.json)
+-- y lo lee aquí, en la variable de psql datos. No se pasa como argumento porque falla a partir de 128 KB.
+\set datos `cat -- "$ARCHIVO_CURSO"`
 --
 -- Del JSON a las tablas:
 --   curso              → cursos

@@ -6,12 +6,28 @@ después salga en el formato acordado) y después CORS y rutas.
 
 from __future__ import annotations
 
+import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import obtener_configuracion
 from app.errores import instalar_manejadores
 from app.routers import actividades, cursos, mentor, salud
+from app.servicios.contenido import origen_del_curso
+
+#: El registro de uvicorn: lo que se escribe aquí sale en la terminal al arrancar, con su formato.
+registro_servidor = logging.getLogger("uvicorn.error")
+
+
+@asynccontextmanager
+async def _al_arrancar(_app: FastAPI) -> AsyncIterator[None]:
+    """Dice en la terminal de dónde sale el curso, para que no se dé por hecho (issue #40)."""
+    registro_servidor.info(origen_del_curso())
+    yield
+
 
 DESCRIPCION = (
     "API del prototipo de aprendizaje adaptativo para 480 Academy. "
@@ -28,6 +44,7 @@ def crear_app() -> FastAPI:
         title="API del Reto 480 · Equipo C",
         description=DESCRIPCION,
         version="0.1.0",
+        lifespan=_al_arrancar,
         contact={
             "name": "Equipo C · Reto 480",
             "url": "https://github.com/Daniel-al435456/Reto480EquipoC",

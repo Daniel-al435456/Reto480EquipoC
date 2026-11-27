@@ -30,6 +30,33 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 | `POST /api/mentor/mensaje` | Responde a una consulta con la personalidad y el trato elegidos | Con clave, el agente Mentor, con hasta 3 lecciones relacionadas, el índice del curso, el progreso y la conversación; puede proponer abrir una lección. Sin clave o si falla, respuesta de respaldo |
 | `POST /api/mentor/proactivo` | Mensaje del mentor cuando el alumno se bloquea | Con clave, el agente Mentor; sin ella o si falla, respuesta de respaldo |
 | `POST /api/mentor/derivacion` | Pasa la consulta a un tutor de la academia | Solo confirma. La tabla `derivaciones` ya existe (migración 003); para guardarla falta saber qué alumno la pide (inicio de sesión) |
+| `POST /api/cuenta` | Crea la cuenta al terminar el alta (los cuatro pasos) y abre la sesión | |
+| `GET /api/cuenta` | Perfil del alumno con sesión | |
+| `PATCH /api/cuenta` | Cambia nombre, apellidos, puesto, alias, modo anónimo y ajustes del mentor | El correo, la empresa, la fecha de nacimiento y el consentimiento solo los corrige la academia |
+| `DELETE /api/cuenta` | Elimina la cuenta y todos los datos del alumno | Pide la contraseña |
+| `PUT /api/cuenta/contrasena` | Cambia la contraseña y cierra las demás sesiones | Pide la actual |
+| `POST /api/sesion` | Inicia sesión con el correo y la contraseña | |
+| `DELETE /api/sesion` | Cierra la sesión de este dispositivo | |
+
+### Cuenta y sesión
+
+Las rutas de la cuenta (issue #55) necesitan la base de datos: sin `DATABASE_URL` responden 503 y la app sigue en su modo local. Las que no son el alta ni el inicio de sesión necesitan además una sesión: la app envía en cada petición la cabecera `Authorization: Bearer <token>`, con el token que devuelven `POST /api/cuenta` y `POST /api/sesion`.
+
+- **Contraseña:** se recibe por HTTPS y se guarda solo como hash Argon2id (`argon2-cffi`). Debe tener al menos 8 caracteres, con alguna letra y algún número, como en el frontend.
+- **Sesión:** el token es aleatorio y dura 30 días. En la tabla `accesos` solo se guarda su resumen SHA-256, así que una copia de la base de datos no sirve para entrar. Cerrar sesión borra su fila; cambiar la contraseña borra las demás del alumno; eliminar la cuenta, todas. Las caducadas se borran cuando el alumno vuelve a entrar.
+- **Alta:** se crea con todos los datos de los cuatro pasos, en una sola transacción. La empresa se busca sin distinguir mayúsculas y, si no existe, se crea. Con menos de 14 años hace falta el consentimiento de la familia.
+- **Privacidad:** si la consulta al mentor o la corrección llevan una sesión válida, el filtro de privacidad quita el nombre y los apellidos del alumno de todo lo que se envía a la IA. Sin sesión, funcionan igual.
+
+| Error | Código | Cuándo |
+|---|---|---|
+| `email_registrado` | 409 | Ya hay una cuenta con ese correo, aunque cambien las mayúsculas |
+| `consentimiento_necesario` | 422 | Menor de 14 años sin el consentimiento de la familia |
+| `privacidad_no_aceptada` | 422 | No se ha aceptado la política de privacidad |
+| `fecha_nacimiento_invalida` | 422 | Fecha futura o de hace más de 120 años |
+| `contrasena_debil` | 422 | Menos de 8 caracteres, o sin letras o sin números |
+| `credenciales_incorrectas` | 401 | Correo o contraseña incorrectos al iniciar sesión (el mismo error en los dos casos) |
+| `sesion_no_valida` | 401 | Sin token, o con uno que no existe o ha caducado |
+| `contrasena_incorrecta` | 403 | La contraseña actual no es correcta al cambiarla o al eliminar la cuenta |
 
 El curso de ejemplo es una copia del del frontend. Si cambia `frontend/src/api/datos.js`,
 se regenera con `node herramientas/exportar-curso.mjs` desde `frontend/`.
@@ -127,7 +154,7 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 
 `aplicar.sh` anota cada migración en la tabla `migraciones_aplicadas`, así que puede ejecutarse varias veces: solo aplica las nuevas. Cada migración se aplica entera o no se aplica.
 
-`cargar_curso.sh` lleva a las tablas el curso de `app/datos/cursos-ejemplo.json` (issue #15). Se vuelve a ejecutar cada vez que cambia el curso: actualiza lo que ha cambiado, borra lo que ya no está en el fichero y no duplica nada. Tampoco borra los datos de los alumnos (matrículas, dominios, sesiones y eventos). Todo va en una transacción: si algo falla, la base de datos se queda como estaba. Antes de cargar nada, `validar_curso.sql` comprueba el fichero entero (issue #50) y, si no cumple las reglas, lista todos los fallos con el identificador afectado. Cómo pasa cada campo del JSON a su tabla está explicado al principio de `cargar_curso.sql`; lo más importante:
+`cargar_curso.sh` lleva a las tablas el curso de `app/datos/cursos-ejemplo.json` (issue #15). Se vuelve a ejecutar cada vez que cambia el curso: actualiza lo que ha cambiado, borra lo que ya no está en el fichero y no duplica nada. Tampoco borra los datos de los alumnos (cuentas, matrículas, dominios, sesiones, eventos, mensajes con el mentor y derivaciones). Todo va en una transacción: si algo falla, la base de datos se queda como estaba. Antes de cargar nada, `validar_curso.sql` comprueba el fichero entero (issue #50) y, si no cumple las reglas, lista todos los fallos con el identificador afectado. Cómo pasa cada campo del JSON a su tabla está explicado al principio de `cargar_curso.sql`; lo más importante:
 
 - Cada vídeo del fichero (`videos`) se guarda en su tabla, y cada lección es un trozo de su vídeo (`videoId`, `inicioS` y `finS`), con su `aviso` si lo tiene. Un vídeo sin elegir (`youtubeId` vacío) se guarda sin `youtube_id`.
 - Cada lección cubre un concepto, también con su mismo identificador.
@@ -151,6 +178,7 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 - **Valores permitidos** (`uso`, `formato`, `estado`, `rol`...) con `CHECK`, más fáciles de ampliar que los tipos `ENUM`.
 - **Nombres de tablas en plural**: las relaciones del diagrama PERTENECE, CUBRE y COMPONE son las tablas `matriculas`, `lecciones_conceptos` y `sesiones_lecciones`.
 - **Derivaciones a un tutor** (migración 003, H7): cada petición es una fila de `derivaciones` con su motivo (`alumno`, `malestar` o `sin_ia`, cuando la IA no responde) y su estado (`pendiente` o `atendida`), y además un evento `derivacion_tutor` en `eventos`. El evento dice que pasó; la tabla guarda el estado, que cambia. No se guarda el texto de la consulta.
+- **Cuentas** (migración 004): `identidades.puesto` es opcional. Las sesiones iniciadas están en `accesos`, con el resumen del token y su caducidad, nunca el token.
 - **Reglas que comprueba el backend**, porque dependen de varias filas o de la fecha actual: el consentimiento de la familia para menores de 14 años, que todas las lecciones de una sesión sean del mismo curso y que el curso de una derivación sea el de su lección, si la tiene.
 
 ## Comprobaciones

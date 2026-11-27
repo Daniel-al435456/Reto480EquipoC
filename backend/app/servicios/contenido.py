@@ -206,8 +206,11 @@ def corregir_respuesta(
     es_menor: bool = False,
     personalidad: Personalidad = "amable",
     tratamiento: Tratamiento = "neutro",
+    nombres: list[str] | None = None,
 ) -> SalidaCorreccion:
     """Corrige una respuesta escrita.
+
+    `nombres` son el nombre y los apellidos del alumno con sesión: no llegan a la IA.
 
     Si contiene todas las palabras clave, es correcta sin preguntar a nadie. Si no, con
     `GROQ_API_KEY` decide el agente de corrección, que entiende respuestas equivalentes escritas
@@ -232,6 +235,7 @@ def corregir_respuesta(
             es_menor=es_menor,
             personalidad=personalidad,
             tratamiento=tratamiento,
+            nombres=nombres,
         )
         if corregida:
             return SalidaCorreccion(

@@ -117,7 +117,7 @@ flowchart LR
 
 ## 6. Modelo de datos y flujo hacia la IA
 
-Aprobado el 24/11/2026 ([propuesta P3](propuestas/datos-y-privacidad.md#modelo-de-datos-y-flujo-hacia-la-ia), con el diagrama entidad-relación) y actualizado el 27/11/2026 con el aviso de Lección (migración 002) y Derivación (migración 003).
+Aprobado el 24/11/2026 ([propuesta P3](propuestas/datos-y-privacidad.md#modelo-de-datos-y-flujo-hacia-la-ia), con el diagrama entidad-relación) y actualizado el 27/11/2026 con el aviso de Lección (migración 002), Derivación (migración 003) y el puesto y Acceso (migración 004).
 
 ![Diagrama entidad-relación de la base de datos](docs/img/modelo-entidad-relacion.jpg)
 
@@ -128,7 +128,8 @@ Derivación también se relaciona con Curso y Lección (0..1 : N), que no se dib
 | Entidad | Contenido | ¿Llega a la IA? |
 |---|---|---|
 | Empresa | Empresas clientes de la academia | Nunca |
-| Identidad | Nombre, apellidos, email, hash de la contraseña, fecha de nacimiento, empresa, identificador externo, consentimiento de la familia y aceptación de la privacidad | Nunca. El backend calcula a partir de la fecha si el alumno es menor |
+| Identidad | Nombre, apellidos, email, hash de la contraseña, fecha de nacimiento, empresa, puesto, identificador externo, consentimiento de la familia y aceptación de la privacidad | Nunca. El backend calcula a partir de la fecha si el alumno es menor |
+| Acceso | Sesiones iniciadas del alumno: resumen del token (nunca el token) y caducidad, a los 30 días | Nunca |
 | Alumno | Seudónimo para la IA, alias, modo anónimo, si usa el mentor con IA, personalidad del mentor y tratamiento | El seudónimo, la personalidad, el tratamiento y si es menor (calculado) |
 | Curso, Vídeo, Lección, Concepto, Pregunta, Recurso | Contenido del curso y material preparado | Sí (es contenido de la academia) |
 | Dominio (Alumno – Concepto) | Nivel por concepto | Sí, agregado |

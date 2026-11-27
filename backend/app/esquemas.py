@@ -6,9 +6,10 @@ esquema de la base de datos, que vive en `backend/migraciones/`.
 
 from __future__ import annotations
 
-from typing import Literal
+from datetime import date, datetime
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from pydantic.alias_generators import to_camel
 
 
@@ -208,3 +209,105 @@ class SalidaMensaje(EsquemaApi):
     redactado_por_ia: bool = Field(
         default=False, description="Si la respuesta la ha redactado la IA o es una de respaldo"
     )
+
+
+# ---------------------------------------------------------------------------
+# Cuenta del alumno (issue #55). Son los únicos esquemas con datos personales: viajan entre la app
+# y el backend, se guardan en `identidades` y nunca se envían a la IA (SPEC §6).
+# ---------------------------------------------------------------------------
+
+#: Texto obligatorio: sin espacios a los lados y con algo escrito.
+Texto = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)]
+#: Texto opcional: puede quedar vacío.
+TextoOpcional = Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)]
+#: El mismo patrón que el frontend (api/cuenta.js, EMAIL_VALIDO) y que el CHECK de identidades.
+Email = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True, to_lower=True, max_length=254, pattern=r"^[^\s@]+@[^\s@]+\.[^\s@]+$"
+    ),
+]
+#: La contraseña se recibe para calcular su hash y no se guarda nunca.
+#: Sus reglas están en servicios/cuentas.py.
+Contrasena = Annotated[str, StringConstraints(max_length=200)]
+
+
+class AjustesAlumno(EsquemaApi):
+    """Datos del alumno que no lo identifican: alias, modo anónimo y cómo quiere al mentor."""
+
+    alias: Texto
+    anonimo: bool = True
+    mentor_ia: bool = Field(default=True, alias="mentorIA", description="Si usa el mentor con IA")
+    personalidad_mentor: Personalidad = "amable"
+    tratamiento: Tratamiento = "neutro"
+
+
+class EntradaAlta(AjustesAlumno):
+    """Alta completa, al terminar sus cuatro pasos: la cuenta solo se crea con todos los datos."""
+
+    empresa: Texto
+    nombre: Texto
+    apellidos: Texto
+    email: Email
+    contrasena: Contrasena
+    puesto: TextoOpcional = ""
+    fecha_nacimiento: date
+    consentimiento_familia: bool = Field(
+        default=False, description="La familia ha dado su consentimiento (menores de 14 años)"
+    )
+    privacidad_aceptada: bool
+
+
+class EntradaSesion(EsquemaApi):
+    email: Email
+    contrasena: Contrasena
+
+
+class Perfil(AjustesAlumno):
+    """Lo que el alumno ve de su cuenta. Nunca lleva la contraseña ni su hash."""
+
+    empresa: str
+    nombre: str
+    apellidos: str
+    email: str
+    puesto: str
+    fecha_nacimiento: date
+    consentimiento_familia: datetime | None = Field(
+        default=None, description="Cuándo dio la familia su consentimiento, si hizo falta"
+    )
+    creada_en: datetime
+
+
+class SalidaSesion(EsquemaApi):
+    """Token de la sesión, que la app envía en cada petición como `Authorization: Bearer ...`."""
+
+    token: str
+    perfil: Perfil
+
+
+class EntradaPerfil(EsquemaApi):
+    """Cambios del perfil.
+
+    El correo, la empresa, la fecha de nacimiento y el consentimiento solo los corrige la
+    academia: si llegan, se ignoran.
+    """
+
+    nombre: Texto | None = None
+    apellidos: Texto | None = None
+    puesto: TextoOpcional | None = None
+    alias: Texto | None = None
+    anonimo: bool | None = None
+    mentor_ia: bool | None = Field(default=None, alias="mentorIA")
+    personalidad_mentor: Personalidad | None = None
+    tratamiento: Tratamiento | None = None
+
+
+class EntradaContrasena(EsquemaApi):
+    actual: Contrasena
+    nueva: Contrasena
+
+
+class EntradaEliminarCuenta(EsquemaApi):
+    """Para eliminar la cuenta hay que escribir la contraseña: no se puede deshacer."""
+
+    contrasena: Contrasena

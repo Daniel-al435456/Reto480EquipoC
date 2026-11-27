@@ -31,15 +31,15 @@ BEGIN
   RAISE NOTICE 'ok   %', descripcion;
 END $$;
 
--- 1. Existen las 19 tablas del modelo.
+-- 1. Existen las 20 tablas del modelo.
 SELECT pg_temp.comprobar(
   (SELECT count(*) FROM information_schema.tables
    WHERE table_schema = 'public' AND table_name IN (
      'empresas', 'identidades', 'alumnos', 'cursos', 'videos', 'lecciones', 'conceptos',
      'lecciones_conceptos', 'preguntas', 'opciones_pregunta', 'palabras_clave', 'recursos',
      'matriculas', 'dominios', 'sesiones', 'sesiones_lecciones', 'eventos', 'mensajes_mentor',
-     'derivaciones')) = 19,
-  'existen las 19 tablas del modelo');
+     'derivaciones', 'accesos')) = 20,
+  'existen las 20 tablas del modelo');
 
 -- Datos de ejemplo válidos: si alguno falla, el esquema rechaza datos correctos.
 INSERT INTO empresas (nombre) VALUES ('Empresa de prueba');
@@ -206,9 +206,30 @@ SELECT pg_temp.comprobar(
   (SELECT count(*) = 5 AND count(*) FILTER (WHERE curso_id IS NOT NULL) = 1 FROM derivaciones WHERE alumno_id = 1),
   'si se borra el curso, la derivación se conserva sin él');
 
+-- 8. Cuentas: puesto y accesos (sesiones iniciadas) (migración 004).
+UPDATE identidades SET puesto = 'Administrativa' WHERE alumno_id = 1;
+SELECT pg_temp.comprobar(
+  (SELECT puesto = 'Administrativa' FROM identidades WHERE alumno_id = 1)
+  AND (SELECT is_nullable = 'YES' FROM information_schema.columns
+       WHERE table_name = 'identidades' AND column_name = 'puesto'),
+  'la identidad guarda el puesto, que es opcional');
+INSERT INTO accesos (alumno_id, hash_token, caduca_en) VALUES (1, 'resumen-del-token', now() + interval '30 days');
+SELECT pg_temp.debe_fallar($$INSERT INTO accesos (alumno_id, hash_token, caduca_en)
+  VALUES (1, 'resumen-del-token', now())$$, '23505',
+  'dos accesos no pueden tener el mismo token');
+SELECT pg_temp.debe_fallar($$INSERT INTO accesos (alumno_id, hash_token) VALUES (1, 'otro')$$, '23502',
+  'un acceso sin caducidad se rechaza');
+SELECT pg_temp.debe_fallar($$INSERT INTO accesos (alumno_id, hash_token, caduca_en) VALUES (99, 'otro', now())$$, '23503',
+  'un acceso debe ser de un alumno existente');
+SELECT pg_temp.comprobar(
+  (SELECT array_agg(column_name::text ORDER BY column_name) FROM information_schema.columns
+   WHERE table_schema = 'public' AND table_name = 'accesos')
+  = ARRAY['actualizado_en', 'alumno_id', 'caduca_en', 'creado_en', 'hash_token', 'id'],
+  'un acceso guarda el resumen del token, nunca el token');
+
 DELETE FROM alumnos WHERE id = 1;
 SELECT pg_temp.comprobar(
   (SELECT count(*) FROM identidades WHERE alumno_id = 1) + (SELECT count(*) FROM eventos WHERE alumno_id = 1)
   + (SELECT count(*) FROM mensajes_mentor WHERE alumno_id = 1) + (SELECT count(*) FROM sesiones WHERE alumno_id = 1)
-  + (SELECT count(*) FROM derivaciones WHERE alumno_id = 1) = 0,
+  + (SELECT count(*) FROM derivaciones WHERE alumno_id = 1) + (SELECT count(*) FROM accesos WHERE alumno_id = 1) = 0,
   'eliminar un alumno borra todos sus datos');

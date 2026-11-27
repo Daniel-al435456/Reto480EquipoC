@@ -23,6 +23,9 @@ from app.errores import ErrorDeNegocio
 
 logger = logging.getLogger(__name__)
 
+#: Tipo de la conexión que reciben los servicios: así no necesitan importar psycopg.
+type Conexion = psycopg.Connection[DictRow]
+
 #: Segundos que se espera a la base de datos antes de dar el error.
 TIEMPO_MAXIMO_CONEXION = 3
 
@@ -70,5 +73,11 @@ def conexion() -> Iterator[psycopg.Connection[DictRow]]:
     with conectada:
         try:
             yield conectada
+        except psycopg.errors.UniqueViolation as error:
+            # Un valor que ya existe (por ejemplo, dos altas a la vez con el mismo correo) no es
+            # que la base de datos no esté disponible: es un conflicto con lo guardado.
+            raise ErrorDeNegocio(
+                "conflicto", "Ya hay un registro guardado con esos datos.", 409
+            ) from error
         except psycopg.Error as error:
             raise _no_disponible(str(error).strip()) from error

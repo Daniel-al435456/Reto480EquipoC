@@ -59,11 +59,11 @@ flowchart LR
 
 **Entidades**
 
-Actualizadas el 25/11/2026 con la cuenta de usuario de P7 y la implementación del esquema (`backend/migraciones/001_esquema_inicial.sql`), y el 27/11/2026 con el aviso de Lección (migración 002) y Derivación (migración 003). La unidad de estudio se llama **lección**, como en el frontend y la API: un vídeo entero o un trozo de él.
+Actualizadas el 25/11/2026 con la cuenta de usuario de P7 y la implementación del esquema (`backend/migraciones/001_esquema_inicial.sql`), y el 27/11/2026 con el aviso de Lección (migración 002), Derivación (migración 003) y el puesto y Acceso (migración 004). La unidad de estudio se llama **lección**, como en el frontend y la API: un vídeo entero o un trozo de él.
 
 ```
 Empresa(id, nombre)
-Identidad(id, alumno_id, empresa_id, id_externo, nombre, apellidos, email, hash_contrasena,
+Identidad(id, alumno_id, empresa_id, id_externo, nombre, apellidos, email, hash_contrasena, puesto,
           fecha_nacimiento, consentimiento_familia_en, privacidad_aceptada_en)   -- nunca se envía a la IA
 Alumno(id, seudonimo_ia, alias, anonimo, mentor_ia_activo, personalidad_mentor, tratamiento)
 Curso(id, titulo, descripcion, nivel)
@@ -77,6 +77,7 @@ Recurso(id, leccion_id, tipo, contenido)
 Evento(id, alumno_id, tipo, leccion_id, pregunta_id, valor, detalles)
 Sesion(id, alumno_id, minutos, audio, estado)
 MensajeMentor(id, alumno_id, leccion_id, rol, texto_filtrado, proactivo)   -- se elimina a los 90 días
+Acceso(id, alumno_id, hash_token, caduca_en)   -- sesión iniciada; nunca el token
 Derivacion(id, alumno_id, curso_id, leccion_id, motivo, estado)   -- sin el texto de la consulta
 ```
 
@@ -107,8 +108,11 @@ Todas las tablas tienen además `creado_en` y `actualizado_en`. La contraseña s
 | Solicita | Alumno – Derivación | 1 : N | | |
 | Desde | Curso – Derivación | 0..1 : N | | |
 | Desde | Lección – Derivación | 0..1 : N | | |
+| Inicia | Alumno – Acceso | 1 : N | | |
 
 Derivación guarda cada vez que el alumno pide hablar con un tutor de la academia (H7), el mentor lo deriva ante señales de malestar o el mentor se queda sin IA y deriva como respaldo, con su estado: pendiente o atendida. Se conserva mientras exista el alumno. No guarda el texto de la consulta, que es texto libre y puede contener datos personales. El hecho también queda en Evento con el tipo `derivacion_tutor`, como dice la [ficha del mentor](agentes/mentor.md); Derivación añade el estado, que cambia con el tiempo, para el futuro panel de tutores. En el diagrama no se dibujan sus relaciones con Curso y Lección, para no cruzarlo.
+
+Acceso es cada sesión iniciada: una por dispositivo. La app envía un token aleatorio en cada petición y el backend busca su resumen SHA-256, que es lo único que se guarda. Cerrar sesión borra la fila y eliminar la cuenta borra todas las del alumno.
 
 Los atributos multivaluados de Pregunta se guardan en las tablas `opciones_pregunta` y `palabras_clave` (primera forma normal).
 

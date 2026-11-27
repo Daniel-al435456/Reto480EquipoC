@@ -11,6 +11,7 @@ from app.esquemas import (
     SalidaMensaje,
     SalidaTexto,
 )
+from app.routers.dependencias import NombresDelAlumno
 from app.servicios import mentor
 
 router = APIRouter(prefix="/api/mentor", tags=["mentor"])
@@ -35,7 +36,8 @@ def proactivo(entrada: EntradaProactivo) -> SalidaTexto:
     response_model_exclude_none=True,
     summary="Responde a una consulta",
 )
-def mensaje(entrada: EntradaMensaje) -> SalidaMensaje:
+def mensaje(entrada: EntradaMensaje, nombres: NombresDelAlumno) -> SalidaMensaje:
+    # Con sesión, el nombre y los apellidos del alumno se quitan de lo que llega a la IA.
     return mentor.responder(
         entrada.texto,
         entrada.curso_id,
@@ -45,6 +47,7 @@ def mensaje(entrada: EntradaMensaje) -> SalidaMensaje:
         es_menor=entrada.es_menor,
         historial=entrada.historial,
         progreso=entrada.progreso,
+        nombres=nombres,
     )
 
 

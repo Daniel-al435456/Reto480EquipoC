@@ -4,7 +4,8 @@ Ningún otro módulo puede hablar con un proveedor de IA (lo comprueba
 `pruebas/test_arquitectura.py`). Todo lo que sale hacia la IA pasa por `consultar`, que:
 
   - no hace nada si no hay `GROQ_API_KEY`: quien llama usa su respuesta de respaldo;
-  - quita de los textos correos, teléfonos, documentos de identidad y enlaces;
+  - quita de los textos correos, teléfonos, documentos de identidad y enlaces, y el nombre y los
+    apellidos del alumno si tiene sesión iniciada (el backend los lee de su cuenta; issue #55);
   - si la IA falla, tarda demasiado o no devuelve un JSON válido, devuelve `None` y lo deja
     anotado en el registro, sin la clave.
 
@@ -39,26 +40,74 @@ PATRONES_PERSONALES = (
 )
 
 
+#: Partes de un nombre que no se quitan: son palabras corrientes ("la variable de entrada").
+PARTICULAS = frozenset(
+    {"de", "del", "la", "las", "los", "y", "e", "i", "da", "do", "dos", "van", "von"}
+)
+
+#: Cada letra de un nombre acepta sus variantes con y sin tilde: "Lopez" encuentra "López".
+_VARIANTES = {
+    "a": "aáàäâ",
+    "e": "eéèëê",
+    "i": "iíìïî",
+    "o": "oóòöô",
+    "u": "uúùüû",
+    "n": "nñ",
+    "c": "cç",
+}
+_SIN_TILDE = {variante: base for base, variantes in _VARIANTES.items() for variante in variantes}
+
+
+def _patron_palabra(palabra: str) -> str:
+    """Expresión que encuentra la palabra con o sin tildes (las mayúsculas las ignora el patrón)."""
+    partes = []
+    for letra in palabra.lower():
+        base = _SIN_TILDE.get(letra, letra)
+        partes.append(f"[{_VARIANTES[base]}]" if base in _VARIANTES else re.escape(letra))
+    return "".join(partes)
+
+
+def _patron_nombres(nombres: tuple[str, ...] | list[str]) -> re.Pattern[str] | None:
+    """Expresión que encuentra cada palabra de los nombres como palabra entera, o None si no hay."""
+    palabras = {
+        palabra
+        for nombre in nombres
+        for palabra in re.split(r"[\s-]+", nombre.strip())
+        if len(palabra) >= 3 and palabra.lower() not in PARTICULAS
+    }
+    if not palabras:
+        return None
+    alternativas = "|".join(_patron_palabra(p) for p in sorted(palabras, key=len, reverse=True))
+    return re.compile(rf"(?<!\w)(?:{alternativas})(?!\w)", re.IGNORECASE)
+
+
 def hay_ia() -> bool:
     """True si hay clave de Groq: sin ella, los agentes usan sus respuestas de respaldo."""
     return bool(obtener_configuracion().clave_groq)
 
 
-def limpiar(texto: str) -> str:
-    """Sustituye los datos personales de un texto por una etiqueta."""
+def limpiar(texto: str, nombres: tuple[str, ...] | list[str] = ()) -> str:
+    """Sustituye los datos personales de un texto por una etiqueta.
+
+    `nombres` son el nombre y los apellidos del alumno, si se conocen: se quitan palabra a palabra,
+    sin distinguir mayúsculas ni tildes.
+    """
     for patron, etiqueta in PATRONES_PERSONALES:
         texto = patron.sub(etiqueta, texto)
+    patron_nombres = _patron_nombres(nombres)
+    if patron_nombres:
+        texto = patron_nombres.sub("[nombre]", texto)
     return texto
 
 
-def _limpiar_datos(datos: Any) -> Any:
+def _limpiar_datos(datos: Any, nombres: tuple[str, ...] | list[str] = ()) -> Any:
     """Aplica `limpiar` a todos los textos, también dentro de listas y diccionarios."""
     if isinstance(datos, str):
-        return limpiar(datos)
+        return limpiar(datos, nombres)
     if isinstance(datos, list):
-        return [_limpiar_datos(valor) for valor in datos]
+        return [_limpiar_datos(valor, nombres) for valor in datos]
     if isinstance(datos, dict):
-        return {clave: _limpiar_datos(valor) for clave, valor in datos.items()}
+        return {clave: _limpiar_datos(valor, nombres) for clave, valor in datos.items()}
     return datos
 
 
@@ -84,11 +133,15 @@ def consultar(
     historial: list[tuple[str, str]] | None = None,
     temperatura: float = 0.4,
     modelo_de_reserva: str | None = None,
+    nombres: tuple[str, ...] | list[str] = (),
 ) -> dict[str, Any] | None:
     """Pide a la IA una respuesta en JSON. Devuelve `None` si no se puede usar.
 
     `historial` son los mensajes anteriores de la conversación, como pares (autor, texto) con
     autor "alumno" o "mentor". También pasan por el filtro.
+
+    `nombres` son el nombre y los apellidos del alumno con sesión: se quitan de todo lo que se envía
+    (la consulta, el historial y también el contenido del curso, por si coincide con el nombre).
 
     Si el modelo responde que ha llegado a su límite de uso (429) y hay `modelo_de_reserva`, se
     repite la petición una vez con ese modelo.
@@ -100,10 +153,13 @@ def consultar(
     mensajes = [{"role": "system", "content": instrucciones}]
     for autor, texto in historial or []:
         mensajes.append(
-            {"role": "user" if autor == "alumno" else "assistant", "content": limpiar(texto)}
+            {
+                "role": "user" if autor == "alumno" else "assistant",
+                "content": limpiar(texto, nombres),
+            }
         )
     mensajes.append(
-        {"role": "user", "content": json.dumps(_limpiar_datos(datos), ensure_ascii=False)}
+        {"role": "user", "content": json.dumps(_limpiar_datos(datos, nombres), ensure_ascii=False)}
     )
     cuerpo = {
         "model": modelo,
@@ -134,7 +190,9 @@ def consultar(
             logger.warning(
                 "%s ha llegado a su límite de uso: se prueba con %s.", modelo, modelo_de_reserva
             )
-            return consultar(modelo_de_reserva, instrucciones, datos, historial, temperatura)
+            return consultar(
+                modelo_de_reserva, instrucciones, datos, historial, temperatura, nombres=nombres
+            )
         logger.warning(
             "La IA respondió %s (%s): se usa la respuesta de respaldo.", error.code, detalle
         )

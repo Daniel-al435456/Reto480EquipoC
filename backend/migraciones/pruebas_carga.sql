@@ -2,7 +2,8 @@
 -- Las ejecuta probar.sh sobre una base de datos temporal, en cuatro fases, después de cada carga:
 --   primera: tras cargar el fichero por primera vez. Además crea los datos de un alumno.
 --   segunda: tras volver a cargar el mismo fichero: no se duplica nada ni se borran datos de alumnos.
---   cambios: tras cargar el fichero con otro vídeo de YouTube en el primer vídeo y una actividad menos.
+--   cambios: tras cargar el fichero con otro vídeo de YouTube en el primer vídeo y una actividad sustituida
+--            por otra nueva (la anterior se borra).
 --   grande:  tras cargar el fichero con más de 128 KB (como cuando lleve las transcripciones).
 -- Recibe la variable de psql fase y, en la variable de entorno ARCHIVO_CURSO, la ruta del JSON que se
 -- acaba de cargar. Lo esperado se calcula a partir de ese JSON, así que las pruebas siguen valiendo

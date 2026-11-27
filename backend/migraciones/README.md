@@ -34,6 +34,10 @@ de contenido con `app/datos/cursos-ejemplo.json`. Por eso no lleva número y
 `aplicar.sh` no lo ejecuta.
 Cada vídeo del fichero se guarda en `videos`, y cada lección es un trozo de su vídeo
 (`inicio_s` y `fin_s`, en segundos), con un `aviso` opcional que se muestra bajo el vídeo.
+Antes de cargar nada, `validar_curso.sql` comprueba el fichero entero (issue #50): campos
+obligatorios, identificadores, trozos de vídeo sin huecos, 2 o 3 actividades por lección y
+un test inicial de 12 preguntas como mucho, una por vídeo. Si algo falla, no se carga nada y
+se listan todos los fallos con el identificador afectado. Necesita PostgreSQL 16 o posterior.
 
 Los ficheros se nombran con tres dígitos y un guion bajo (`001_esquema_inicial.sql`,
 `002_...`) y no se editan una vez fusionados en `main`: si algo cambia, se añade un

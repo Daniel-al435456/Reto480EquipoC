@@ -81,7 +81,7 @@ Acceso(id, alumno_id, hash_token, caduca_en)   -- sesión iniciada; nunca el tok
 Derivacion(id, alumno_id, curso_id, leccion_id, motivo, estado)   -- sin el texto de la consulta
 ```
 
-Todas las tablas tienen además `creado_en` y `actualizado_en`. La contraseña solo se guarda como hash (Argon2 o bcrypt), calculado por el backend. La fecha de nacimiento no sale de `Identidad`: el backend calcula el tramo de edad y a la IA solo le llega si el alumno es menor. La personalidad del mentor y el tratamiento (femenino, masculino o neutro) se guardan en `Alumno` porque el backend los envía a la IA. Las preferencias visuales (tema, tamaño del texto, forma del mentor) se guardan en el dispositivo, no en la base de datos.
+Todas las tablas tienen además `creado_en` y `actualizado_en`. La contraseña solo se guarda como hash Argon2id, calculado por el backend. La fecha de nacimiento no sale de `Identidad`: el backend calcula el tramo de edad y a la IA solo le llega si el alumno es menor. La personalidad del mentor y el tratamiento (femenino, masculino o neutro) se guardan en `Alumno` porque el backend los envía a la IA. Las preferencias visuales (tema, tamaño del texto, forma del mentor) se guardan en el dispositivo, no en la base de datos.
 
 **Relaciones**
 

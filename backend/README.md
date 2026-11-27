@@ -42,10 +42,12 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 
 Las rutas de la cuenta (issue #55) necesitan la base de datos: sin `DATABASE_URL` responden 503 y la app sigue en su modo local. Las que no son el alta ni el inicio de sesión necesitan además una sesión: la app envía en cada petición la cabecera `Authorization: Bearer <token>`, con el token que devuelven `POST /api/cuenta` y `POST /api/sesion`.
 
-- **Contraseña:** se recibe por HTTPS y se guarda solo como hash Argon2id (`argon2-cffi`). Debe tener al menos 8 caracteres, con alguna letra y algún número, como en el frontend.
+- **Contraseña:** se recibe por HTTPS y se guarda solo como hash Argon2id (`argon2-cffi`, con los parámetros mínimos de OWASP: 19 MiB y 2 pasadas, para no agotar la memoria de Render). Debe tener al menos 8 caracteres, con alguna letra y algún número, como en el frontend. Todavía no hay límite de intentos de inicio de sesión.
 - **Sesión:** el token es aleatorio y dura 30 días. En la tabla `accesos` solo se guarda su resumen SHA-256, así que una copia de la base de datos no sirve para entrar. Cerrar sesión borra su fila; cambiar la contraseña borra las demás del alumno; eliminar la cuenta, todas. Las caducadas se borran cuando el alumno vuelve a entrar.
-- **Alta:** se crea con todos los datos de los cuatro pasos, en una sola transacción. La empresa se busca sin distinguir mayúsculas y, si no existe, se crea. Con menos de 14 años hace falta el consentimiento de la familia.
-- **Privacidad:** si la consulta al mentor o la corrección llevan una sesión válida, el filtro de privacidad quita el nombre y los apellidos del alumno de todo lo que se envía a la IA. Sin sesión, funcionan igual.
+- **Alta:** se crea con todos los datos de los cuatro pasos, en una sola transacción. La empresa se busca sin distinguir mayúsculas y, si no existe, se crea; al eliminar la cuenta se borra si ya no la usa nadie. Con menos de 14 años hace falta el consentimiento de la familia, con la fecha del servidor. Responder `email_registrado` permite saber si un correo tiene cuenta: es lo habitual en un alta, y el inicio de sesión no lo revela (mismo error y mismo tiempo de respuesta).
+- **Privacidad:** si el mentor, la corrección o la evaluación del test llevan una sesión válida, el backend calcula si el alumno es menor con su fecha de nacimiento (no se fía de `esMenor`), y el filtro de privacidad quita su nombre y sus apellidos de lo que escribe antes de enviarlo a la IA. Sin sesión, o si la base de datos falla en ese momento, funcionan igual que antes, con lo que diga la app.
+- **Registro del servidor:** de un error de la base de datos solo se registran su código y su mensaje principal, nunca el detalle, que puede repetir la fila con los datos del alumno.
+- **Eliminar la cuenta** es `DELETE /api/cuenta` con la contraseña en el cuerpo (`{"contrasena": "..."}`).
 
 | Error | Código | Cuándo |
 |---|---|---|
@@ -57,6 +59,8 @@ Las rutas de la cuenta (issue #55) necesitan la base de datos: sin `DATABASE_URL
 | `credenciales_incorrectas` | 401 | Correo o contraseña incorrectos al iniciar sesión (el mismo error en los dos casos) |
 | `sesion_no_valida` | 401 | Sin token, o con uno que no existe o ha caducado |
 | `contrasena_incorrecta` | 403 | La contraseña actual no es correcta al cambiarla o al eliminar la cuenta |
+| `datos_no_validos` | 422 | La base de datos rechaza un dato (por ejemplo, un carácter que no admite) |
+| `conflicto` | 409 | Un valor que tiene que ser único ya está guardado |
 
 El curso de ejemplo es una copia del del frontend. Si cambia `frontend/src/api/datos.js`,
 se regenera con `node herramientas/exportar-curso.mjs` desde `frontend/`.

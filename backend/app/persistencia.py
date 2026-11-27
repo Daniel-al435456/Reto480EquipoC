@@ -74,10 +74,34 @@ def conexion() -> Iterator[psycopg.Connection[DictRow]]:
         try:
             yield conectada
         except psycopg.errors.UniqueViolation as error:
-            # Un valor que ya existe (por ejemplo, dos altas a la vez con el mismo correo) no es
-            # que la base de datos no esté disponible: es un conflicto con lo guardado.
+            # Un valor que ya existe no es que la base de datos no esté disponible: es un
+            # conflicto con lo guardado.
+            logger.warning("Valor repetido en la base de datos: %s", _resumen_error(error))
             raise ErrorDeNegocio(
                 "conflicto", "Ya hay un registro guardado con esos datos.", 409
             ) from error
+        except (psycopg.IntegrityError, psycopg.DataError) as error:
+            # La base de datos rechaza un dato (una regla CHECK, un valor obligatorio, un carácter
+            # que no admite): el problema está en la petición, no en el servidor.
+            logger.warning("La base de datos rechaza un dato: %s", _resumen_error(error))
+            raise ErrorDeNegocio(
+                "datos_no_validos", "Algún dato no es válido. Revísalo y vuelve a intentarlo.", 422
+            ) from error
         except psycopg.Error as error:
-            raise _no_disponible(str(error).strip()) from error
+            raise _no_disponible(_resumen_error(error)) from error
+
+
+def _resumen_error(error: psycopg.Error) -> str:
+    """Lo que se registra de un error de la base de datos: su código y su mensaje principal.
+
+    Nunca el detalle (`DETAIL`), que puede repetir la fila entera con los datos personales
+    del alumno (nombre, correo, hash de la contraseña).
+    """
+    diagnostico = error.diag
+    partes = [
+        error.sqlstate or "sin código",
+        diagnostico.message_primary or type(error).__name__,
+    ]
+    if diagnostico.constraint_name:
+        partes.append(f"restricción {diagnostico.constraint_name}")
+    return " · ".join(partes)

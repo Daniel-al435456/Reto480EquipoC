@@ -86,28 +86,35 @@ def hay_ia() -> bool:
     return bool(obtener_configuracion().clave_groq)
 
 
+#: Campos de `datos` que escribe el alumno. Solo en ellos (y en el historial) se busca su nombre:
+#: el contenido del curso es fijo y conocido, y si una palabra suya apareciera como "[nombre]",
+#: quien viera la petición sabría cómo se llama el alumno.
+TEXTOS_DEL_ALUMNO = frozenset({"consulta", "respuesta_del_alumno"})
+
+
+def _quitar_nombres(texto: str, patron_nombres: re.Pattern[str] | None) -> str:
+    return patron_nombres.sub("[nombre]", texto) if patron_nombres else texto
+
+
 def limpiar(texto: str, nombres: tuple[str, ...] | list[str] = ()) -> str:
     """Sustituye los datos personales de un texto por una etiqueta.
 
     `nombres` son el nombre y los apellidos del alumno, si se conocen: se quitan palabra a palabra,
-    sin distinguir mayúsculas ni tildes.
+    sin distinguir mayúsculas ni tildes. Solo se pasan para textos que escribe el alumno.
     """
     for patron, etiqueta in PATRONES_PERSONALES:
         texto = patron.sub(etiqueta, texto)
-    patron_nombres = _patron_nombres(nombres)
-    if patron_nombres:
-        texto = patron_nombres.sub("[nombre]", texto)
-    return texto
+    return _quitar_nombres(texto, _patron_nombres(nombres))
 
 
-def _limpiar_datos(datos: Any, nombres: tuple[str, ...] | list[str] = ()) -> Any:
-    """Aplica `limpiar` a todos los textos, también dentro de listas y diccionarios."""
+def _limpiar_datos(datos: Any) -> Any:
+    """Aplica `limpiar` (sin nombres) a todos los textos, también en listas y diccionarios."""
     if isinstance(datos, str):
-        return limpiar(datos, nombres)
+        return limpiar(datos)
     if isinstance(datos, list):
-        return [_limpiar_datos(valor, nombres) for valor in datos]
+        return [_limpiar_datos(valor) for valor in datos]
     if isinstance(datos, dict):
-        return {clave: _limpiar_datos(valor, nombres) for clave, valor in datos.items()}
+        return {clave: _limpiar_datos(valor) for clave, valor in datos.items()}
     return datos
 
 
@@ -140,8 +147,8 @@ def consultar(
     `historial` son los mensajes anteriores de la conversación, como pares (autor, texto) con
     autor "alumno" o "mentor". También pasan por el filtro.
 
-    `nombres` son el nombre y los apellidos del alumno con sesión: se quitan de todo lo que se envía
-    (la consulta, el historial y también el contenido del curso, por si coincide con el nombre).
+    `nombres` son el nombre y los apellidos del alumno con sesión: se quitan del historial y de
+    los campos que escribe él (`TEXTOS_DEL_ALUMNO`), no del contenido del curso.
 
     Si el modelo responde que ha llegado a su límite de uso (429) y hay `modelo_de_reserva`, se
     repite la petición una vez con ese modelo.
@@ -150,17 +157,20 @@ def consultar(
     if not clave:
         return None
 
+    patron_nombres = _patron_nombres(nombres)
     mensajes = [{"role": "system", "content": instrucciones}]
     for autor, texto in historial or []:
         mensajes.append(
             {
                 "role": "user" if autor == "alumno" else "assistant",
-                "content": limpiar(texto, nombres),
+                "content": _quitar_nombres(limpiar(texto), patron_nombres),
             }
         )
-    mensajes.append(
-        {"role": "user", "content": json.dumps(_limpiar_datos(datos, nombres), ensure_ascii=False)}
-    )
+    limpios = _limpiar_datos(datos)
+    for campo in TEXTOS_DEL_ALUMNO & limpios.keys():
+        if isinstance(limpios[campo], str):
+            limpios[campo] = _quitar_nombres(limpios[campo], patron_nombres)
+    mensajes.append({"role": "user", "content": json.dumps(limpios, ensure_ascii=False)})
     cuerpo = {
         "model": modelo,
         "messages": mensajes,

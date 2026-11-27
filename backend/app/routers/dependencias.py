@@ -38,15 +38,19 @@ def alumno_con_sesion(token: Annotated[str, Depends(token_de_sesion)]) -> int:
     return cuentas.alumno_del_token(token)
 
 
-def nombres_del_alumno(credenciales: Credenciales) -> list[str]:
-    """Nombre y apellidos del alumno, si la petición trae una sesión válida.
+def datos_del_alumno(credenciales: Credenciales) -> cuentas.DatosParaLaIA:
+    """Nombre, apellidos y si es menor el alumno, si la petición trae una sesión válida.
 
-    Solo sirven para quitarlos de lo que se envía a la IA. Sin sesión, la lista está vacía y la
-    ruta funciona igual: el mentor y la corrección no exigen haber iniciado sesión.
+    El nombre solo sirve para quitarlo de lo que se envía a la IA. Sin sesión, los datos están
+    vacíos y la ruta funciona igual: el mentor y la corrección no exigen haber iniciado sesión.
     """
-    return cuentas.nombres_del_token(credenciales.credentials.strip()) if credenciales else []
+    return (
+        cuentas.datos_del_token(credenciales.credentials.strip())
+        if credenciales
+        else (cuentas.DatosParaLaIA())
+    )
 
 
 TokenSesion = Annotated[str, Depends(token_de_sesion)]
 AlumnoConSesion = Annotated[int, Depends(alumno_con_sesion)]
-NombresDelAlumno = Annotated[list[str], Depends(nombres_del_alumno)]
+DatosDelAlumno = Annotated[cuentas.DatosParaLaIA, Depends(datos_del_alumno)]

@@ -126,14 +126,14 @@ flowchart TD
 
 | Se envía | No se envía nunca |
 |---|---|
-| Si el alumno es menor (sí o no) | Nombre, apellidos ni alias |
+| Si el alumno es menor (sí o no). Con sesión, lo calcula el backend con su fecha de nacimiento | Alias. Tampoco el nombre ni los apellidos del alumno con sesión (véase debajo) |
 | Personalidad y trato del mentor | Correo, contraseña ni empresa |
 | La pregunta y la conversación, ya filtradas | Fecha de nacimiento |
 | La respuesta a una actividad escrita, ya filtrada | |
 | Qué lecciones domina o ha completado (identificadores del curso) | Ningún dato de la cuenta |
 | Contenido del curso: lecciones, vídeos, tramos, resúmenes e índice | |
 
-El filtro detecta correos, teléfonos, documentos de identidad y enlaces. Si la petición trae la sesión del alumno (issue #55), quita también su nombre y sus apellidos, sin distinguir mayúsculas ni tildes. **No detecta otros nombres:** si el alumno escribe el de otra persona, o el suyo sin haber iniciado sesión, ese texto llega a la IA. Por eso la app no pide datos personales en el chat y las instrucciones del mentor le prohíben pedirlos o repetirlos.
+El filtro detecta correos, teléfonos, documentos de identidad y enlaces. Si la petición trae la sesión del alumno (issue #55), quita también su nombre y sus apellidos de lo que escribe él (la pregunta, la conversación y la respuesta a una actividad), sin distinguir mayúsculas ni tildes. No los busca en el contenido del curso: si una palabra conocida del curso apareciera como `[nombre]`, delataría cómo se llama. **Lo que no detecta:** el nombre de otra persona, el suyo si no ha iniciado sesión o si la base de datos falla en ese momento, los diminutivos y las partes de menos de 3 letras ("Li", "Mª"). Por eso la app no pide datos personales en el chat y las instrucciones del mentor le prohíben pedirlos o repetirlos. Por eso la app no pide datos personales en el chat y las instrucciones del mentor le prohíben pedirlos o repetirlos.
 
 Solo `app/privacidad.py` puede hablar con un proveedor de IA. Lo comprueba una prueba de arquitectura (`pruebas/test_arquitectura.py`): si otro módulo importa un cliente HTTP o escribe la dirección de Groq, las pruebas fallan. El frontend nunca llama a la IA ni conoce la clave.
 

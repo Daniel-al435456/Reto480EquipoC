@@ -272,10 +272,10 @@ class Perfil(AjustesAlumno):
     email: str
     puesto: str
     fecha_nacimiento: date
-    consentimiento_familia: datetime | None = Field(
+    consentimiento_familia_en: datetime | None = Field(
         default=None, description="Cuándo dio la familia su consentimiento, si hizo falta"
     )
-    creada_en: datetime
+    creado_en: datetime = Field(description="Cuándo se creó la cuenta")
 
 
 class SalidaSesion(EsquemaApi):

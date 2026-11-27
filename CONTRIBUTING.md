@@ -15,7 +15,7 @@ Acuerdos de trabajo del Equipo C.
 
 El 24/11 nos repartimos las tareas de otra forma: Daniel, IA y material del curso; Jeremy, base de datos; Talia, backend; Andrea, frontend. Es un reparto orientativo y en la práctica participamos todos en todo ([Bitácora, sesión 2](BITACORA.md#sesión-2--martes-24112026)).
 
-Cada historia de usuario se gestiona como una issue con responsable y estimación.
+Cada historia de usuario se gestiona como una issue con responsable y estimación, y todas las tareas se siguen en un único [tablero](https://github.com/users/Daniel-al435456/projects/1).
 
 ## Ramas
 

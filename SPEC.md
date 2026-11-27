@@ -56,7 +56,7 @@ La barra inferior tiene cuatro pestañas: Hoy, Progreso, Mentor y Perfil.
 
 ## 4. Historias de usuario
 
-Aprobadas el 24/11/2026 ([propuesta P2](propuestas/README.md#p2-historias-de-usuario)). Cada historia es una issue del [tablero](https://github.com/Daniel-al435456/Reto480EquipoC/issues) con responsable y estimación.
+Aprobadas el 24/11/2026 ([propuesta P2](propuestas/README.md#p2-historias-de-usuario)). Cada historia es una [issue](https://github.com/Daniel-al435456/Reto480EquipoC/issues) con responsable y estimación, en el [tablero](https://github.com/users/Daniel-al435456/projects/1).
 
 | # | Como… | Quiero… | Para… | Prioridad | Criterios de aceptación |
 |---|---|---|---|---|---|

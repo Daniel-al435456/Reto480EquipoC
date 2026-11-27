@@ -21,15 +21,112 @@ after(async () => {
   await servidor?.parar();
 });
 
+/**
+ * Servidor de cuentas simulado (issue #57): responde como las rutas de cuenta del backend (#55), con las
+ * cuentas en memoria. Guarda cada petición para comprobar qué envía la app.
+ */
+async function servidorDeCuentas(contexto) {
+  const cuentas = new Map(); // email → { perfil, contrasena }
+  const tokens = new Map(); // token → email
+  const peticiones = [];
+  let siguiente = 1;
+  const responder = (route, estado, json) =>
+    estado === 204 ? route.fulfill({ status: 204 }) : route.fulfill({ status: estado, json });
+  const error = (route, estado, codigo) => responder(route, estado, { error: codigo, mensaje: codigo });
+  const abrirSesion = (email) => {
+    const token = `token-${siguiente++}`;
+    tokens.set(token, email);
+    return { token, perfil: cuentas.get(email).perfil };
+  };
+  const emailDe = (route) => tokens.get((route.request().headers().authorization ?? '').replace('Bearer ', ''));
+  const registrar = (route) => {
+    const peticion = route.request();
+    const cuerpo = peticion.postData() ? peticion.postDataJSON() : null;
+    peticiones.push({ metodo: peticion.method(), ruta: new URL(peticion.url()).pathname, cuerpo, cabeceras: peticion.headers() });
+    return cuerpo;
+  };
+  const crear = (datos) => {
+    const { contrasena, consentimientoFamilia, privacidadAceptada, ...resto } = datos;
+    const perfil = {
+      puesto: '',
+      anonimo: true,
+      mentorIA: true,
+      personalidadMentor: 'amable',
+      tratamiento: 'neutro',
+      ...resto,
+      email: resto.email.toLowerCase(),
+      consentimientoFamiliaEn: consentimientoFamilia ? '2026-11-27T10:00:00+00:00' : null,
+      creadoEn: '2026-11-27T10:00:00+00:00',
+    };
+    cuentas.set(perfil.email, { perfil, contrasena });
+    return perfil.email;
+  };
+
+  await contexto.route('**/api/cuenta', (route) => {
+    const cuerpo = registrar(route);
+    const metodo = route.request().method();
+    if (metodo === 'POST') {
+      if (cuentas.has(cuerpo.email.toLowerCase())) return error(route, 409, 'email_registrado');
+      return responder(route, 201, abrirSesion(crear(cuerpo)));
+    }
+    const email = emailDe(route);
+    if (!email) return error(route, 401, 'sesion_no_valida');
+    const cuenta = cuentas.get(email);
+    if (metodo === 'GET') return responder(route, 200, cuenta.perfil);
+    if (metodo === 'PATCH') {
+      Object.assign(cuenta.perfil, cuerpo);
+      return responder(route, 200, cuenta.perfil);
+    }
+    if (cuerpo?.contrasena !== cuenta.contrasena) return error(route, 403, 'contrasena_incorrecta');
+    cuentas.delete(email);
+    for (const [token, dueno] of tokens) if (dueno === email) tokens.delete(token);
+    return responder(route, 204);
+  });
+  await contexto.route('**/api/cuenta/contrasena', (route) => {
+    const cuerpo = registrar(route);
+    const email = emailDe(route);
+    if (!email) return error(route, 401, 'sesion_no_valida');
+    if (cuerpo.actual !== cuentas.get(email).contrasena) return error(route, 403, 'contrasena_incorrecta');
+    cuentas.get(email).contrasena = cuerpo.nueva;
+    return responder(route, 204);
+  });
+  await contexto.route('**/api/sesion', (route) => {
+    const cuerpo = registrar(route);
+    if (route.request().method() === 'DELETE') {
+      tokens.delete((route.request().headers().authorization ?? '').replace('Bearer ', ''));
+      return responder(route, 204);
+    }
+    const cuenta = cuentas.get(cuerpo.email.toLowerCase());
+    if (!cuenta || cuenta.contrasena !== cuerpo.contrasena) return error(route, 401, 'credenciales_incorrectas');
+    return responder(route, 200, abrirSesion(cuerpo.email.toLowerCase()));
+  });
+  return { cuentas, tokens, peticiones, crear };
+}
+
 /** Abre la app en un móvil nuevo, sin datos guardados, y recoge los errores de JavaScript. */
 async function abrir() {
   const contexto = await navegador.newContext({ ...devices['Pixel 7'], serviceWorkers: 'block' });
+  const servidorCuentas = await servidorDeCuentas(contexto);
   const pagina = await contexto.newPage();
   const errores = [];
   pagina.on('pageerror', (e) => errores.push(e.message));
   await pagina.goto(servidor.url);
   await pagina.getByText('Aprende a tu ritmo.').waitFor();
-  return { contexto, pagina, errores };
+  return { contexto, pagina, errores, servidorCuentas };
+}
+
+const estadoGuardado = (pagina) => pagina.evaluate(() => localStorage.getItem('reto480-estado-v5') ?? '');
+/** Todo lo que la app ha guardado en este móvil, con todas sus claves. */
+const todoLoGuardado = (pagina) =>
+  pagina.evaluate(() => Object.keys(localStorage).map((clave) => `${clave}=${localStorage.getItem(clave)}`).join('\n'));
+
+/** Espera a que una condición de la prueba (no de la página) se cumpla, como mucho 3 segundos. */
+async function esperarCondicion(condicion) {
+  for (let intento = 0; intento < 30; intento++) {
+    if (condicion()) return;
+    await new Promise((resolver) => setTimeout(resolver, 100));
+  }
+  assert.fail('La condición no se ha cumplido a tiempo.');
 }
 
 const ruta = (pagina) => pagina.evaluate(() => location.hash.replace(/^#/, ''));
@@ -414,3 +511,251 @@ describe('vídeo por trozos: inicio', () => {
     await contexto.close();
   });
 });
+
+describe('cuenta en el servidor', () => {
+  const pablo = {
+    empresa: 'Acme Formación',
+    nombre: 'Pablo',
+    apellidos: 'Ruiz',
+    email: 'pablo@acme.es',
+    contrasena: 'pablo1234',
+    fechaNacimiento: '1985-02-03',
+    alias: 'Zorro7',
+  };
+
+  /** Inicia sesión desde la bienvenida. */
+  async function entrar(pagina, email, contrasena) {
+    // En un móvil donde aún no se ha entrado, la bienvenida ofrece "Ya tengo cuenta" en lugar de "Iniciar sesión".
+    await pagina.getByRole('button', { name: /^(Iniciar sesión|Ya tengo cuenta)$/ }).first().click();
+    await pagina.getByLabel('Correo electrónico').fill(email);
+    await pagina.getByLabel('Contraseña', { exact: true }).fill(contrasena);
+    await boton(pagina, 'Iniciar sesión').click();
+  }
+
+  async function cerrarSesion(pagina) {
+    await pagina.goto(servidor.url + '#/perfil');
+    await boton(pagina, 'Cerrar sesión').click();
+    await pagina.getByText('Aprende a tu ritmo.').waitFor();
+  }
+
+  it('el alta envía al terminar todos los datos, y la contraseña no se guarda en el móvil', async () => {
+    const { contexto, pagina, errores, servidorCuentas } = await abrir();
+    await completarAlta(pagina, { personalidad: 'Gracioso' });
+    const altas = servidorCuentas.peticiones.filter((p) => p.metodo === 'POST' && p.ruta === '/api/cuenta');
+    assert.equal(altas.length, 1);
+    assert.deepEqual(
+      { ...altas[0].cuerpo },
+      {
+        empresa: 'Acme Formación',
+        nombre: 'Lucía',
+        apellidos: 'García Pérez',
+        email: 'lucia@acme.es',
+        contrasena: 'clave1234',
+        puesto: '',
+        fechaNacimiento: '1990-05-10',
+        consentimientoFamilia: false,
+        privacidadAceptada: true,
+        alias: JSON.parse(await estadoGuardado(pagina)).alias,
+        anonimo: true,
+        mentorIA: true,
+        personalidadMentor: 'gracioso',
+        tratamiento: 'neutro',
+      },
+    );
+    assert.match(await estadoGuardado(pagina), /"token":"token-1"/);
+    assert.ok(!(await todoLoGuardado(pagina)).includes('clave1234'));
+    assert.deepEqual(errores, []);
+    await contexto.close();
+  });
+
+  it('si el correo ya tiene cuenta, lo dice al terminar el alta', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    servidorCuentas.crear({ ...pablo, email: 'lucia@acme.es' });
+    await crearCuenta(pagina);
+    await indicarNacimiento(pagina, '1990-05-10');
+    await boton(pagina, 'Continuar').click();
+    await boton(pagina, 'Empezar a aprender').click();
+    await pagina.getByText(/Ya hay una cuenta con ese correo/).waitFor();
+    assert.equal(await ruta(pagina), '/preferencias');
+    await contexto.close();
+  });
+
+  it('si el servidor no responde, avisa, se queda en el paso 4 y deja reintentar', async () => {
+    const { contexto, pagina } = await abrir();
+    await crearCuenta(pagina);
+    await indicarNacimiento(pagina, '1990-05-10');
+    await boton(pagina, 'Continuar').click();
+    await pagina.route('**/api/cuenta', (route) => route.abort('connectionrefused'));
+    await boton(pagina, 'Empezar a aprender').click();
+    await pagina.getByText(/No hemos podido conectar/).waitFor();
+    assert.equal(await ruta(pagina), '/preferencias');
+    await pagina.unroute('**/api/cuenta');
+    await boton(pagina, 'Empezar a aprender').click();
+    await pagina.getByText('Elige un curso').waitFor();
+    await contexto.close();
+  });
+
+  it('al recargar a mitad del alta, pide otra vez la contraseña antes de crear la cuenta', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    await crearCuenta(pagina);
+    await indicarNacimiento(pagina, '1990-05-10');
+    await boton(pagina, 'Continuar').click();
+    await pagina.reload();
+    await pagina.getByText('Hazla a tu medida').waitFor();
+    await pagina.getByLabel('Contraseña', { exact: true }).fill('clave1234');
+    await boton(pagina, 'Empezar a aprender').click();
+    await pagina.getByText('Elige un curso').waitFor();
+    assert.equal(servidorCuentas.cuentas.get('lucia@acme.es').contrasena, 'clave1234');
+    await contexto.close();
+  });
+
+  it('iniciar sesión con el servidor carga la cuenta y sus ajustes', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    servidorCuentas.crear(pablo);
+    await entrar(pagina, 'Pablo@Acme.es', 'otra1234');
+    await pagina.getByText('El correo o la contraseña no son correctos.').waitFor();
+    await pagina.getByLabel('Contraseña', { exact: true }).fill('pablo1234');
+    await boton(pagina, 'Iniciar sesión').click();
+    await pagina.waitForFunction(() => location.hash === '#/cursos');
+    assert.match(await estadoGuardado(pagina), /"alias":"Zorro7"/);
+    await contexto.close();
+  });
+
+  it('cerrar sesión avisa al servidor y borra el token del móvil', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    await completarAlta(pagina);
+    await cerrarSesion(pagina);
+    assert.ok(servidorCuentas.peticiones.some((p) => p.metodo === 'DELETE' && p.ruta === '/api/sesion'));
+    assert.equal(servidorCuentas.tokens.size, 0);
+    // En el estado del móvil no queda nada de la cuenta: ni el token ni sus datos personales.
+    const estado = await estadoGuardado(pagina);
+    for (const dato of ['token-1', 'Lucía', 'lucia@acme.es', 'Acme']) assert.ok(!estado.includes(dato), dato);
+    // Al volver a entrar, la petición ya no lleva la sesión anterior.
+    await entrar(pagina, 'lucia@acme.es', 'clave1234');
+    await pagina.waitForFunction(() => location.hash === '#/cursos');
+    const login = servidorCuentas.peticiones.findLast((p) => p.ruta === '/api/sesion' && p.metodo === 'POST');
+    assert.equal(login.cabeceras.authorization, undefined);
+    await contexto.close();
+  });
+
+  it('eliminar la cuenta pide la contraseña', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    await completarAlta(pagina);
+    await pagina.goto(servidor.url + '#/perfil/seguridad');
+    await boton(pagina, 'Eliminar mi cuenta').click();
+    await pagina.getByLabel('Escribe tu contraseña para confirmar').fill('otra1234');
+    await boton(pagina, 'Sí, eliminar mi cuenta').click();
+    await pagina.getByText('La contraseña no es correcta.').waitFor();
+    assert.ok(servidorCuentas.cuentas.has('lucia@acme.es'));
+    await pagina.getByLabel('Escribe tu contraseña para confirmar').fill('clave1234');
+    await boton(pagina, 'Sí, eliminar mi cuenta').click();
+    await pagina.getByText('Aprende a tu ritmo.').waitFor();
+    assert.ok(!servidorCuentas.cuentas.has('lucia@acme.es'));
+    await contexto.close();
+  });
+
+  it('las preguntas al mentor llevan la sesión del alumno', async () => {
+    const { contexto, pagina } = await abrir();
+    const cabeceras = [];
+    await pagina.route('**/salud', (route) => route.fulfill({ json: { estado: 'ok', servicio: 'prueba', version: 'test' } }));
+    await pagina.route('**/api/mentor/mensaje', (route) => {
+      cabeceras.push(route.request().headers().authorization);
+      return route.fulfill({ json: { texto: 'Respuesta del mentor.', derivado: false } });
+    });
+    await completarAlta(pagina);
+    await pagina.getByRole('button', { name: /Python desde cero/ }).click();
+    await pagina.goto(servidor.url + '#/mentor');
+    await pagina.locator('#pregunta-mentor').fill('¿Qué es una variable?');
+    await pagina.keyboard.press('Enter');
+    await pagina.getByText('Respuesta del mentor.').last().waitFor({ state: 'attached' });
+    assert.deepEqual(cabeceras, ['Bearer token-1']);
+    await contexto.close();
+  });
+
+  it('cambiar el nombre desde el perfil lo guarda en el servidor', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    await completarAlta(pagina);
+    await pagina.goto(servidor.url + '#/perfil/cuenta');
+    await pagina.getByLabel('Nombre', { exact: true }).fill('Lucía María');
+    await boton(pagina, 'Guardar cambios').click();
+    await pagina.getByText('Cambios guardados.').waitFor();
+    await esperarCondicion(() => servidorCuentas.cuentas.get('lucia@acme.es').perfil.nombre === 'Lucía María');
+    await contexto.close();
+  });
+
+  it('si la sesión ha caducado, vuelve a pedir que se inicie sesión', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    await completarAlta(pagina);
+    servidorCuentas.tokens.clear();
+    await pagina.goto(servidor.url + '#/perfil/cuenta');
+    await pagina.getByLabel('Nombre', { exact: true }).fill('Otra');
+    await boton(pagina, 'Guardar cambios').click();
+    await pagina.getByText(/Tu sesión ha caducado/).waitFor();
+    assert.equal(await ruta(pagina), '/entrar');
+    await contexto.close();
+  });
+
+  it('al abrir la app con una sesión caducada, pide entrar de nuevo', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    await completarAlta(pagina);
+    servidorCuentas.tokens.clear();
+    await pagina.reload();
+    await pagina.getByText(/Tu sesión ha caducado/).waitFor();
+    assert.equal(await ruta(pagina), '/entrar');
+    assert.ok(!(await estadoGuardado(pagina)).includes('Lucía'));
+    await contexto.close();
+  });
+
+  it('si un cambio del perfil no se guarda en el servidor, avisa y el móvil sigue como estaba', async () => {
+    const { contexto, pagina } = await abrir();
+    await completarAlta(pagina);
+    await pagina.goto(servidor.url + '#/perfil/privacidad');
+    const interruptor = pagina.getByRole('switch', { name: /Mentor con IA/ });
+    assert.equal(await interruptor.getAttribute('aria-checked'), 'true');
+    await pagina.route('**/api/cuenta', (route) => route.abort('connectionrefused'));
+    await interruptor.click();
+    await pagina.getByText(/No se ha podido guardar el cambio/).waitFor();
+    assert.equal(await interruptor.getAttribute('aria-checked'), 'true');
+    assert.match(await estadoGuardado(pagina), /"mentorIA":true/);
+    await contexto.close();
+  });
+
+  it('eliminar la cuenta con doble clic no muestra errores y borra su progreso del móvil', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    await completarAlta(pagina);
+    await pagina.getByRole('button', { name: /Python desde cero/ }).click();
+    await pagina.getByRole('button', { name: 'Empezar el test', exact: true }).waitFor();
+    await pagina.goto(servidor.url + '#/perfil/seguridad');
+    await boton(pagina, 'Eliminar mi cuenta').click();
+    await pagina.getByLabel('Escribe tu contraseña para confirmar').fill('clave1234');
+    await boton(pagina, 'Sí, eliminar mi cuenta').dblclick();
+    await pagina.getByText('Aprende a tu ritmo.').waitFor();
+    assert.equal(servidorCuentas.peticiones.filter((p) => p.metodo === 'DELETE' && p.ruta === '/api/cuenta').length, 1);
+    assert.equal(await pagina.getByText(/sesión ha caducado/).count(), 0);
+    const guardado = await todoLoGuardado(pagina);
+    assert.ok(!guardado.includes('reto480-progreso'), guardado);
+    // La bienvenida ya no ofrece entrar con una cuenta que no existe.
+    await boton(pagina, 'Crear cuenta').waitFor();
+    await contexto.close();
+  });
+
+  it('dos cuentas en el mismo móvil: cada una recupera su progreso', async () => {
+    const { contexto, pagina, servidorCuentas } = await abrir();
+    servidorCuentas.crear(pablo);
+    await completarAlta(pagina);
+    await pagina.getByRole('button', { name: /Python desde cero/ }).click();
+    await pagina.getByRole('button', { name: 'Empezar el test', exact: true }).waitFor();
+    await cerrarSesion(pagina);
+    await entrar(pagina, 'pablo@acme.es', 'pablo1234');
+    await pagina.waitForFunction(() => location.hash === '#/cursos');
+    // Pablo no ve nada de Lucía: ni su nombre ni su alias ni su curso.
+    const dePablo = await estadoGuardado(pagina);
+    assert.match(dePablo, /"alias":"Zorro7"/);
+    for (const dato of ['Lucía', 'lucia@acme.es', 'python-desde-cero']) assert.ok(!dePablo.includes(dato), dato);
+    await cerrarSesion(pagina);
+    await entrar(pagina, 'lucia@acme.es', 'clave1234');
+    await pagina.waitForFunction(() => location.hash === '#/curso/python-desde-cero/test');
+    await contexto.close();
+  });
+});
+

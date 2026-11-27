@@ -178,8 +178,15 @@ Se aplican con atributos en `<html>` (`data-tema`, `data-texto`, `data-contraste
 - `src/api/cliente.js`: única capa de acceso a datos. Las pantallas nunca llaman a `fetch` ni a la IA directamente.
 - `obtenerCursoCompleto` carga el curso y sus lecciones desde la API. Si no hay backend, se conserva `datos.js` como respaldo para la demo.
 
-Esta conexión es un paso intermedio: el backend todavía lee el curso del JSON de ejemplo. La conexión del servicio a PostgreSQL queda para una fase posterior y no forma parte de este contrato.
-- La cuenta, el progreso, los ajustes, el alias y el modo anónimo se guardan en el navegador (`localStorage`, clave `reto480-estado-v3`). Si se cambia la forma de los datos guardados, hay que subir la versión de la clave en `src/hooks/useEstado.jsx` y en `index.html`.
+- El estado del alumno se guarda en el navegador (`localStorage`, clave `reto480-estado-v5`). Si se cambia la forma de los datos guardados, hay que subir la versión de la clave en `src/hooks/useEstado.jsx` y en `index.html`.
+- **Cuenta (issue #57).** Con backend, la cuenta vive en el servidor (rutas de la tabla de abajo). En el navegador quedan, mientras la sesión está abierta, el token (que viaja en todas las peticiones como `Authorization: Bearer <token>`) y una copia del perfil; al cerrar sesión se borran. La contraseña nunca se guarda: entre el paso 1 y el 4 del alta solo está en memoria (`src/api/altaPendiente.js`); si la app se recarga, el paso 4 la vuelve a pedir.
+  - Al abrir la app y al volver a ella, se comprueba la sesión (`GET /api/cuenta`): si ha caducado, la app vuelve a la pantalla de entrar; si no, trae los cambios del perfil hechos en otro móvil o por la academia.
+  - Los cambios del perfil se aplican cuando el servidor los confirma. Si fallan, el móvil sigue como estaba y se avisa.
+  - Si el servidor no responde, el alta y el inicio de sesión avisan y dejan reintentar.
+  - El service worker no guarda en caché las respuestas de la API (`public/sw.js`).
+  - Sin backend, la cuenta se guarda en el navegador como antes (con un resumen SHA-256 de la contraseña).
+  - Pendiente: con dos pestañas abiertas, cerrar sesión en una no la cierra en la otra; y si el alumno sale de la pantalla de entrar con la petición en curso, la respuesta inicia la sesión igualmente.
+- **Progreso.** El curso, el test, las lecciones completadas, la sesión, la conversación con el mentor y los eventos siguen en el navegador hasta que estén en el servidor (ramas 3 y 4). Al cerrar sesión se guardan por cuenta, en `reto480-progreso-v5:<resumen del correo>` (el correo no queda en claro), con la fecha de creación de la cuenta: al volver a entrar, cada cuenta recupera el suyo, y nunca el de otra cuenta con el mismo correo. Los mensajes del mentor de más de 90 días no se recuperan (SPEC §6). Eliminar la cuenta borra su progreso. Los ajustes de visualización son del dispositivo y no se guardan en el servidor. Al arrancar se borran las claves de versiones anteriores (`reto480-estado-v3` y `-v4`).
 
 **Conectar el backend.** Con el backend en marcha (`backend/README.md`), crear el fichero `frontend/.env.local`, que no se sube al repositorio, con:
 
@@ -203,6 +210,15 @@ Al arrancar, la app comprueba una vez si el backend responde en `/salud` (3 segu
 | `mensajeProactivoMentor` | `POST /api/mentor/proactivo` | `{ cursoId, leccionId, senal, esMenor, personalidad, tratamiento, progreso }` | `{ texto }` |
 | `preguntarMentor` | `POST /api/mentor/mensaje` | `{ cursoId, leccionId, texto, esMenor, personalidad, tratamiento, historial, progreso }`. `historial`: últimos mensajes `{ autor, texto }`; `progreso`: `{ dominadas, completadas }` (identificadores de lecciones) | `{ texto, derivado, leccionId?, leccionTitulo? }`. Si llega `leccionId`, el mentor propone abrir esa lección y se muestra un botón |
 | `solicitarTutorHumano` | `POST /api/mentor/derivacion` | `{ cursoId, leccionId }` | `{ texto }` |
+| `crearCuentaServidor` | `POST /api/cuenta` | `{ empresa, nombre, apellidos, email, contrasena, puesto, fechaNacimiento, consentimientoFamilia, privacidadAceptada, alias, anonimo, mentorIA, personalidadMentor, tratamiento }` (`src/api/sesion.js`, `cuerpoAlta`) | `{ token, perfil }` |
+| `iniciarSesionServidor` | `POST /api/sesion` | `{ email, contrasena }` | `{ token, perfil }` |
+| `cerrarSesionServidor` | `DELETE /api/sesion` | | 204 |
+| `obtenerPerfilServidor` | `GET /api/cuenta` | | `perfil` (comprueba la sesión al abrir la app y al volver a ella) |
+| `actualizarPerfilServidor` | `PATCH /api/cuenta` | Alguno de `{ nombre, apellidos, puesto, alias, anonimo, mentorIA, personalidadMentor, tratamiento }` | `perfil` |
+| `cambiarContrasenaServidor` | `PUT /api/cuenta/contrasena` | `{ actual, nueva }` | 204 |
+| `eliminarCuentaServidor` | `DELETE /api/cuenta` | `{ contrasena }` | 204 |
+
+`perfil` es `{ empresa, nombre, apellidos, email, puesto, fechaNacimiento, consentimientoFamiliaEn, creadoEn, alias, anonimo, mentorIA, personalidadMentor, tratamiento }`. Las funciones de cuenta no tienen respuesta simulada: si el servidor no responde o devuelve un error, lanzan un `ErrorCuenta` con el código del backend (`email_registrado`, `credenciales_incorrectas`, `sesion_no_valida`...) o `sin_conexion`, y `mensajeDeError` (`src/api/sesion.js`) da el texto para el alumno.
 
 La IA está en el backend ([propuesta P1](../propuestas/README.md#p1-agentes-de-ia)): Claude prepara el contenido una vez por vídeo y Groq redacta el diagnóstico y responde como mentor. Las claves de la IA nunca llegan al frontend.
 
@@ -213,7 +229,7 @@ Se usan el ejecutor de pruebas de Node (`node:test`) y Playwright, sin más depe
 | Carpeta | Qué comprueba |
 |---|---|
 | `pruebas/unitarias/` | Reglas de negocio en funciones puras de `src/api/`: acceso y alta, edad y menores (incluido el cambio de tramo al cumplir años), datos de la cuenta, contraseñas, personalidad y trato del mentor, datos que llegan a la IA y planificador de sesión (historias H2 a H5). También reglas de arquitectura: solo `src/api/` usa la red, no hay claves ni llamadas a proveedores de IA, no hay dependencias nuevas y la clave del estado coincide con `index.html`. |
-| `pruebas/e2e/` | La app compilada en Chromium con tamaño de móvil: alta de un adulto y de un menor de 14 años, fecha de nacimiento futura, respuesta del mentor con la personalidad elegida, datos que no se pueden cambiar, cierre e inicio de sesión, funcionamiento sin conexión, accesibilidad básica de las pantallas públicas y peso del JavaScript (menos de 200 KB comprimido). |
+| `pruebas/e2e/` | La app compilada en Chromium con tamaño de móvil: alta de un adulto y de un menor de 14 años, fecha de nacimiento futura, respuesta del mentor con la personalidad elegida, datos que no se pueden cambiar, cierre e inicio de sesión, funcionamiento sin conexión, accesibilidad básica de las pantallas públicas y peso del JavaScript (menos de 200 KB comprimido). La cuenta en el servidor se prueba con un servidor de cuentas simulado (`servidorDeCuentas` en `alumno.test.js`); el modo local, con la app compilada sin backend en `dist-local/` (`local.test.js`, `npm run build:local`). |
 
 `npm run verificar` las ejecuta todas tras compilar, y GitHub Actions lo repite en cada pull request (`.github/workflows/frontend.yml`). Una regla de negocio nueva se escribe como función pura en `src/api/` y se prueba en `pruebas/unitarias/`.
 

@@ -3,14 +3,14 @@
  * - Guarda la aplicación en el dispositivo para que cargue al instante y funcione sin conexión.
  * - Navegación: intenta la red y, si no hay conexión, sirve la versión guardada.
  * - Resto de ficheros propios: sirve la copia guardada y la actualiza en segundo plano.
- * - Nunca guarda contenido de otros dominios (vídeos de YouTube, API externas).
+ * - Nunca guarda contenido de otros dominios (vídeos de YouTube, API externas) ni las respuestas de la API propia.
  *
  * - Las versiones nuevas esperan a que el alumno pulse "Actualizar" (aviso dentro de la app),
  *   para no cambiar la aplicación a mitad de una lección.
  *
  * Al publicar cambios, sube la versión: así los dispositivos detectan que hay una versión nueva.
  */
-const VERSION = 'v6';
+const VERSION = 'v7';
 const CACHE = `reto480-${VERSION}`;
 const ESENCIALES = [
   './',
@@ -44,6 +44,9 @@ self.addEventListener('fetch', (evento) => {
   const url = new URL(request.url);
 
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  // Las respuestas de la API nunca se guardan: dependen de la sesión del alumno, y en un móvil compartido
+  // se podría ver el perfil de otra cuenta. Sin conexión, la app ya usa su copia del curso.
+  if (url.pathname.includes('/api/') || url.pathname.endsWith('/salud')) return;
 
   if (request.mode === 'navigate') {
     evento.respondWith(

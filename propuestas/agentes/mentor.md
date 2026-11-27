@@ -50,4 +50,4 @@ Devuelve: {"mensaje": "...", "accion": "ver_fragmento|repasar|descansar|derivar_
 - Contexto máximo de unos 8.000 tokens por llamada.
 - Máximo 30 mensajes al día por alumno.
 - Tiempo de respuesta objetivo: < 3 s. Si se supera, mostramos un mensaje predefinido según la señal.
-- Las derivaciones a tutor se registran como evento `derivacion_tutor`. En el futuro, esos eventos alimentarán el panel de tutores.
+- Las derivaciones a tutor se registran como evento `derivacion_tutor`. Además, la tabla `derivaciones` (migración 003, del 27/11/2026) guardará cada petición con su motivo (la pide el alumno, señales de malestar o respaldo porque la IA no responde) y su estado (pendiente o atendida), sin el texto de la consulta. El backend la escribirá cuando sepa qué alumno la pide (inicio de sesión). En el futuro, esa tabla alimentará el panel de tutores.

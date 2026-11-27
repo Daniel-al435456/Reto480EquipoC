@@ -59,7 +59,7 @@ flowchart LR
 
 **Entidades**
 
-Actualizadas el 25/11/2026 con la cuenta de usuario de P7 y la implementación del esquema (`backend/migraciones/001_esquema_inicial.sql`). La unidad de estudio se llama **lección**, como en el frontend y la API: un vídeo entero o un trozo de él.
+Actualizadas el 25/11/2026 con la cuenta de usuario de P7 y la implementación del esquema (`backend/migraciones/001_esquema_inicial.sql`), y el 27/11/2026 con el aviso de Lección (migración 002) y Derivación (migración 003). La unidad de estudio se llama **lección**, como en el frontend y la API: un vídeo entero o un trozo de él.
 
 ```
 Empresa(id, nombre)
@@ -68,7 +68,7 @@ Identidad(id, alumno_id, empresa_id, id_externo, nombre, apellidos, email, hash_
 Alumno(id, seudonimo_ia, alias, anonimo, mentor_ia_activo, personalidad_mentor, tratamiento)
 Curso(id, titulo, descripcion, nivel)
 Video(id, curso_id, titulo, youtube_id, duracion_s, orden, transcripcion, origen_transcripcion)
-Leccion(id, video_id, titulo, descripcion, inicio_s, fin_s, duracion_lectura_min, resumen, lectura, ejercicio)
+Leccion(id, video_id, titulo, descripcion, inicio_s, fin_s, aviso, duracion_lectura_min, resumen, lectura, ejercicio)
 Concepto(id, curso_id, nombre)
 Pregunta(id, concepto_id, leccion_id, uso, formato, dificultad, enunciado, solucion, explicacion)
    opciones (multivaluado): orden, texto, correcta
@@ -77,6 +77,7 @@ Recurso(id, leccion_id, tipo, contenido)
 Evento(id, alumno_id, tipo, leccion_id, pregunta_id, valor, detalles)
 Sesion(id, alumno_id, minutos, audio, estado)
 MensajeMentor(id, alumno_id, leccion_id, rol, texto_filtrado, proactivo)   -- se elimina a los 90 días
+Derivacion(id, alumno_id, curso_id, leccion_id, motivo, estado)   -- sin el texto de la consulta
 ```
 
 Todas las tablas tienen además `creado_en` y `actualizado_en`. La contraseña solo se guarda como hash (Argon2 o bcrypt), calculado por el backend. La fecha de nacimiento no sale de `Identidad`: el backend calcula el tramo de edad y a la IA solo le llega si el alumno es menor. La personalidad del mentor y el tratamiento (femenino, masculino o neutro) se guardan en `Alumno` porque el backend los envía a la IA. Las preferencias visuales (tema, tamaño del texto, forma del mentor) se guardan en el dispositivo, no en la base de datos.
@@ -103,6 +104,11 @@ Todas las tablas tienen además `creado_en` y `actualizado_en`. La contraseña s
 | Compone | Sesión – Lección | N : M | orden, completado | `sesiones_lecciones` |
 | Conversa | Alumno – Mensaje mentor | 1 : N | | |
 | Trata | Lección – Mensaje mentor | 0..1 : N | | |
+| Solicita | Alumno – Derivación | 1 : N | | |
+| Desde | Curso – Derivación | 0..1 : N | | |
+| Desde | Lección – Derivación | 0..1 : N | | |
+
+Derivación guarda cada vez que el alumno pide hablar con un tutor de la academia (H7), el mentor lo deriva ante señales de malestar o el mentor se queda sin IA y deriva como respaldo, con su estado: pendiente o atendida. Se conserva mientras exista el alumno. No guarda el texto de la consulta, que es texto libre y puede contener datos personales. El hecho también queda en Evento con el tipo `derivacion_tutor`, como dice la [ficha del mentor](agentes/mentor.md); Derivación añade el estado, que cambia con el tiempo, para el futuro panel de tutores. En el diagrama no se dibujan sus relaciones con Curso y Lección, para no cruzarlo.
 
 Los atributos multivaluados de Pregunta se guardan en las tablas `opciones_pregunta` y `palabras_clave` (primera forma normal).
 
@@ -166,6 +172,7 @@ Todas las llamadas a la IA pasan por un único módulo del backend (`backend/app
 | Dato | Plazo de conservación | Finalidad |
 |---|---|---|
 | Mensajes con el mentor | 90 días | Continuidad de la conversación |
+| Derivaciones a un tutor (motivo y estado, sin la consulta) | Mientras exista el alumno | Que la academia atienda al alumno |
 | Nivel por concepto y eventos agregados | Mientras dure la suscripción | Personalización del itinerario |
 | Registros de llamadas a la IA | Solo metadatos (tokens, coste, latencia), sin contenido | Control del coste |
 

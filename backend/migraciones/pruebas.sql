@@ -31,14 +31,15 @@ BEGIN
   RAISE NOTICE 'ok   %', descripcion;
 END $$;
 
--- 1. Existen las 18 tablas del modelo.
+-- 1. Existen las 19 tablas del modelo.
 SELECT pg_temp.comprobar(
   (SELECT count(*) FROM information_schema.tables
    WHERE table_schema = 'public' AND table_name IN (
      'empresas', 'identidades', 'alumnos', 'cursos', 'videos', 'lecciones', 'conceptos',
      'lecciones_conceptos', 'preguntas', 'opciones_pregunta', 'palabras_clave', 'recursos',
-     'matriculas', 'dominios', 'sesiones', 'sesiones_lecciones', 'eventos', 'mensajes_mentor')) = 18,
-  'existen las 18 tablas del modelo');
+     'matriculas', 'dominios', 'sesiones', 'sesiones_lecciones', 'eventos', 'mensajes_mentor',
+     'derivaciones')) = 19,
+  'existen las 19 tablas del modelo');
 
 -- Datos de ejemplo válidos: si alguno falla, el esquema rechaza datos correctos.
 INSERT INTO empresas (nombre) VALUES ('Empresa de prueba');
@@ -168,8 +169,46 @@ SELECT pg_temp.debe_fallar($$INSERT INTO sesiones (alumno_id, minutos, audio) VA
   'una sesión solo dura 5, 10 o 20 minutos');
 SELECT pg_temp.debe_fallar($$INSERT INTO mensajes_mentor (alumno_id, rol, texto_filtrado) VALUES (1, 'tutor', 'x')$$, '23514',
   'un rol de mensaje desconocido se rechaza');
+
+-- 7. Derivaciones a un tutor de la academia (H7, migración 003).
+INSERT INTO derivaciones (alumno_id, curso_id, leccion_id, motivo) VALUES (1, 'python-desde-cero', 'variables', 'alumno');
+INSERT INTO derivaciones (alumno_id, motivo) VALUES (1, 'malestar'), (1, 'sin_ia');
+SELECT pg_temp.comprobar((SELECT count(*) = 3 AND bool_and(estado = 'pendiente') FROM derivaciones WHERE alumno_id = 1),
+  'una derivación empieza pendiente, y el curso y la lección son opcionales (motivos: alumno, malestar o sin_ia)');
+UPDATE derivaciones SET actualizado_en = '2000-01-01' WHERE motivo = 'alumno';
+UPDATE derivaciones SET estado = 'atendida' WHERE motivo = 'alumno';
+SELECT pg_temp.comprobar((SELECT estado = 'atendida' AND actualizado_en > '2000-01-01' FROM derivaciones WHERE motivo = 'alumno'),
+  'una derivación se puede marcar como atendida, y queda anotado cuándo');
+SELECT pg_temp.debe_fallar($$INSERT INTO derivaciones (alumno_id, motivo) VALUES (1, 'aburrimiento')$$, '23514',
+  'un motivo de derivación desconocido se rechaza');
+SELECT pg_temp.debe_fallar($$INSERT INTO derivaciones (alumno_id) VALUES (1)$$, '23502',
+  'una derivación sin motivo se rechaza');
+SELECT pg_temp.debe_fallar($$UPDATE derivaciones SET estado = 'olvidada'$$, '23514',
+  'un estado de derivación desconocido se rechaza');
+SELECT pg_temp.debe_fallar($$INSERT INTO derivaciones (alumno_id, motivo) VALUES (99, 'alumno')$$, '23503',
+  'una derivación debe ser de un alumno existente');
+SELECT pg_temp.comprobar(
+  (SELECT array_agg(column_name::text ORDER BY column_name) FROM information_schema.columns
+   WHERE table_schema = 'public' AND table_name = 'derivaciones')
+  = ARRAY['actualizado_en', 'alumno_id', 'creado_en', 'curso_id', 'estado', 'id', 'leccion_id', 'motivo'],
+  'la derivación no guarda el texto de la consulta ni datos personales');
+INSERT INTO lecciones (id, video_id, titulo, inicio_s, fin_s, duracion_lectura_min)
+  VALUES ('leccion-borrable', 'python-intro', 'Se borra', 300, 600, 1);
+INSERT INTO derivaciones (alumno_id, leccion_id, motivo) VALUES (1, 'leccion-borrable', 'alumno');
+DELETE FROM lecciones WHERE id = 'leccion-borrable';
+SELECT pg_temp.comprobar(
+  (SELECT count(*) = 4 AND count(*) FILTER (WHERE leccion_id IS NOT NULL) = 1 FROM derivaciones WHERE alumno_id = 1),
+  'si se borra la lección, la derivación se conserva sin ella');
+INSERT INTO cursos (id, titulo) VALUES ('curso-borrable', 'Se borra');
+INSERT INTO derivaciones (alumno_id, curso_id, motivo) VALUES (1, 'curso-borrable', 'alumno');
+DELETE FROM cursos WHERE id = 'curso-borrable';
+SELECT pg_temp.comprobar(
+  (SELECT count(*) = 5 AND count(*) FILTER (WHERE curso_id IS NOT NULL) = 1 FROM derivaciones WHERE alumno_id = 1),
+  'si se borra el curso, la derivación se conserva sin él');
+
 DELETE FROM alumnos WHERE id = 1;
 SELECT pg_temp.comprobar(
   (SELECT count(*) FROM identidades WHERE alumno_id = 1) + (SELECT count(*) FROM eventos WHERE alumno_id = 1)
-  + (SELECT count(*) FROM mensajes_mentor WHERE alumno_id = 1) + (SELECT count(*) FROM sesiones WHERE alumno_id = 1) = 0,
+  + (SELECT count(*) FROM mensajes_mentor WHERE alumno_id = 1) + (SELECT count(*) FROM sesiones WHERE alumno_id = 1)
+  + (SELECT count(*) FROM derivaciones WHERE alumno_id = 1) = 0,
   'eliminar un alumno borra todos sus datos');

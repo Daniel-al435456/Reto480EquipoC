@@ -157,13 +157,16 @@ INSERT INTO dominios (alumno_id, concepto_id, nivel, nivel_test) SELECT 1, id, 0
 INSERT INTO sesiones (alumno_id, minutos, audio) VALUES (1, 10, true);
 INSERT INTO sesiones_lecciones (sesion_id, leccion_id, orden) SELECT 1, id, 1 FROM lecciones_esperadas WHERE orden = 1;
 INSERT INTO eventos (alumno_id, tipo, leccion_id) SELECT 1, 'video_iniciado', id FROM lecciones_esperadas WHERE orden = 1;
+INSERT INTO derivaciones (alumno_id, curso_id, leccion_id, motivo)
+  SELECT 1, curso_id, id, 'alumno' FROM lecciones_esperadas WHERE orden = 1;
 \else
 SELECT pg_temp.comprobar(
   (SELECT count(*) FROM matriculas) = 1
   AND (SELECT count(*) FROM dominios) = 1
   AND (SELECT count(*) FROM sesiones_lecciones) = 1
-  AND (SELECT count(*) FROM eventos WHERE leccion_id IS NOT NULL) = 1,
-  'volver a cargar el curso no borra la matrícula, el dominio, la sesión ni los eventos del alumno');
+  AND (SELECT count(*) FROM eventos WHERE leccion_id IS NOT NULL) = 1
+  AND (SELECT count(*) FROM derivaciones WHERE curso_id IS NOT NULL AND leccion_id IS NOT NULL) = 1,
+  'volver a cargar el curso no borra la matrícula, el dominio, la sesión, los eventos ni las derivaciones del alumno');
 \endif
 
 SELECT :'fase' = 'cambios' AS es_cambios \gset

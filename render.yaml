@@ -1,0 +1,28 @@
+# Backend en Render, como Blueprint: Render lee este fichero y crea el servicio.
+# Guía paso a paso: docs/despliegue.md.
+# Las variables marcadas con sync: false las pide Render al crear el servicio. Sus valores (contraseña de
+# la base de datos, clave de Groq) solo se escriben en Render, nunca en el repositorio.
+services:
+  - type: web
+    name: reto480-api
+    runtime: python
+    plan: free
+    region: frankfurt
+    rootDir: backend
+    buildCommand: pip install .
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /salud
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: ENTORNO
+        value: produccion
+      # Cadena de conexión de Supabase, en modo sesión del pooler (puerto 5432).
+      - key: DATABASE_URL
+        sync: false
+      # Dirección del frontend en Netlify, para CORS. Varias, separadas por comas.
+      - key: FRONTEND_URL
+        sync: false
+      # Clave de Groq. Mientras no esté, el mentor usa sus respuestas de respaldo.
+      - key: GROQ_API_KEY
+        sync: false

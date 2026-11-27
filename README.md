@@ -55,6 +55,7 @@ El prototipo aborda estos problemas con tres componentes:
 | [Tablero de tareas](https://github.com/users/Daniel-al435456/projects/1) | Backlog del proyecto en GitHub Projects, vinculado al repositorio: qué falta, quién se encarga y en qué estado está |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Roles, ramas, pull requests y definición de terminado |
 | [AGENTS.md](AGENTS.md) | Instrucciones para los asistentes de IA de desarrollo: comandos, reglas, convenciones y límites |
+| [docs/despliegue.md](docs/despliegue.md) | Cómo publicar la app con cuentas propias en Supabase, Render y Netlify |
 | [docs/registro-harness.md](docs/registro-harness.md) | Fallos de los asistentes de IA y qué cambiamos en el proyecto para que no se repitan |
 | [frontend/](frontend/README.md) | Aplicación del alumno (React PWA): puesta en marcha, pantallas y estructura |
 | [docs/img/](docs/img/README.md) | Bocetos y diagramas de la sesión de diseño |

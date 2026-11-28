@@ -33,6 +33,21 @@ export const usaBackend = Boolean(DIRECCION);
 let servidorDisponible = null;
 
 /**
+ * Token de la sesión del alumno (issue #57). Lo pone useEstado al iniciar sesión y viaja en todas las peticiones,
+ * también las del mentor: así el backend quita su nombre de lo que va a la IA y sabe si es menor por su fecha.
+ */
+let tokenSesion = null;
+
+export function ponerTokenSesion(token) {
+  tokenSesion = token || null;
+}
+
+const cabeceras = (conCuerpo) => ({
+  ...(conCuerpo ? { 'Content-Type': 'application/json' } : {}),
+  ...(tokenSesion ? { Authorization: `Bearer ${tokenSesion}` } : {}),
+});
+
+/**
  * Comprueba una sola vez si el backend responde en /salud. Si no responde, la app pasa a las respuestas
  * de ejemplo sin hacer esperar al alumno 8 segundos en cada pantalla. Devuelve true o false.
  */
@@ -54,7 +69,7 @@ async function conRespaldo(ruta, cuerpo, simulado) {
   try {
     const respuesta = await fetch(`${API}${ruta}`, {
       method: cuerpo ? 'POST' : 'GET',
-      headers: cuerpo ? { 'Content-Type': 'application/json' } : undefined,
+      headers: cabeceras(Boolean(cuerpo)),
       body: cuerpo ? JSON.stringify(cuerpo) : undefined,
       signal: AbortSignal.timeout(TIEMPO_MAXIMO_MS),
     });
@@ -248,3 +263,68 @@ function normalizar(texto) {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+/*
+ * Cuenta del alumno en el servidor (issue #57). A diferencia del resto, no tiene respuesta simulada: la cuenta
+ * solo existe en el servidor. Sin backend configurado (usaBackend), las pantallas siguen en modo local y no llaman
+ * a estas funciones. Si el servidor no responde, lanzan un ErrorCuenta con código "sin_conexion".
+ */
+
+/**
+ * Error de una ruta de cuenta: el código del backend ({ error, mensaje }) o "sin_conexion". `token` es el de la sesión
+ * con la que se hizo la petición: si la sesión ha caducado, solo se cierra si sigue siendo la abierta.
+ */
+export class ErrorCuenta extends Error {
+  constructor(codigo, mensaje = '', estado = 0, token = null) {
+    super(mensaje || codigo);
+    this.codigo = codigo;
+    this.mensaje = mensaje;
+    this.estado = estado;
+    this.token = token;
+  }
+}
+
+async function llamarCuenta(ruta, metodo, cuerpo) {
+  const token = tokenSesion;
+  let respuesta;
+  try {
+    respuesta = await fetch(`${API}${ruta}`, {
+      method: metodo,
+      headers: cabeceras(cuerpo !== undefined),
+      body: cuerpo !== undefined ? JSON.stringify(cuerpo) : undefined,
+      signal: AbortSignal.timeout(TIEMPO_MAXIMO_MS),
+    });
+  } catch {
+    throw new ErrorCuenta('sin_conexion', '', 0, token);
+  }
+  if (respuesta.status === 204) return null;
+  // Un servidor que no es el backend (por ejemplo, el de la app sin API) responde con HTML: es como no tenerlo.
+  const datos = await respuesta.json().catch(() => null);
+  if (!respuesta.ok) {
+    throw new ErrorCuenta(datos?.error ?? 'sin_conexion', datos?.mensaje ?? '', respuesta.status, token);
+  }
+  if (datos === null) throw new ErrorCuenta('sin_conexion', '', 0, token);
+  return datos;
+}
+
+/** Crea la cuenta con los datos de los cuatro pasos (api/sesion.js, cuerpoAlta). Devuelve { token, perfil }. */
+export const crearCuentaServidor = (datos) => llamarCuenta('/api/cuenta', 'POST', datos);
+
+/** Inicia sesión. Devuelve { token, perfil }. */
+export const iniciarSesionServidor = (email, contrasena) => llamarCuenta('/api/sesion', 'POST', { email, contrasena });
+
+/** El perfil del alumno con sesión: sirve para comprobar que la sesión sigue valiendo y traer cambios de otro móvil. */
+export const obtenerPerfilServidor = () => llamarCuenta('/api/cuenta', 'GET');
+
+/** Cierra la sesión de este dispositivo: el token deja de valer. */
+export const cerrarSesionServidor = () => llamarCuenta('/api/sesion', 'DELETE');
+
+/** Guarda en el servidor cambios del perfil (api/sesion.js, CAMPOS_PERFIL). Devuelve el perfil. */
+export const actualizarPerfilServidor = (cambios) => llamarCuenta('/api/cuenta', 'PATCH', cambios);
+
+/** Cambia la contraseña; el servidor cierra las demás sesiones del alumno. */
+export const cambiarContrasenaServidor = (actual, nueva) =>
+  llamarCuenta('/api/cuenta/contrasena', 'PUT', { actual, nueva });
+
+/** Elimina la cuenta y todos sus datos. Pide la contraseña. */
+export const eliminarCuentaServidor = (contrasena) => llamarCuenta('/api/cuenta', 'DELETE', { contrasena });

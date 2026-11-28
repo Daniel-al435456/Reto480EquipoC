@@ -29,7 +29,7 @@
     <script>
       // Aplica los ajustes de visualización del alumno antes de que cargue la app, para evitar parpadeos.
       try {
-        var ajustes = (JSON.parse(localStorage.getItem('reto480-estado-v4')) || {}).ajustes || {};
+        var ajustes = (JSON.parse(localStorage.getItem('reto480-estado-v5')) || {}).ajustes || {};
         ['tema', 'texto', 'contraste', 'movimiento'].forEach(function (clave) {
           var valor = ajustes[clave];
           if (valor && valor !== 'auto' && valor !== 'normal') document.documentElement.dataset[clave] = valor;

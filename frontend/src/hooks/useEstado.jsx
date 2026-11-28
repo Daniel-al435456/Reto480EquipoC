@@ -1,5 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { ponerTokenSesion } from '../api/cliente.js';
 import { cambiosPermitidos } from '../api/cuenta.js';
+import { borrarClavesAntiguas } from '../api/progresoLocal.js';
+import { mensajeDeError } from '../api/sesion.js';
+import { accionesDeSesion } from './sesionServidor.js';
 import { esMenor } from '../api/edad.js';
 import { PERSONALIDAD_INICIAL, TRATAMIENTO_INICIAL } from '../api/mentor.js';
 
@@ -10,10 +14,14 @@ export { esMenor };
  * perfil (alias y modo anónimo), curso elegido, resultado del test, progreso,
  * modo de estudio, sesión en curso, conversación con el mentor y eventos de aprendizaje.
  * Se guarda en el almacenamiento local para no perder el progreso al cerrar la app.
- * Cuando exista backend, la cuenta y la sesión se gestionarán en el servidor y los eventos se enviarán a la API.
+ *
+ * Con backend (issue #57), la cuenta vive en el servidor: aquí se guarda el token de la sesión y los cambios del perfil
+ * se envían solos. El progreso sigue en el móvil hasta las ramas 3 y 4, guardado por cuenta: al cambiar de cuenta,
+ * cada una recupera el suyo. Sin backend, la cuenta solo existe en el móvil, como antes.
+ * Si cambia la forma del estado guardado, se sube la versión de la clave aquí y en index.html.
  */
 
-const CLAVE = 'reto480-estado-v4';
+const CLAVE = 'reto480-estado-v5';
 
 const MENSAJE_INICIAL_MENTOR = {
   id: 'bienvenida',
@@ -69,24 +77,44 @@ const estadoInicial = {
   /** Lección de la que se habla al abrir el mentor desde una lección: { leccionId, titulo }. */
   contextoMentor: null,
   eventos: [],
+  /** Token de la sesión en el servidor (con backend). Nunca la contraseña. */
+  token: null,
+  /** Aviso para la pantalla de entrar, por ejemplo cuando la sesión ha caducado. */
+  avisoSesion: '',
+  /**
+   * Ya se ha entrado con una cuenta del servidor en este móvil. Al cerrar sesión se borran sus datos, pero la bienvenida
+   * sigue ofreciendo "Iniciar sesión" en lugar de "Crear cuenta". No guarda nada de la cuenta.
+   */
+  cuentaConocida: false,
+  /** Aviso que se muestra en cualquier pantalla, por ejemplo si un cambio del perfil no se ha podido guardar. */
+  avisoGlobal: '',
 };
 
-
 function cargar() {
+  borrarClavesAntiguas();
+  let estado = estadoInicial;
   try {
     const guardado = JSON.parse(localStorage.getItem(CLAVE));
-    return guardado
-      ? { ...estadoInicial, ...guardado, ajustes: { ...AJUSTES_INICIALES, ...guardado.ajustes } }
-      : estadoInicial;
+    if (guardado) estado = { ...estadoInicial, ...guardado, ajustes: { ...AJUSTES_INICIALES, ...guardado.ajustes } };
   } catch {
-    return estadoInicial;
+    // Sin almacenamiento o con datos dañados: se empieza de cero.
   }
+  // Antes de la primera petición, para que ya lleve la sesión.
+  ponerTokenSesion(estado.token);
+  return estado;
 }
 
 const Contexto = createContext(null);
 
 export function EstadoProvider({ children }) {
   const [estado, setEstado] = useState(cargar);
+  // Estado actual para las acciones que llaman al servidor, que no deben depender de cada cambio.
+  const estadoActual = useRef(estado);
+  estadoActual.current = estado;
+
+  useEffect(() => {
+    ponerTokenSesion(estado.token);
+  }, [estado.token]);
 
   useEffect(() => {
     try {
@@ -103,6 +131,24 @@ export function EstadoProvider({ children }) {
     }));
   }, []);
 
+  // Acciones de la sesión con el servidor (hooks/sesionServidor.js). No dependen de cada cambio del estado.
+  const sesionServidor = useMemo(() => accionesDeSesion({ estadoActual, setEstado, inicial: estadoInicial }), []);
+
+  // Comprueba la sesión al abrir la app y al volver a ella: si ha caducado, pide entrar de nuevo.
+  useEffect(() => {
+    sesionServidor.comprobarSesion();
+    const alVolver = () => document.visibilityState === 'visible' && sesionServidor.comprobarSesion();
+    document.addEventListener('visibilitychange', alVolver);
+    return () => document.removeEventListener('visibilitychange', alVolver);
+  }, [sesionServidor]);
+
+  /** Un cambio del perfil que el servidor no ha guardado: el móvil sigue como estaba y se avisa. */
+  const avisarFallo = useCallback((error) => {
+    if (error?.codigo === 'sesion_no_valida') return;
+    setEstado((e) => ({ ...e, avisoGlobal: `No se ha podido guardar el cambio. ${mensajeDeError(error)}` }));
+  }, []);
+  const cambiar = useCallback((cambios) => sesionServidor.cambiarPerfil(cambios).catch(avisarFallo), [sesionServidor, avisarFallo]);
+
   const acciones = useMemo(
     () => ({
       registrarEvento,
@@ -112,22 +158,26 @@ export function EstadoProvider({ children }) {
       registrarConsentimiento: () =>
         setEstado((e) => (e.altaCompleta ? e : { ...e, consentimientoFamilia: new Date().toISOString() })),
       ponerContextoMentor: (contexto) => setEstado((e) => ({ ...e, contextoMentor: contexto })),
+      // Paso 1 del alta. Con backend, la cuenta aún no existe en el servidor: se crea al terminar el paso 4.
       crearCuenta: (cuenta) =>
         setEstado((e) => ({ ...e, cuenta: { ...cuenta, creada: new Date().toISOString() }, sesionIniciada: true })),
+      entrarConServidor: sesionServidor.entrarConServidor,
       // Desde el perfil solo se pueden cambiar algunos datos (CAMPOS_EDITABLES en api/cuenta.js); el resto solo la academia.
-      actualizarCuenta: (cambios) =>
-        setEstado((e) => {
-          return { ...e, cuenta: { ...e.cuenta, ...cambiosPermitidos(cambios) } };
-        }),
+      // Devuelve una promesa: PerfilCuenta espera a que el servidor los guarde para confirmarlo.
+      actualizarCuenta: (cambios) => sesionServidor.cambiarPerfil(cambiosPermitidos(cambios)),
       guardarContrasena: (hashContrasena) => setEstado((e) => ({ ...e, cuenta: { ...e.cuenta, hashContrasena } })),
       iniciarSesion: () => setEstado((e) => ({ ...e, sesionIniciada: true })),
-      cerrarSesion: () => setEstado((e) => ({ ...e, sesionIniciada: false, sesion: null, contextoMentor: null })),
+      cerrarSesion: sesionServidor.cerrarSesion,
       completarAlta: () => setEstado((e) => ({ ...e, altaCompleta: true })),
-      cambiarMentorIA: (mentorIA) => setEstado((e) => ({ ...e, mentorIA })),
-      cambiarPersonalidadMentor: (personalidadMentor) => setEstado((e) => ({ ...e, personalidadMentor })),
-      cambiarTratamiento: (tratamiento) => setEstado((e) => ({ ...e, tratamiento })),
-      guardarPerfil: ({ alias, anonimo }) => setEstado((e) => ({ ...e, alias, anonimo })),
-      cambiarAnonimo: (anonimo) => setEstado((e) => ({ ...e, anonimo })),
+      // Ajustes que también se guardan en el servidor: con sesión, se aplican cuando el servidor los confirma.
+      cambiarMentorIA: (mentorIA) => cambiar({ mentorIA }),
+      cambiarPersonalidadMentor: (personalidadMentor) => cambiar({ personalidadMentor }),
+      cambiarTratamiento: (tratamiento) => cambiar({ tratamiento }),
+      guardarPerfil: ({ alias, anonimo }) => cambiar({ alias, anonimo }),
+      cambiarAnonimo: (anonimo) => cambiar({ anonimo }),
+      caducarSesion: sesionServidor.caducarSesion,
+      quitarAvisoSesion: () => setEstado((e) => (e.avisoSesion ? { ...e, avisoSesion: '' } : e)),
+      quitarAvisoGlobal: () => setEstado((e) => (e.avisoGlobal ? { ...e, avisoGlobal: '' } : e)),
       seleccionarCurso: (cursoId) =>
         setEstado((e) =>
           e.cursoId === cursoId
@@ -135,6 +185,8 @@ export function EstadoProvider({ children }) {
             : {
                 ...estadoInicial,
                 cuenta: e.cuenta,
+                token: e.token,
+                cuentaConocida: e.cuentaConocida,
                 sesionIniciada: e.sesionIniciada,
                 altaCompleta: e.altaCompleta,
                 mentorIA: e.mentorIA,
@@ -176,9 +228,10 @@ export function EstadoProvider({ children }) {
         setEstado((e) => ({ ...e, mensajesMentor: [MENSAJE_INICIAL_MENTOR], mentorNoLeido: false })),
       marcarMentorLeido: () => setEstado((e) => (e.mentorNoLeido ? { ...e, mentorNoLeido: false } : e)),
       // Eliminar la cuenta borra todos los datos del alumno de este dispositivo. Se conservan los ajustes de visualización.
-      eliminarCuenta: () => setEstado((e) => ({ ...estadoInicial, ajustes: e.ajustes })),
+      // Con backend, la pantalla la elimina antes en el servidor.
+      eliminarCuenta: sesionServidor.eliminarCuenta,
     }),
-    [registrarEvento],
+    [registrarEvento, sesionServidor, cambiar],
   );
 
   const valor = useMemo(() => ({ estado, ...acciones }), [estado, acciones]);

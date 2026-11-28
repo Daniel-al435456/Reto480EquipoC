@@ -9,7 +9,8 @@ import estilos from './Bienvenida.module.css';
 export function Bienvenida({ navegar }) {
   const encabezado = useTituloPantalla('Bienvenida');
   const { estado } = useEstado();
-  const tieneCuenta = Boolean(estado.cuenta);
+  // Con backend, al cerrar sesión se borra la cuenta del móvil, pero se recuerda que ya se entró desde aquí.
+  const tieneCuenta = Boolean(estado.cuenta || estado.cuentaConocida);
 
   return (
     <div className={estilos.bienvenida}>

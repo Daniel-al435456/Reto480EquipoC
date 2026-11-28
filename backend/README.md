@@ -40,7 +40,7 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 
 ### Cuenta y sesión
 
-Las rutas de la cuenta (issue #55) necesitan la base de datos: sin `DATABASE_URL` responden 503 y la app sigue en su modo local. Las que no son el alta ni el inicio de sesión necesitan además una sesión: la app envía en cada petición la cabecera `Authorization: Bearer <token>`, con el token que devuelven `POST /api/cuenta` y `POST /api/sesion`.
+Las rutas de la cuenta (issue #55) necesitan la base de datos: sin `DATABASE_URL` responden 503. Una app con `VITE_API_URL` que apunta a un backend sin base de datos no puede crear cuentas ni iniciar sesión (avisa de que no puede conectar): todo despliegue con backend necesita su base de datos. Solo la app sin `VITE_API_URL` funciona en modo local. Las que no son el alta ni el inicio de sesión necesitan además una sesión: la app envía en cada petición la cabecera `Authorization: Bearer <token>`, con el token que devuelven `POST /api/cuenta` y `POST /api/sesion`.
 
 - **Contraseña:** se recibe por HTTPS y se guarda solo como hash Argon2id (`argon2-cffi`, con los parámetros mínimos de OWASP: 19 MiB y 2 pasadas, para no agotar la memoria de Render). Debe tener al menos 8 caracteres, con alguna letra y algún número, como en el frontend. Todavía no hay límite de intentos de inicio de sesión.
 - **Sesión:** el token es aleatorio y dura 30 días. En la tabla `accesos` solo se guarda su resumen SHA-256, así que una copia de la base de datos no sirve para entrar. Cerrar sesión borra su fila; cambiar la contraseña borra las demás del alumno; eliminar la cuenta, todas. Las caducadas se borran cuando el alumno vuelve a entrar.

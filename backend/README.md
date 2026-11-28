@@ -37,6 +37,14 @@ camelCase, como los usa el frontend (`leccionId`, `esMenor`). Detalle y pruebas 
 | `PUT /api/cuenta/contrasena` | Cambia la contraseña y cierra las demás sesiones | Pide la actual |
 | `POST /api/sesion` | Inicia sesión con el correo y la contraseña | |
 | `DELETE /api/sesion` | Cierra la sesión de este dispositivo | |
+| `GET /api/progreso` | Progreso del alumno en su curso actual | |
+| `PUT /api/cursos/{curso_id}/matricula` | Elige el curso: lo hace el actual y devuelve su progreso | |
+| `PUT /api/cursos/{curso_id}/test/resultado` | Guarda el resultado del test inicial | Sustituye el anterior |
+| `PUT /api/cursos/{curso_id}/dominio/{leccion_id}` | Estudia igualmente una lección dominada (`{"estudiar": true}`) o vuelve a saltarla | |
+| `POST /api/sesiones` | Empieza una sesión de estudio con sus lecciones, en orden | Abandona la que siguiera abierta |
+| `PUT /api/sesiones/{id}/lecciones/{leccion_id}` | Marca una lección de la sesión como completada | |
+| `PATCH /api/sesiones/{id}` | Termina la sesión: `completada` o `abandonada` | |
+| `POST /api/eventos` | Guarda un evento de aprendizaje | Solo los tipos de la lista, sin texto libre |
 
 ### Cuenta y sesión
 
@@ -61,6 +69,29 @@ Las rutas de la cuenta (issue #55) necesitan la base de datos: sin `DATABASE_URL
 | `contrasena_incorrecta` | 403 | La contraseña actual no es correcta al cambiarla o al eliminar la cuenta |
 | `datos_no_validos` | 422 | La base de datos rechaza un dato (por ejemplo, un carácter que no admite) |
 | `conflicto` | 409 | Un valor que tiene que ser único ya está guardado |
+
+### Progreso del alumno
+
+Las rutas del progreso (issue #60) necesitan, como las de la cuenta, la base de datos y una sesión. Guardan lo que el alumno hace en el curso con su `alumno_id`, sin datos personales. Devuelven el progreso con la forma del estado del frontend: `cursoId`, `testHecho`, `dominioTest`, `dominio` y `completadas`.
+
+- **Curso actual:** es la matrícula que se tocó por última vez. Elegir un curso, guardar su test o empezar una sesión en él lo matricula si hacía falta y lo hace el actual. Al volver a un curso anterior se recupera su progreso.
+- **Dominio:** la tabla `dominios` va por concepto y el frontend, por lección. Una lección está dominada si el alumno domina todos sus conceptos. `nivel_test` guarda lo que dijo el test y `nivel`, lo que usa el itinerario: estudiar igualmente una lección pone `nivel` a 0 y conserva `nivel_test`, y volver a saltarla solo la da por dominada si el test lo dijo. De momento los niveles son 1 (domina) o 0. Hoy cada lección tiene un concepto propio (`cargar_curso.sql`); si un concepto se compartiera entre lecciones, dominar una lo daría por dominado en las demás, y estudiar igualmente una lo quitaría también de las otras.
+- **Test inicial:** se guarda una fila por cada concepto del curso, también los que no domina, para saber que el test está hecho aunque no domine nada. Repetirlo sustituye el resultado, también lo que el alumno eligió estudiar igualmente.
+- **Sesiones:** de 5, 10 o 20 minutos y con al menos una lección, todas del mismo curso. Una lección repetida se guarda una vez. Empezar una sesión abandona la que siguiera abierta; si llegan dos a la vez, la segunda espera a la primera. Una sesión terminada no cambia de estado; repetir la misma petición no da error.
+- **Lecciones completadas:** son las marcadas como completadas en las sesiones del alumno, sin tabla propia: una lección siempre se completa dentro de una sesión, también cuando el alumno la elige suelta. Se pueden completar aunque la sesión ya haya terminado: si el alumno empieza otra sesión en otro móvil, lo que termine en el primero no se pierde. Salen en el orden en que se completaron por primera vez.
+- **Sesión a medio hacer:** no se guarda en qué paso iba. Desde otro dispositivo se recuperan las lecciones completadas, pero no la sesión.
+- **Eventos:** solo los de aprendizaje (`actividad_respondida`, `video_iniciado`, `sesion_abandonada`…; la lista está en `TipoEvento`, en `app/esquemas.py`). Los de la cuenta no se guardan en `eventos`, y `sesion_iniciada` solo se admite con el curso y los minutos de la sesión de estudio: sin ellos es el inicio de sesión en la cuenta. `derivacion_tutor` no se admite porque lo escribe el backend junto con su fila de `derivaciones`. Los `detalles` siguen `DetallesEvento`: cada dato con su tipo (números con rango, sí o no, valores de una lista cerrada o un curso que exista), nunca texto libre.
+- **Otros alumnos:** una sesión de otro alumno responde lo mismo que una que no existe.
+
+| Error | Código | Cuándo |
+|---|---|---|
+| `curso_no_encontrado` | 404 | El curso no existe |
+| `leccion_no_encontrada` | 404 | La lección no es de ese curso, o no es de esa sesión |
+| `lecciones_no_validas` | 422 | El test o la sesión llevan una lección que no existe o es de otro curso |
+| `sesion_no_encontrada` | 404 | La sesión no existe o es de otro alumno |
+| `sesion_terminada` | 409 | Cambiar de estado una sesión terminada |
+| `validacion` | 422 | Minutos distintos de 5, 10 o 20, una sesión sin lecciones, un tipo de evento no permitido o detalles no admitidos |
+| `datos_no_validos` | 422 | Un evento con una lección, una pregunta o un curso que no existen |
 
 El curso de ejemplo es una copia del del frontend. Si cambia `frontend/src/api/datos.js`,
 se regenera con `node herramientas/exportar-curso.mjs` desde `frontend/`.
@@ -183,7 +214,7 @@ La conexión usa las variables de entorno estándar de PostgreSQL (`PGHOST`, `PG
 - **Nombres de tablas en plural**: las relaciones del diagrama PERTENECE, CUBRE y COMPONE son las tablas `matriculas`, `lecciones_conceptos` y `sesiones_lecciones`.
 - **Derivaciones a un tutor** (migración 003, H7): cada petición es una fila de `derivaciones` con su motivo (`alumno`, `malestar` o `sin_ia`, cuando la IA no responde) y su estado (`pendiente` o `atendida`), y además un evento `derivacion_tutor` en `eventos`. El evento dice que pasó; la tabla guarda el estado, que cambia. No se guarda el texto de la consulta.
 - **Cuentas** (migración 004): `identidades.puesto` es opcional. Las sesiones iniciadas están en `accesos`, con el resumen del token y su caducidad, nunca el token.
-- **Reglas que comprueba el backend**, porque dependen de varias filas o de la fecha actual: el consentimiento de la familia para menores de 14 años, que todas las lecciones de una sesión sean del mismo curso y que el curso de una derivación sea el de su lección, si la tiene.
+- **Reglas que comprueba el backend**, porque dependen de varias filas o de la fecha actual: el consentimiento de la familia para menores de 14 años, que todas las lecciones de una sesión sean del mismo curso (lo comprueba `POST /api/sesiones`) y que el curso de una derivación sea el de su lección, si la tiene.
 
 ## Comprobaciones
 

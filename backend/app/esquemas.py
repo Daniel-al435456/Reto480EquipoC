@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 from pydantic.alias_generators import to_camel
 
 
@@ -311,3 +311,123 @@ class EntradaEliminarCuenta(EsquemaApi):
     """Para eliminar la cuenta hay que escribir la contraseña: no se puede deshacer."""
 
     contrasena: Contrasena
+
+
+# ---------------------------------------------------------------------------
+# Progreso del alumno (issue #60): matrícula, test inicial, dominio, sesiones de estudio y eventos.
+# Nada de esto identifica al alumno: se guarda con su alumno_id, nunca con su identidad.
+# ---------------------------------------------------------------------------
+
+#: Identificador de contenido, como el dominio `slug` de la base de datos.
+Slug = Annotated[str, StringConstraints(pattern=r"^[a-z0-9]+(-[a-z0-9]+)*$", max_length=120)]
+
+
+class Progreso(EsquemaApi):
+    """Progreso del alumno en un curso, con la forma que usa el estado del frontend.
+
+    `dominio` y `dominioTest` tienen una entrada por lección dominada: lo que usa el itinerario
+    y lo que dijo el test. Son distintos cuando el alumno elige estudiar igualmente una lección.
+    """
+
+    curso_id: str | None = Field(description="Curso del progreso; null si no está en ninguno")
+    test_hecho: bool
+    dominio_test: dict[str, bool]
+    dominio: dict[str, bool]
+    completadas: list[str] = Field(
+        description="Lecciones completadas, en el orden en que lo fueron"
+    )
+
+
+class EntradaResultadoTest(EsquemaApi):
+    """Resultado del test inicial: las lecciones que domina, como lo devuelve la evaluación."""
+
+    dominio: dict[Slug, bool] = Field(max_length=500)
+
+
+class EntradaDominio(EsquemaApi):
+    """Estudiar igualmente una lección que el test dio por dominada (true) o volver a saltarla."""
+
+    estudiar: bool
+
+
+class EntradaSesionEstudio(EsquemaApi):
+    """Sesión de estudio que empieza el alumno, con sus lecciones en orden."""
+
+    curso_id: Slug
+    minutos: Literal[5, 10, 20] = Field(description="Tiempo que eligió el alumno (H4)")
+    audio: bool
+    lecciones: list[Slug] = Field(min_length=1, max_length=100)
+
+
+class SalidaSesionEstudio(EsquemaApi):
+    id: int
+
+
+class EntradaFinSesion(EsquemaApi):
+    estado: Literal["completada", "abandonada"]
+
+
+#: Eventos de aprendizaje que se guardan. No están los de la cuenta (alta, contraseña, inicio y
+#: cierre de sesión, perfil...), que no van a `eventos` (migración 001), ni `derivacion_tutor`, que
+#: lo escribe el backend junto con su fila de `derivaciones` (migración 003).
+TipoEvento = Literal[
+    "curso_abierto",
+    "test_completado",
+    "leccion_elegida",
+    "sesion_iniciada",
+    "video_iniciado",
+    "contenido_completado",
+    "actividad_respondida",
+    "mentor_proactivo",
+    "leccion_completada",
+    "sesion_completada",
+    "sesion_abandonada",
+    "pregunta_mentor",
+]
+
+
+class DetallesEvento(EsquemaApi):
+    """Lo que puede acompañar a un evento, cada dato con su tipo.
+
+    No admite otros datos ni texto libre, que podría llevar datos personales: el texto que se
+    admite es un identificador de curso, que el backend comprueba que existe, o un valor de una
+    lista cerrada. La lección y la pregunta van fuera, en `leccionId` y `preguntaId`.
+    """
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid")
+
+    curso_id: Slug | None = None
+    #: Tipo del paso de la sesión que se ha completado.
+    formato: Literal["video", "lectura", "resumen"] | None = None
+    #: Señal del detector que ha hecho intervenir al mentor. Se añaden aquí las nuevas.
+    senal: Literal["fallos_repetidos"] | None = None
+    minutos: Literal[5, 10, 20] | None = None
+    paso: int | None = Field(default=None, ge=0, le=200)
+    pasos: int | None = Field(default=None, ge=0, le=200)
+    aciertos: int | None = Field(default=None, ge=0, le=100)
+    total: int | None = Field(default=None, ge=0, le=100)
+    audio: bool | None = None
+    solo_actividades: bool | None = None
+    repaso: bool | None = None
+    correcta: bool | None = None
+
+
+class EntradaEvento(EsquemaApi):
+    tipo: TipoEvento
+    leccion_id: Slug | None = None
+    pregunta_id: Slug | None = Field(default=None, description="La actividad o pregunta respondida")
+    valor: float | None = None
+    detalles: DetallesEvento = Field(default_factory=DetallesEvento)
+
+    @model_validator(mode="after")
+    def _sesion_de_estudio(self) -> EntradaEvento:
+        """`sesion_iniciada` es el inicio de una sesión de estudio, con su curso y sus minutos.
+
+        El frontend usa el mismo nombre al iniciar sesión en la cuenta, sin datos: ese evento es de
+        la cuenta y no se guarda.
+        """
+        if self.tipo == "sesion_iniciada" and (
+            self.detalles.curso_id is None or self.detalles.minutos is None
+        ):
+            raise ValueError("sesion_iniciada necesita el curso y los minutos de la sesión")
+        return self

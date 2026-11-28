@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { guardarContrasenaAlta } from '../api/altaPendiente.js';
+import { usaBackend } from '../api/cliente.js';
 import { EMAIL_VALIDO, errorContrasena, resumirContrasena } from '../api/cuenta.js';
 import { Boton } from '../componentes/Boton.jsx';
 import { Campo } from '../componentes/Campo.jsx';
@@ -12,6 +14,8 @@ export const PASOS_ALTA = 4;
  * Alta, paso 1 de 4: datos de la cuenta.
  * El acceso a 480 Academy lo da la empresa del alumno, por eso se pide.
  * Estos datos identifican al alumno y nunca se envían a la IA (propuesta P3).
+ * Con backend, la cuenta se crea en el servidor al terminar el paso 4 (Preferencias): hasta entonces la contraseña
+ * solo se guarda en memoria (api/altaPendiente.js). Sin backend, se guarda su resumen en el dispositivo.
  */
 export function Registro({ navegar }) {
   const { estado, crearCuenta, registrarEvento } = useEstado();
@@ -45,13 +49,14 @@ export function Registro({ navegar }) {
       return;
     }
     setEnviando(true);
+    if (usaBackend) guardarContrasenaAlta(datos.contrasena);
     crearCuenta({
       empresa: datos.empresa.trim(),
       nombre: datos.nombre.trim(),
       apellidos: datos.apellidos.trim(),
       email: datos.email.trim().toLowerCase(),
       puesto: datos.puesto.trim(),
-      hashContrasena: await resumirContrasena(datos.contrasena),
+      ...(usaBackend ? {} : { hashContrasena: await resumirContrasena(datos.contrasena) }),
     });
     registrarEvento('cuenta_creada');
     navegar('/edad');
@@ -64,7 +69,7 @@ export function Registro({ navegar }) {
       alVolver={() => navegar('/bienvenida')}
       progreso={{ valor: 1, maximo: PASOS_ALTA, etiqueta: `Paso 1 de ${PASOS_ALTA}` }}
     >
-      {estado.cuenta && (
+      {!usaBackend && estado.cuenta && (
         <p className={comun.aviso}>Ya hay una cuenta en este dispositivo. Si creas otra, sustituirá a la anterior.</p>
       )}
       <form className={comun.grupo} onSubmit={enviar} noValidate>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEstado } from '../hooks/useEstado.jsx';
 import { useConexion, usePwa } from '../hooks/usePwa.js';
 import { actualizar, instalar } from '../pwa.js';
 import { IconoDescargar, IconoSinConexion } from './Iconos.jsx';
@@ -8,9 +9,11 @@ const CLAVE_DESCARTE = 'reto480-instalacion-descartada';
 
 /**
  * Avisos generales de la aplicación, encima del contenido:
- * sin conexión, versión nueva disponible y sugerencia de instalar la app (una vez).
+ * sin conexión, un cambio del perfil que no se ha podido guardar, versión nueva disponible y sugerencia de instalar
+ * la app (una vez).
  */
 export function AvisosApp({ sugerirInstalacion }) {
+  const { estado, quitarAvisoGlobal } = useEstado();
   const conectado = useConexion();
   const { puedeInstalar, hayVersionNueva } = usePwa();
   const [descartada, setDescartada] = useState(() => {
@@ -39,6 +42,15 @@ export function AvisosApp({ sugerirInstalacion }) {
             <strong>Sin conexión.</strong> Puedes seguir con lo que ya se ha cargado. El mentor responderá cuando vuelva
             la conexión.
           </span>
+        </div>
+      )}
+
+      {estado.avisoGlobal && (
+        <div className={estilos.aviso} role="alert">
+          <span>{estado.avisoGlobal}</span>
+          <button type="button" className={estilos.secundario} onClick={quitarAvisoGlobal}>
+            Cerrar
+          </button>
         </div>
       )}
 

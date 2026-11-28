@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { tramoDe } from '../api/edad.js';
+import { mensajeDeError } from '../api/sesion.js';
 import { IconoCandado } from '../componentes/Iconos.jsx';
 import { AvatarPixel } from '../componentes/AvatarPixel.jsx';
 import { Boton } from '../componentes/Boton.jsx';
@@ -30,24 +31,36 @@ export function PerfilCuenta({ navegar }) {
   });
   const [errores, setErrores] = useState({});
   const [aviso, setAviso] = useState('');
+  const [error, setError] = useState('');
+  const [guardando, setGuardando] = useState(false);
   const cambiar = (clave) => (valor) => {
     setDatos((d) => ({ ...d, [clave]: valor }));
     setErrores((e) => ({ ...e, [clave]: undefined }));
     setAviso('');
+    setError('');
   };
 
-  const guardar = (evento) => {
+  const guardar = async (evento) => {
     evento.preventDefault();
     const e = {};
     if (!datos.nombre.trim()) e.nombre = 'Indica tu nombre.';
     if (!datos.apellidos.trim()) e.apellidos = 'Indica tus apellidos.';
     setErrores(e);
     if (Object.keys(e).length) return;
-    actualizarCuenta({
-      nombre: datos.nombre.trim(),
-      apellidos: datos.apellidos.trim(),
-      puesto: datos.puesto.trim(),
-    });
+    setGuardando(true);
+    try {
+      // Con backend, espera a que el servidor los guarde. Si la sesión ha caducado, se vuelve a la pantalla de entrar.
+      await actualizarCuenta({
+        nombre: datos.nombre.trim(),
+        apellidos: datos.apellidos.trim(),
+        puesto: datos.puesto.trim(),
+      });
+    } catch (fallo) {
+      if (fallo.codigo !== 'sesion_no_valida') setError(mensajeDeError(fallo));
+      return;
+    } finally {
+      setGuardando(false);
+    }
     registrarEvento('cuenta_actualizada');
     setAviso('Cambios guardados.');
   };
@@ -77,7 +90,14 @@ export function PerfilCuenta({ navegar }) {
           <Campo etiqueta="Nombre" valor={datos.nombre} alCambiar={cambiar('nombre')} error={errores.nombre} autoComplete="given-name" />
           <Campo etiqueta="Apellidos" valor={datos.apellidos} alCambiar={cambiar('apellidos')} error={errores.apellidos} autoComplete="family-name" />
           <Campo etiqueta="Puesto o área" opcional valor={datos.puesto} alCambiar={cambiar('puesto')} autoComplete="organization-title" />
-          <Boton type="submit">Guardar cambios</Boton>
+          <Boton type="submit" disabled={guardando}>
+            Guardar cambios
+          </Boton>
+          {error && (
+            <p role="alert" className={`${comun.aviso} ${comun.incorrecto}`}>
+              {error}
+            </p>
+          )}
           <p role="status" className={comun.secundario}>
             {aviso}
           </p>

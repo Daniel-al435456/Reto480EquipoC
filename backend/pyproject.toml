@@ -13,6 +13,9 @@ dependencies = [
   # Conexión con PostgreSQL (issue #40). La versión "binary" trae su propia libpq: no hace falta
   # compilar nada ni instalar librerías del sistema.
   "psycopg[binary]>=3.2,<4",
+  # Hash de las contraseñas (issue #55). Argon2id es el algoritmo que recomienda OWASP y el que fija el
+  # esquema (identidades.hash_contrasena); la biblioteca estándar de Python no lo trae.
+  "argon2-cffi>=23.1,<26",
 ]
 
 [project.optional-dependencies]

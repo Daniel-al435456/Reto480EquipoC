@@ -15,8 +15,9 @@
 --                        (la posición 0 del fichero es el orden 1)
 --
 -- Se puede ejecutar varias veces. Lo que ya existe se actualiza (INSERT ... ON CONFLICT) y no se borra, así
--- que se conservan las matrículas, los dominios, las sesiones y los eventos de los alumnos. Lo que un curso
--- del fichero ya no tiene (una lección, una actividad) sí se borra, con lo que dependa de ello.
+-- que se conservan las cuentas, matrículas, dominios, sesiones, eventos, mensajes y derivaciones de los
+-- alumnos. Lo que un curso del fichero ya no tiene (una lección, una actividad) sí se borra, con lo que
+-- dependa de ello.
 
 -- Antes de tocar nada, se comprueba el fichero entero (issue #50). Si algo falla, la carga se detiene aquí
 -- y se listan todos los fallos. validar_curso.sql deja el fichero en tablas temporales: cursos_json,

@@ -315,10 +315,12 @@ def responder_mentor(
     es_menor: bool,
     personalidad: Personalidad,
     tratamiento: Tratamiento,
+    nombres: list[str] | None = None,
 ) -> dict[str, Any] | None:
     """Respuesta del agente Mentor, o `None` para el respaldo.
 
     Devuelve el texto, si deriva a un tutor y la lección que propone abrir (solo si existe).
+    `nombres` son el nombre y los apellidos del alumno con sesión, para que el filtro los quite.
     """
     respuesta = privacidad.consultar(
         obtener_configuracion().modelo_mentor,
@@ -336,6 +338,7 @@ def responder_mentor(
         # Si el modelo del mentor llega a su límite por minuto, responde el del diagnóstico,
         # más pequeño y con su propio límite, antes que una respuesta fija.
         modelo_de_reserva=obtener_configuracion().modelo_diagnostico,
+        nombres=nombres or (),
     )
     mensaje = _mensaje(respuesta, MAXIMO_PALABRAS_MENTOR)
     if mensaje is None or respuesta is None:
@@ -357,6 +360,7 @@ def corregir_respuesta(
     es_menor: bool,
     personalidad: Personalidad,
     tratamiento: Tratamiento,
+    nombres: list[str] | None = None,
 ) -> dict[str, Any] | None:
     """Corrección del agente de respuestas escritas, o `None` para corregir por palabras clave.
 
@@ -374,6 +378,7 @@ def corregir_respuesta(
             "respuesta_del_alumno": respuesta,
         },
         temperatura=0.2,
+        nombres=nombres or (),
     )
     comentario = _mensaje(
         {"mensaje": (resultado or {}).get("comentario")}, MAXIMO_PALABRAS_CORRECCION

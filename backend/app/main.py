@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import obtener_configuracion
 from app.errores import instalar_manejadores
-from app.routers import actividades, cursos, mentor, salud
+from app.routers import actividades, cuenta, cursos, mentor, salud
 from app.servicios.agentes import origen_de_la_ia
 from app.servicios.contenido import origen_del_curso
 
@@ -67,6 +67,7 @@ def crear_app() -> FastAPI:
     app.include_router(cursos.router)
     app.include_router(actividades.router)
     app.include_router(mentor.router)
+    app.include_router(cuenta.router)
     return app
 
 

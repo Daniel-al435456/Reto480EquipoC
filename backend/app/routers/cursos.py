@@ -11,6 +11,7 @@ from app.esquemas import (
     SalidaEvaluacion,
     SalidaTest,
 )
+from app.routers.dependencias import DatosDelAlumno
 from app.servicios import contenido
 
 router = APIRouter(prefix="/api/cursos", tags=["cursos"])
@@ -42,11 +43,14 @@ def preguntas_test(curso_id: str) -> SalidaTest:
     response_model=SalidaEvaluacion,
     summary="Corrige el test inicial y explica el itinerario",
 )
-def evaluar_test(curso_id: str, entrada: EntradaEvaluacion) -> SalidaEvaluacion:
+def evaluar_test(
+    curso_id: str, entrada: EntradaEvaluacion, alumno: DatosDelAlumno
+) -> SalidaEvaluacion:
+    # Con sesión, si es menor lo dice su fecha de nacimiento, no la app.
     return contenido.evaluar_test(
         curso_id,
         entrada.respuestas,
-        es_menor=entrada.es_menor,
+        es_menor=alumno.menor(entrada.es_menor),
         personalidad=entrada.personalidad,
         tratamiento=entrada.tratamiento,
     )

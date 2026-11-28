@@ -11,19 +11,20 @@ from app.esquemas import (
     SalidaMensaje,
     SalidaTexto,
 )
+from app.routers.dependencias import DatosDelAlumno
 from app.servicios import mentor
 
 router = APIRouter(prefix="/api/mentor", tags=["mentor"])
 
 
 @router.post("/proactivo", response_model=SalidaTexto, summary="Mensaje del mentor ante un bloqueo")
-def proactivo(entrada: EntradaProactivo) -> SalidaTexto:
+def proactivo(entrada: EntradaProactivo, alumno: DatosDelAlumno) -> SalidaTexto:
     return mentor.mensaje_proactivo(
         entrada.curso_id,
         entrada.leccion_id,
         entrada.personalidad,
         entrada.tratamiento,
-        es_menor=entrada.es_menor,
+        es_menor=alumno.menor(entrada.es_menor),
         senal=entrada.senal,
         progreso=entrada.progreso,
     )
@@ -35,16 +36,19 @@ def proactivo(entrada: EntradaProactivo) -> SalidaTexto:
     response_model_exclude_none=True,
     summary="Responde a una consulta",
 )
-def mensaje(entrada: EntradaMensaje) -> SalidaMensaje:
+def mensaje(entrada: EntradaMensaje, alumno: DatosDelAlumno) -> SalidaMensaje:
+    # Con sesión, el nombre y los apellidos del alumno se quitan de lo que escribe antes de que
+    # llegue a la IA, y si es menor lo dice su fecha de nacimiento, no la app.
     return mentor.responder(
         entrada.texto,
         entrada.curso_id,
         entrada.leccion_id,
         entrada.personalidad,
         entrada.tratamiento,
-        es_menor=entrada.es_menor,
+        es_menor=alumno.menor(entrada.es_menor),
         historial=entrada.historial,
         progreso=entrada.progreso,
+        nombres=alumno.nombres,
     )
 
 

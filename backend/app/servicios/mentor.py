@@ -223,8 +223,11 @@ def responder(
     es_menor: bool = False,
     historial: list[MensajeAnterior] | None = None,
     progreso: ProgresoAlumno | None = None,
+    nombres: list[str] | None = None,
 ) -> SalidaMensaje:
     """Respuesta a una consulta del alumno.
+
+    `nombres` son el nombre y los apellidos del alumno con sesión: no llegan a la IA.
 
     Con IA, el mentor responde con las lecciones relacionadas, el índice del curso, el progreso
     del alumno y la conversación anterior. Sin IA, resume la lección de la que habla.
@@ -245,6 +248,7 @@ def responder(
         es_menor=es_menor,
         personalidad=personalidad,
         tratamiento=tratamiento,
+        nombres=nombres,
     )
     if respuesta_ia:
         return _salida(curso, respuesta_ia)

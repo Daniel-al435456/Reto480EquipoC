@@ -72,7 +72,7 @@ flowchart LR
 1. La app envía la pregunta junto con los últimos 8 mensajes de la conversación, el progreso del alumno (qué lecciones domina y cuáles ha completado), la personalidad y el trato que eligió y si es menor.
 2. El backend busca hasta 3 lecciones relacionadas con la pregunta: la que nombra, la lección desde la que se pregunta y las que comparten más palabras con la pregunta.
 3. Prepara las instrucciones del mentor con la personalidad y el trato, y los datos: esas lecciones (vídeo, tramo, resumen y lectura), los datos generales del curso con su índice y el progreso.
-4. `privacidad.py` quita correos, teléfonos, documentos de identidad y enlaces de todos los textos y llama a Groq.
+4. `privacidad.py` quita correos, teléfonos, documentos de identidad y enlaces de todos los textos, y también el nombre y los apellidos del alumno si la petición trae su sesión, y llama a Groq.
 5. El backend comprueba la respuesta: que sea un JSON con un mensaje y que la lección que propone exista. Si el mensaje pasa de 100 palabras (se le piden 70), lo descarta. En cualquiera de esos casos usa el respaldo.
 6. La app muestra la respuesta con la marca «Redactado con IA» y, si el mentor propone una lección, un botón para abrirla.
 
@@ -91,7 +91,7 @@ sequenceDiagram
   API->>API: elige hasta 3 lecciones relacionadas
   API->>Ag: lecciones, índice del curso, progreso
   Ag->>Pr: instrucciones + datos
-  Pr->>Pr: quita correos, teléfonos, documentos y enlaces
+  Pr->>Pr: quita correos, teléfonos, documentos, enlaces y el nombre del alumno
   Pr->>G: petición (gpt-oss-120b)
   G-->>Pr: {mensaje, accion, fragmento_id}
   Pr-->>Ag: JSON
@@ -126,14 +126,14 @@ flowchart TD
 
 | Se envía | No se envía nunca |
 |---|---|
-| Si el alumno es menor (sí o no) | Nombre, apellidos ni alias |
+| Si el alumno es menor (sí o no). Con sesión, lo calcula el backend con su fecha de nacimiento | Alias. Tampoco el nombre ni los apellidos del alumno con sesión (véase debajo) |
 | Personalidad y trato del mentor | Correo, contraseña ni empresa |
 | La pregunta y la conversación, ya filtradas | Fecha de nacimiento |
 | La respuesta a una actividad escrita, ya filtrada | |
 | Qué lecciones domina o ha completado (identificadores del curso) | Ningún dato de la cuenta |
 | Contenido del curso: lecciones, vídeos, tramos, resúmenes e índice | |
 
-El filtro detecta correos, teléfonos, documentos de identidad y enlaces. **No detecta nombres:** si un alumno escribe su nombre o el de otra persona en una pregunta, ese texto llega a la IA. Por eso la app no pide datos personales en el chat y las instrucciones del mentor le prohíben pedirlos o repetirlos.
+El filtro detecta correos, teléfonos, documentos de identidad y enlaces. Si la petición trae la sesión del alumno (issue #55), quita también su nombre y sus apellidos de lo que escribe él (la pregunta, la conversación y la respuesta a una actividad), sin distinguir mayúsculas ni tildes. No los busca en el contenido del curso: si una palabra conocida del curso apareciera como `[nombre]`, delataría cómo se llama. **Lo que no detecta:** el nombre de otra persona, el suyo si no ha iniciado sesión o si la base de datos falla en ese momento, los diminutivos y las partes de menos de 3 letras ("Li", "Mª"). Por eso la app no pide datos personales en el chat y las instrucciones del mentor le prohíben pedirlos o repetirlos. Por eso la app no pide datos personales en el chat y las instrucciones del mentor le prohíben pedirlos o repetirlos.
 
 Solo `app/privacidad.py` puede hablar con un proveedor de IA. Lo comprueba una prueba de arquitectura (`pruebas/test_arquitectura.py`): si otro módulo importa un cliente HTTP o escribe la dirección de Groq, las pruebas fallan. El frontend nunca llama a la IA ni conoce la clave.
 
